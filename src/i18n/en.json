@@ -1,0 +1,61 @@
+{
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "about": "About Us",
+    "contact": "Contact Us",
+    "favorites": "Favorites",
+    "cart": "Cart"
+  },
+  "home": {
+    "explore": "Explore Products",
+    "featured": "Featured Products",
+    "view_all": "View All Products",
+    "about_preview_title": "About Us",
+    "contact_cta": "Contact Us via WhatsApp",
+    "whatsapp_help": "Need instant help? Chat with our mechanic experts on WhatsApp directly."
+  },
+  "products": {
+    "search": "Search products...",
+    "category": "All Categories",
+    "no_products": "No products found.",
+    "add_to_cart": "Add to Cart",
+    "out_of_stock": "Out of Stock",
+    "price": "Price",
+    "details": "View Details"
+  },
+  "product_modal": {
+    "quantity": "Quantity",
+    "added": "Added to cart successfully",
+    "close": "Close"
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty.",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "checkout": "Checkout via WhatsApp",
+    "clear": "Clear Cart",
+    "items": "items"
+  },
+  "favorites": {
+    "title": "Your Favorites",
+    "empty": "No favorites saved yet."
+  },
+  "about": {
+    "title": "About Us"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "form": {
+      "name": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "message": "Your Message",
+      "submit": "Send Message",
+      "submitting": "Sending...",
+      "success": "Your message was sent successfully!",
+      "error": "Failed to send your message. Please try again."
+    }
+  }
+}
