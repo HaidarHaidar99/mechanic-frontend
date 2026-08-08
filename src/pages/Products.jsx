@@ -56,14 +56,17 @@ export default function Products() {
   });
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-12 pb-16">
       
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white uppercase tracking-wide">
+        <span className="text-[10px] font-black text-red-500 uppercase tracking-widest block font-heading">
+          {currentLang === 'en' ? 'Performance Hub' : 'مركز الأداء'}
+        </span>
+        <h1 className="text-3xl font-extrabold text-zinc-950 dark:text-white uppercase tracking-tight mt-1 font-heading">
           {t('nav.products')}
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm text-zinc-500 dark:text-zinc-450 mt-1 max-w-xl">
           {currentLang === 'en' 
             ? 'Browse our extensive catalog of genuine parts and automotive supplies.' 
             : 'تصفح تشكيلتنا الواسعة من قطع الغيار الأصلية ومستلزمات السيارات.'}
@@ -71,69 +74,67 @@ export default function Products() {
       </div>
 
       {/* Filter / Search Bar */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white dark:bg-[#1f2028] p-4 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm transition-colors">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center bg-white dark:bg-[#121215] p-5 rounded-2xl border border-zinc-200/60 dark:border-zinc-900/60 shadow-sm transition-colors">
         
         {/* Search Input */}
-        <div className="relative w-full md:max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:right-3 rtl:left-auto" />
+        <div className="relative md:col-span-2">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rtl:right-4 rtl:left-auto" />
           <input 
             type="text"
             placeholder={t('products.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rtl:pr-10 rtl:pl-4 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+            className="w-full pl-11 pr-4 py-2.5 rtl:pr-11 rtl:pl-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-sm text-zinc-950 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-red-500 dark:focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-sans"
           />
         </div>
 
         {/* Category Dropdown */}
-        {categories.length > 0 && (
-          <div className="relative w-full md:w-64 flex items-center">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:right-3 rtl:left-auto" />
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full pl-10 pr-8 py-2 rtl:pr-10 rtl:pl-8 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all appearance-none cursor-pointer"
-            >
-              <option value="">{t('products.category')}</option>
-              {categories.map((cat, idx) => (
-                <option key={idx} value={cat}>{cat}</option>
-              ))}
-            </select>
-            {/* Custom arrow indicator for select */}
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 rtl:left-3 rtl:right-auto">
-              ▼
-            </div>
+        <div className="relative w-full">
+          <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rtl:right-4 rtl:left-auto" />
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full pl-11 pr-10 py-2.5 rtl:pr-11 rtl:pl-10 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-sm text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 dark:focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all appearance-none cursor-pointer font-sans"
+          >
+            <option value="">{t('products.category')}</option>
+            {categories.map((cat, idx) => (
+              <option key={idx} value={cat}>{cat}</option>
+            ))}
+          </select>
+          {/* Custom chevron indicator */}
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 rtl:left-4 rtl:right-auto text-[10px]">
+            ▼
           </div>
-        )}
+        </div>
 
       </div>
 
       {/* Products Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {[...Array(8)].map((_, i) => (
-            <div key={i} className="animate-pulse bg-white dark:bg-[#1f2028] border border-gray-150 dark:border-gray-800 rounded-xl p-4 space-y-4">
-              <div className="aspect-square bg-gray-200 dark:bg-gray-800 rounded-lg w-full" />
-              <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-2/3" />
-              <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-1/2" />
-              <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded w-full" />
+            <div key={i} className="animate-pulse bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-2xl p-5 space-y-4">
+              <div className="aspect-square bg-zinc-100 dark:bg-zinc-800 rounded-xl w-full" />
+              <div className="h-4 bg-zinc-100 dark:bg-zinc-800 rounded w-2/3" />
+              <div className="h-3 bg-zinc-100 dark:bg-zinc-800 rounded w-1/2" />
+              <div className="h-9 bg-zinc-100 dark:bg-zinc-800 rounded-xl w-full" />
             </div>
           ))}
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="text-center py-16 border border-dashed border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-[#1f2028]/35 transition-colors">
-          <Wrench className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+        <div className="text-center py-20 border border-dashed border-zinc-200 dark:border-zinc-900 rounded-3xl bg-white dark:bg-[#121215]/20 animate-fade-in">
+          <Wrench className="w-12 h-12 text-zinc-400 mx-auto mb-4 animate-bounce" />
+          <h3 className="text-lg font-extrabold text-zinc-950 dark:text-white font-heading">
             {t('products.no_products')}
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-zinc-500 dark:text-zinc-450 mt-1 max-w-sm mx-auto leading-relaxed">
             {currentLang === 'en' 
               ? 'Try modifying your search query or selected category.' 
               : 'يرجى تغيير كلمة البحث أو التصنيف المحدد.'}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch animate-fade-in">
           {filteredProducts.map(product => (
             <ProductCard 
               key={product.id} 

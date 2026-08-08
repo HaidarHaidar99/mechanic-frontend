@@ -31,30 +31,28 @@ export default function Favorites() {
     fetchProducts();
   }, []);
 
-  // Filter only products that exist in the favoriteIds list
-  // Gracefully ignores any IDs of deleted products
   const favoriteProducts = products.filter(p => favoriteIds.includes(p.id));
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[45vh] space-y-4">
-        <Wrench className="w-10 h-10 text-red-650 animate-spin" />
-        <span className="text-gray-500 text-sm">Loading favorites...</span>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <Wrench className="w-12 h-12 text-red-650 animate-spin" />
+        <span className="text-zinc-550 dark:text-zinc-450 text-sm font-semibold tracking-wider uppercase animate-pulse">Loading favorites...</span>
       </div>
     );
   }
 
   if (favoriteProducts.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[45vh] space-y-6 text-center">
-        <div className="p-4 bg-gray-100 dark:bg-gray-900 rounded-full text-gray-400">
-          <Heart className="w-16 h-16" />
+      <div className="flex flex-col items-center justify-center min-h-[55vh] space-y-6 text-center max-w-md mx-auto py-12 animate-fade-in">
+        <div className="p-5 bg-zinc-100 dark:bg-zinc-900 rounded-2xl text-red-500 animate-pulse">
+          <Heart className="w-12 h-12 fill-red-500" />
         </div>
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-2xl font-extrabold text-zinc-950 dark:text-white font-heading uppercase tracking-tight">
             {t('favorites.empty')}
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm">
+          <p className="text-xs text-zinc-550 dark:text-zinc-450 leading-relaxed">
             {currentLang === 'en' 
               ? 'Tapping the heart icon on products will save them here for quick access later.'
               : 'الضغط على رمز القلب في بطاقة المنتج سيقوم بحفظه هنا للرجوع إليه لاحقاً.'}
@@ -62,7 +60,7 @@ export default function Favorites() {
         </div>
         <Link 
           to="/products"
-          className="inline-flex items-center gap-1 px-5 py-2.5 bg-red-650 hover:bg-red-750 text-white font-bold rounded-xl shadow transition-all hover:scale-103"
+          className="inline-flex items-center gap-1.5 px-6 py-3.5 bg-red-650 hover:bg-red-755 text-white font-bold rounded-xl text-xs uppercase tracking-widest transition-all hover:scale-102 cursor-pointer shadow-md shadow-red-500/10"
         >
           <span>{currentLang === 'en' ? 'Explore Products' : 'استكشف المنتجات'}</span>
           <ArrowRight className="w-4 h-4 rtl:rotate-180" />
@@ -72,20 +70,23 @@ export default function Favorites() {
   }
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-12 pb-16 animate-fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white uppercase tracking-wide">
+      <div className="border-b border-zinc-200 dark:border-zinc-900 pb-5">
+        <span className="text-[10px] font-black text-red-500 uppercase tracking-widest block font-heading">
+          {currentLang === 'en' ? 'My Wishlist' : 'قائمتي المفضلة'}
+        </span>
+        <h1 className="text-3xl font-extrabold text-zinc-950 dark:text-white uppercase tracking-tight mt-1 font-heading">
           {t('favorites.title')}
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-xs text-zinc-500 dark:text-zinc-450 mt-1 font-bold">
           {favoriteProducts.length} {currentLang === 'en' ? 'products saved' : 'منتجات تم حفظها'}
         </p>
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
         {favoriteProducts.map(product => (
           <ProductCard 
             key={product.id} 

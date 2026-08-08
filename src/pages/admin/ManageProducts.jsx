@@ -5,7 +5,7 @@ import { apiRequest } from '../../services/api';
 import { compressImage } from '../../utils/imageCompression';
 import { 
   Plus, Edit2, Trash2, Eye, EyeOff, Search, 
-  Upload, Sparkles, Check, AlertCircle, RefreshCw, X 
+  Upload, Sparkles, Check, AlertCircle, RefreshCw, X, Save
 } from 'lucide-react';
 
 export default function ManageProducts() {
@@ -17,7 +17,7 @@ export default function ManageProducts() {
   const [error, setError] = useState(null);
 
   // Form states
-  const [editingProduct, setEditingProduct] = useState(null); // null means list view, {} or product object means modal form
+  const [editingProduct, setEditingProduct] = useState(null); // null means list view, otherwise product object
   const [formType, setFormType] = useState('create'); // 'create' | 'edit'
 
   const [nameEn, setNameEn] = useState('');
@@ -99,7 +99,6 @@ export default function ManageProducts() {
       setCompressionLoading(true);
       setFormError(null);
       
-      // Compress the image down to ~100-150KB
       const base64Result = await compressImage(file);
       setImageBase64(base64Result);
     } catch (err) {
@@ -114,7 +113,6 @@ export default function ManageProducts() {
     e.preventDefault();
     if (formSubmitting || compressionLoading) return;
 
-    // Validate fields
     if (!nameEn.trim() || !nameAr.trim() || !descEn.trim() || !descAr.trim() || !catEn.trim() || !catAr.trim() || !price || !imageBase64) {
       setFormError(currentLang === 'en' 
         ? 'All fields are required, including an image.' 
@@ -207,12 +205,12 @@ export default function ManageProducts() {
     <div className="space-y-6">
       
       {/* 1. Header controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-900 pb-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-wider">
+          <h1 className="text-xl font-bold text-zinc-950 dark:text-white uppercase tracking-wider font-heading">
             {currentLang === 'en' ? 'Product Inventory' : 'مخزون المنتجات'}
           </h1>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-zinc-400">
             {currentLang === 'en' ? 'Add, edit, or archive catalog products.' : 'إضافة، تعديل، أو أرشفة منتجات المتجر.'}
           </p>
         </div>
@@ -220,7 +218,7 @@ export default function ManageProducts() {
         {!editingProduct && (
           <button
             onClick={openCreateForm}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-red-650 hover:bg-red-750 rounded-xl transition-all shadow cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-red-650 hover:bg-red-755 rounded-xl transition-all shadow cursor-pointer shrink-0"
           >
             <Plus className="w-4 h-4" />
             <span>{currentLang === 'en' ? 'New Product' : 'منتج جديد'}</span>
@@ -236,70 +234,74 @@ export default function ManageProducts() {
           
           {/* Search bar */}
           <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rtl:right-3 rtl:left-auto" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-450 rtl:right-3.5 rtl:left-auto" />
             <input
               type="text"
               placeholder={currentLang === 'en' ? 'Search inventory...' : 'بحث في المخزون...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rtl:pr-10 rtl:pl-4 bg-white dark:bg-[#16181c] border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition-all text-gray-950 dark:text-white"
+              className="w-full pl-10 pr-4 py-2.5 rtl:pr-10 rtl:pl-4 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all text-zinc-950 dark:text-white"
             />
           </div>
 
-          {/* Grid list of inventory */}
+          {/* Table list of inventory */}
           {loading ? (
-            <div className="text-center py-12 text-sm text-gray-500 flex items-center justify-center gap-2">
+            <div className="text-center py-12 text-xs text-zinc-450 flex items-center justify-center gap-2">
               <RefreshCw className="w-5 h-5 animate-spin" />
               <span>Loading inventory...</span>
             </div>
           ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-16 border border-dashed border-gray-200 dark:border-gray-800 bg-white dark:bg-[#16181c]/30 rounded-2xl">
-              <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-500">{currentLang === 'en' ? 'No inventory products match filter.' : 'لا توجد منتجات مطابقة للبحث.'}</p>
+            <div className="text-center py-16 border border-dashed border-zinc-200 dark:border-zinc-900 bg-white dark:bg-[#121215]/20 rounded-3xl">
+              <AlertCircle className="w-8 h-8 text-zinc-400 mx-auto mb-2" />
+              <p className="text-xs text-zinc-500 font-semibold">{currentLang === 'en' ? 'No inventory products match filter.' : 'لا توجد منتجات مطابقة للبحث.'}</p>
             </div>
           ) : (
-            <div className="bg-white dark:bg-[#16181c] border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm transition-colors">
+            <div className="bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl overflow-hidden shadow-sm transition-colors">
               <table className="w-full text-left rtl:text-right border-collapse text-sm">
                 <thead>
-                  <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/10 text-gray-500 font-semibold text-xs tracking-wider uppercase">
+                  <tr className="border-b border-zinc-200 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-950/10 text-zinc-400 font-semibold text-xs tracking-wider uppercase">
                     <th className="px-6 py-4">{currentLang === 'en' ? 'Product' : 'المنتج'}</th>
                     <th className="px-6 py-4">{currentLang === 'en' ? 'Category' : 'التصنيف'}</th>
                     <th className="px-6 py-4">{currentLang === 'en' ? 'Price' : 'السعر'}</th>
-                    <th className="px-6 py-4">{currentLang === 'en' ? 'Status' : 'الحالة'}</th>
+                    <th className="px-6 py-4">Status</th>
                     <th className="px-6 py-4 text-center">{currentLang === 'en' ? 'Actions' : 'العمليات'}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
+                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-900">
                   {filteredProducts.map(p => {
                     const name = p.name[currentLang] || p.name['en'] || '';
                     const cat = p.category[currentLang] || p.category['en'] || '';
                     
                     return (
-                      <tr key={p.id} className="hover:bg-gray-50/30 dark:hover:bg-gray-800/10 transition-colors">
+                      <tr key={p.id} className="hover:bg-zinc-50/20 dark:hover:bg-zinc-900/10 transition-colors">
+                        
                         {/* Title & image */}
                         <td className="px-6 py-4 flex items-center gap-3">
-                          <img src={p.imageBase64} alt={name} className="w-10 h-10 rounded-lg object-cover bg-gray-100 dark:bg-gray-900" />
+                          <img src={p.imageBase64} alt={name} className="w-9 h-9 rounded-lg object-cover bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900/40 shrink-0" />
                           <div>
-                            <div className="font-semibold text-gray-900 dark:text-white line-clamp-1">{name}</div>
+                            <div className="font-semibold text-zinc-900 dark:text-white line-clamp-1 font-heading">{name}</div>
                             {p.featured && (
-                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 bg-red-500/10 text-red-500 text-[9px] font-bold rounded mt-0.5">
-                                <Sparkles className="w-2.5 h-2.5" />
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 bg-red-500/10 text-red-500 text-[8px] font-black rounded uppercase tracking-wider mt-0.5 font-heading">
+                                <Sparkles className="w-2.5 h-2.5 animate-pulse" />
                                 {currentLang === 'en' ? 'FEATURED' : 'مميز'}
                               </span>
                             )}
                           </div>
                         </td>
+
                         {/* Category */}
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 font-medium">
+                        <td className="px-6 py-4 text-zinc-500 dark:text-zinc-400 font-bold text-xs uppercase tracking-wider">
                           {cat}
                         </td>
+
                         {/* Price */}
-                        <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">
+                        <td className="px-6 py-4 font-extrabold text-zinc-950 dark:text-white font-heading">
                           ${p.price.toFixed(2)}
                         </td>
+
                         {/* Status */}
                         <td className="px-6 py-4">
-                          <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
                             p.isActive 
                               ? 'bg-green-500/10 text-green-500' 
                               : 'bg-red-500/10 text-red-500'
@@ -308,25 +310,27 @@ export default function ManageProducts() {
                             {p.isActive ? (currentLang === 'en' ? 'Active' : 'نشط') : (currentLang === 'en' ? 'Inactive' : 'غير نشط')}
                           </span>
                         </td>
+
                         {/* Actions */}
                         <td className="px-6 py-4 text-center">
                           <div className="flex items-center justify-center gap-2">
                             <button
                               onClick={() => openEditForm(p)}
-                              className="p-1.5 text-gray-500 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors cursor-pointer"
+                              className="p-1.5 text-zinc-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors cursor-pointer"
                               title="Edit product"
                             >
-                              <Edit2 className="w-4 h-4" />
+                              <Edit2 className="w-3.5 h-3.5" />
                             </button>
                             <button
                               onClick={() => handleDeleteProduct(p.id, name)}
-                              className="p-1.5 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+                              className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
                               title="Delete product"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </td>
+
                       </tr>
                     );
                   })}
@@ -339,28 +343,28 @@ export default function ManageProducts() {
 
       ) : (
         
-        // --- EDIT/CREATE MODAL FORM VIEW ---
-        <div className="bg-white dark:bg-[#16181c] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-6 sm:p-8 transition-colors max-w-4xl mx-auto">
+        // --- EDIT/CREATE VIEW ---
+        <div className="bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl shadow-sm p-6 sm:p-8 transition-colors max-w-4xl mx-auto">
           
-          <div className="flex items-center justify-between pb-4 border-b border-gray-150 dark:border-gray-850 mb-6">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white uppercase tracking-wide">
+          <div className="flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-900/60 mb-6">
+            <h2 className="text-base font-bold text-zinc-950 dark:text-white uppercase tracking-wider font-heading">
               {formType === 'create' 
                 ? (currentLang === 'en' ? 'Create New Product' : 'إضافة منتج جديد') 
                 : (currentLang === 'en' ? 'Edit Product Details' : 'تعديل بيانات المنتج')}
             </h2>
             <button 
               onClick={() => setEditingProduct(null)} 
-              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 rounded-lg"
+              className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-400 rounded-full"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4.5 h-4.5" />
             </button>
           </div>
 
           <form onSubmit={handleFormSubmit} className="space-y-6">
             
             {formError && (
-              <div className="flex items-center gap-2 p-4 bg-red-950/20 text-red-400 rounded-xl text-sm border border-red-900/50">
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <div className="flex items-center gap-2 p-4 bg-red-955/20 text-red-400 rounded-2xl text-xs border border-red-900/50">
+                <AlertCircle className="w-4.5 h-4.5 flex-shrink-0" />
                 <span>{formError}</span>
               </div>
             )}
@@ -368,103 +372,103 @@ export default function ManageProducts() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {/* Left Column: English details */}
-              <div className="space-y-4 bg-gray-50/50 dark:bg-gray-900/10 border border-gray-200 dark:border-gray-850 p-6 rounded-2xl">
-                <h3 className="text-xs font-extrabold text-red-600 dark:text-red-500 uppercase tracking-widest border-b border-gray-200 dark:border-gray-850 pb-2">
+              <div className="space-y-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 p-5 rounded-2xl">
+                <h3 className="text-[10px] font-black text-red-500 uppercase tracking-widest border-b border-zinc-150 dark:border-zinc-900/60 pb-2 font-heading">
                   English Fields (EN)
                 </h3>
                 
                 {/* Name EN */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">Product Name (EN) *</label>
+                  <label className="text-[10px] font-black text-zinc-550 dark:text-zinc-400 uppercase tracking-widest">Product Name (EN) *</label>
                   <input
                     type="text"
                     required
                     value={nameEn}
                     onChange={(e) => setNameEn(e.target.value)}
                     placeholder="Premium Brake Pads"
-                    className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition-all text-gray-950 dark:text-white"
+                    className="px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all text-zinc-950 dark:text-white font-sans"
                   />
                 </div>
 
                 {/* Category EN */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">Category (EN) *</label>
+                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Category (EN) *</label>
                   <input
                     type="text"
                     required
                     value={catEn}
                     onChange={(e) => setCatEn(e.target.value)}
                     placeholder="Brakes"
-                    className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition-all text-gray-950 dark:text-white"
+                    className="px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all text-zinc-950 dark:text-white font-sans"
                   />
                 </div>
 
                 {/* Desc EN */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">Description (EN) *</label>
+                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Description (EN) *</label>
                   <textarea
                     rows="4"
                     required
                     value={descEn}
                     onChange={(e) => setDescEn(e.target.value)}
-                    placeholder="High performance carbon metallic formula..."
-                    className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition-all resize-none text-gray-950 dark:text-white"
+                    placeholder="High performance carbon formula..."
+                    className="px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all resize-none text-zinc-950 dark:text-white font-sans"
                   />
                 </div>
               </div>
 
               {/* Right Column: Arabic details */}
-              <div className="space-y-4 bg-gray-50/50 dark:bg-gray-900/10 border border-gray-200 dark:border-gray-850 p-6 rounded-2xl" dir="rtl">
-                <h3 className="text-xs font-extrabold text-red-600 dark:text-red-500 uppercase tracking-widest border-b border-gray-200 dark:border-gray-850 pb-2">
+              <div className="space-y-4 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 p-5 rounded-2xl" dir="rtl">
+                <h3 className="text-[10px] font-black text-red-500 uppercase tracking-widest border-b border-zinc-150 dark:border-zinc-900/60 pb-2 font-heading text-right">
                   الحقول باللغة العربية (AR)
                 </h3>
                 
                 {/* Name AR */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">اسم المنتج (العربية) *</label>
+                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest text-right">اسم المنتج (العربية) *</label>
                   <input
                     type="text"
                     required
                     value={nameAr}
                     onChange={(e) => setNameAr(e.target.value)}
                     placeholder="فحمات فرامل متميزة"
-                    className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition-all text-gray-950 dark:text-white"
+                    className="px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all text-zinc-950 dark:text-white font-sans text-right"
                   />
                 </div>
 
                 {/* Category AR */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">التصنيف (العربية) *</label>
+                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest text-right">التصنيف (العربية) *</label>
                   <input
                     type="text"
                     required
                     value={catAr}
                     onChange={(e) => setCatAr(e.target.value)}
                     placeholder="الفرامل"
-                    className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition-all text-gray-950 dark:text-white"
+                    className="px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all text-zinc-950 dark:text-white font-sans text-right"
                   />
                 </div>
 
                 {/* Desc AR */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">الوصف (العربية) *</label>
+                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest text-right">الوصف (العربية) *</label>
                   <textarea
                     rows="4"
                     required
                     value={descAr}
                     onChange={(e) => setDescAr(e.target.value)}
                     placeholder="تركيبة كربون معدنية عالية الأداء..."
-                    className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition-all resize-none text-gray-950 dark:text-white"
+                    className="px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all resize-none text-zinc-950 dark:text-white font-sans text-right"
                   />
                 </div>
               </div>
 
               {/* Shared parameters */}
-              <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-6 items-start border-t border-gray-150 dark:border-gray-850 pt-6">
+              <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-6 items-start border-t border-zinc-100 dark:border-zinc-900/60 pt-6">
                 
                 {/* Price input */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">Price (USD) *</label>
+                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Price (USD) *</label>
                   <input
                     type="number"
                     step="0.01"
@@ -473,59 +477,59 @@ export default function ManageProducts() {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     placeholder="49.99"
-                    className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition-all text-gray-950 dark:text-white"
+                    className="px-3.5 py-2.5 bg-zinc-50 dark:bg-[#121215] border border-zinc-250 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all text-zinc-950 dark:text-white font-sans"
                   />
                 </div>
 
                 {/* Image Upload Box */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">Product Image *</label>
-                  <div className="relative border border-dashed border-gray-350 dark:border-gray-750 hover:bg-gray-50/50 dark:hover:bg-gray-900/10 rounded-lg p-2 transition-colors flex items-center justify-center gap-3">
+                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Product Image *</label>
+                  <div className="relative border border-dashed border-zinc-300 dark:border-zinc-800 hover:bg-zinc-50/50 dark:hover:bg-zinc-950/10 rounded-xl p-2 transition-colors flex items-center justify-center gap-3">
                     <input
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange}
-                      className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                      className="absolute inset-0 opacity-0 cursor-pointer z-10 font-sans"
                     />
                     
                     {imageBase64 ? (
                       <div className="flex items-center gap-2">
-                        <img src={imageBase64} alt="Upload Preview" className="w-12 h-12 object-cover rounded-lg border border-gray-200 dark:border-gray-800" />
-                        <span className="text-[10px] text-green-500 font-semibold uppercase tracking-wider flex items-center gap-0.5">
+                        <img src={imageBase64} alt="Upload Preview" className="w-12 h-12 object-cover rounded-lg border border-zinc-200 dark:border-zinc-800" />
+                        <span className="text-[9px] text-green-500 font-black uppercase tracking-widest flex items-center gap-0.5">
                           <Check className="w-3.5 h-3.5" />
                           {currentLang === 'en' ? 'Loaded' : 'تم التحميل'}
                         </span>
                       </div>
                     ) : (
-                      <div className="text-center py-2 text-gray-400 flex flex-col items-center">
+                      <div className="text-center py-2.5 text-zinc-400 flex flex-col items-center">
                         <Upload className="w-5 h-5 mb-0.5" />
-                        <span className="text-[10px] font-semibold">{currentLang === 'en' ? 'Upload Image' : 'اختر صورة'}</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest">{currentLang === 'en' ? 'Upload Image' : 'اختر صورة'}</span>
                       </div>
                     )}
                   </div>
                   {compressionLoading && (
-                    <span className="text-[10px] text-gray-400 animate-pulse">{currentLang === 'en' ? 'Compressing image...' : 'جاري ضغط الصورة...'}</span>
+                    <span className="text-[9px] text-zinc-400 animate-pulse font-bold">{currentLang === 'en' ? 'Compressing image...' : 'جاري ضغط الصورة...'}</span>
                   )}
                 </div>
 
                 {/* Toggles (Active & Featured) */}
-                <div className="flex flex-row sm:flex-col items-center justify-around sm:items-start gap-4 py-2 border-l border-gray-200 dark:border-gray-850 pl-6 rtl:border-l-0 rtl:border-r rtl:pl-0 rtl:pr-6 sm:h-full">
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">
+                <div className="flex flex-row sm:flex-col items-center justify-around sm:items-start gap-4 py-2 border-l border-zinc-150 dark:border-zinc-850 pl-6 rtl:border-l-0 rtl:border-r rtl:pl-0 rtl:pr-6 sm:h-full">
+                  <label className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-zinc-650 dark:text-zinc-350 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={isActive}
                       onChange={(e) => setIsActive(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-red-655 focus:ring-red-500"
+                      className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-800 text-red-655 focus:ring-red-500 cursor-pointer"
                     />
-                    <span>{currentLang === 'en' ? 'Visible (Active)' : 'نشط (مرئي)'}</span>
+                    <span>{currentLang === 'en' ? 'Active (Visible)' : 'نشط (مرئي)'}</span>
                   </label>
 
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">
+                  <label className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-zinc-655 dark:text-zinc-350 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={featured}
                       onChange={(e) => setFeatured(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-red-655 focus:ring-red-500"
+                      className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-800 text-red-655 focus:ring-red-500 cursor-pointer"
                     />
                     <span>{currentLang === 'en' ? 'Featured Item' : 'منتج مميز'}</span>
                   </label>
@@ -536,11 +540,11 @@ export default function ManageProducts() {
             </div>
 
             {/* Buttons */}
-            <div className="flex items-center justify-end gap-3 border-t border-gray-150 dark:border-gray-850 pt-6">
+            <div className="flex items-center justify-end gap-3 border-t border-zinc-100 dark:border-zinc-900/60 pt-6">
               <button
                 type="button"
                 onClick={() => setEditingProduct(null)}
-                className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-xl"
+                className="px-4 py-2 text-xs font-bold text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 border border-zinc-300 dark:border-zinc-800 rounded-xl uppercase tracking-wider cursor-pointer"
               >
                 {currentLang === 'en' ? 'Cancel' : 'إلغاء'}
               </button>
@@ -548,11 +552,12 @@ export default function ManageProducts() {
               <button
                 type="submit"
                 disabled={formSubmitting || compressionLoading}
-                className="px-6 py-2 bg-red-650 hover:bg-red-750 disabled:bg-gray-400 dark:disabled:bg-gray-800 text-white font-bold rounded-xl text-sm transition-all cursor-pointer shadow hover:shadow-md"
+                className="inline-flex items-center gap-1.5 px-5 py-2 bg-red-650 hover:bg-red-755 disabled:bg-zinc-200 dark:disabled:bg-zinc-850 text-white font-bold rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow"
               >
-                {formSubmitting
+                <Save className="w-3.5 h-3.5" />
+                <span>{formSubmitting
                   ? (currentLang === 'en' ? 'Saving...' : 'جاري الحفظ...')
-                  : (currentLang === 'en' ? 'Save Product' : 'حفظ المنتج')}
+                  : (currentLang === 'en' ? 'Save Product' : 'حفظ المنتج')}</span>
               </button>
             </div>
 

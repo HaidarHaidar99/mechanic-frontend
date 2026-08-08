@@ -20,124 +20,139 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-900 text-gray-300 border-t border-gray-800 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="bg-[#0b0c10] text-[#94a3b8] border-t border-zinc-900 transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        
+        {/* Footer Top Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           
-          {/* Brand/Logo Column */}
-          <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-2 text-white font-bold text-lg tracking-wider">
-              <Wrench className="w-5 h-5 text-red-500" />
+          {/* Logo & Intro */}
+          <div className="space-y-5">
+            <Link to="/" className="flex items-center gap-2.5 font-heading text-white font-extrabold text-lg uppercase tracking-widest transition-opacity hover:opacity-90">
+              <div className="p-2 rounded-lg bg-red-600 text-white shadow-md shadow-red-500/10">
+                <Wrench className="w-4 h-4" />
+              </div>
               <span>{displayCompanyName}</span>
             </Link>
-            <p className="text-sm text-gray-400">
+            <p className="text-xs leading-relaxed text-zinc-400">
               {currentLang === 'en' 
-                ? 'Your premium partner for automotive commerce, genuine auto parts, and professional repair services.' 
-                : 'شريكك المتميز لتجارة السيارات وقطع الغيار الأصلية وخدمات الإصلاح الاحترافية.'}
+                ? 'Your premium partner for automotive commerce, genuine auto parts, and professional repair services. Engineered for quality.' 
+                : 'شريكك المتميز لتجارة السيارات وقطع الغيار الأصلية وخدمات الإصلاح الاحترافية. مصمم لتحقيق أعلى جودة.'}
             </p>
             {/* Social Icons */}
-            <div className="flex space-x-4 rtl:space-x-reverse pt-2">
+            <div className="flex gap-2 pt-2">
               {facebook && (
-                <a href={facebook} target="_blank" rel="noopener noreferrer" className="p-2 hover:text-white hover:bg-gray-850 rounded-full transition-colors" aria-label="Facebook">
-                  <Facebook className="w-5 h-5" />
+                <a 
+                  href={facebook} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="p-2.5 bg-zinc-900 hover:bg-red-600 hover:text-white rounded-xl transition-all duration-300"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="w-4 h-4" />
                 </a>
               )}
               {instagram && (
-                <a href={instagram} target="_blank" rel="noopener noreferrer" className="p-2 hover:text-white hover:bg-gray-850 rounded-full transition-colors" aria-label="Instagram">
-                  <Instagram className="w-5 h-5" />
+                <a 
+                  href={instagram} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="p-2.5 bg-zinc-900 hover:bg-red-600 hover:text-white rounded-xl transition-all duration-300"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="w-4 h-4" />
                 </a>
               )}
             </div>
           </div>
 
-          {/* Quick Links Column */}
-          <div>
-            <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
-              {currentLang === 'en' ? 'Quick Links' : 'روابط سريعة'}
+          {/* Quick Links */}
+          <div className="space-y-4">
+            <h3 className="font-heading text-white text-xs font-black uppercase tracking-widest">
+              {currentLang === 'en' ? 'Quick Navigation' : 'روابط سريعة'}
             </h3>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-2.5 text-xs font-semibold">
               <li>
-                <Link to="/" className="hover:text-white transition-colors">{t('nav.home')}</Link>
+                <Link to="/" className="hover:text-red-500 transition-colors uppercase tracking-wider block">{t('nav.home')}</Link>
               </li>
               <li>
-                <Link to="/products" className="hover:text-white transition-colors">{t('nav.products')}</Link>
+                <Link to="/products" className="hover:text-red-500 transition-colors uppercase tracking-wider block">{t('nav.products')}</Link>
               </li>
               <li>
-                <Link to="/about" className="hover:text-white transition-colors">{t('nav.about')}</Link>
+                <Link to="/about" className="hover:text-red-500 transition-colors uppercase tracking-wider block">{t('nav.about')}</Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:text-white transition-colors">{t('nav.contact')}</Link>
+                <Link to="/contact" className="hover:text-red-500 transition-colors uppercase tracking-wider block">{t('nav.contact')}</Link>
               </li>
             </ul>
           </div>
 
-          {/* Contact Details Column */}
-          <div className="space-y-3">
-            <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
-              {currentLang === 'en' ? 'Contact Details' : 'تفاصيل الاتصال'}
+          {/* Contact Details */}
+          <div className="space-y-4">
+            <h3 className="font-heading text-white text-xs font-black uppercase tracking-widest">
+              {currentLang === 'en' ? 'Store Location' : 'موقع المحل'}
             </h3>
-            
-            {phone && (
-              <div className="flex items-center gap-2 text-sm">
-                <Phone className="w-4 h-4 text-red-500" />
-                <a href={`tel:${phone}`} className="hover:text-white transition-colors">{phone}</a>
-              </div>
-            )}
-            
-            {whatsapp && (
-              <div className="flex items-center gap-2 text-sm">
-                <MessageSquare className="w-4 h-4 text-green-500" />
-                <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">WhatsApp</a>
-              </div>
-            )}
-
-            {email && (
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="w-4 h-4 text-red-500" />
-                <a href={`mailto:${email}`} className="hover:text-white transition-colors">{email}</a>
-              </div>
-            )}
-
-            {address && (
-              <div className="flex items-center gap-2 text-sm">
-                <MapPin className="w-4 h-4 text-red-500" />
-                <span>{address}</span>
-              </div>
-            )}
+            <ul className="space-y-3 text-xs font-semibold">
+              {phone && (
+                <li className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-red-500 shrink-0" />
+                  <a href={`tel:${phone}`} className="hover:text-white transition-colors">{phone}</a>
+                </li>
+              )}
+              {whatsapp && (
+                <li className="flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4 text-green-500 shrink-0" />
+                  <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">WhatsApp Chat</a>
+                </li>
+              )}
+              {email && (
+                <li className="flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-red-500 shrink-0" />
+                  <a href={`mailto:${email}`} className="hover:text-white transition-colors">{email}</a>
+                </li>
+              )}
+              {address && (
+                <li className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                  <span className="text-zinc-400">{address}</span>
+                </li>
+              )}
+            </ul>
           </div>
 
-          {/* Business Hours Column */}
-          <div>
-            <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
-              {currentLang === 'en' ? 'Working Hours' : 'ساعات العمل'}
+          {/* Business Hours */}
+          <div className="space-y-4">
+            <h3 className="font-heading text-white text-xs font-black uppercase tracking-widest">
+              {currentLang === 'en' ? 'Business Hours' : 'ساعات العمل'}
             </h3>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li className="flex justify-between">
-                <span>{currentLang === 'en' ? 'Mon - Fri:' : 'الاثنين - الجمعة:'}</span>
-                <span className="text-gray-300">8:00 AM - 6:00 PM</span>
+            <ul className="space-y-2.5 text-xs font-semibold text-zinc-400">
+              <li className="flex justify-between border-b border-zinc-900 pb-1.5">
+                <span>{currentLang === 'en' ? 'Monday - Friday:' : 'الاثنين - الجمعة:'}</span>
+                <span className="text-white">8:00 AM - 6:00 PM</span>
               </li>
-              <li className="flex justify-between">
+              <li className="flex justify-between border-b border-zinc-900 pb-1.5">
                 <span>{currentLang === 'en' ? 'Saturday:' : 'السبت:'}</span>
-                <span className="text-gray-300">9:00 AM - 4:00 PM</span>
+                <span className="text-white">9:00 AM - 4:00 PM</span>
               </li>
               <li className="flex justify-between">
                 <span>{currentLang === 'en' ? 'Sunday:' : 'الأحد:'}</span>
-                <span className="text-red-500 font-medium">{currentLang === 'en' ? 'Closed' : 'مغلق'}</span>
+                <span className="text-red-500 font-extrabold">{currentLang === 'en' ? 'CLOSED' : 'مغلق'}</span>
               </li>
             </ul>
           </div>
 
         </div>
 
-        {/* Copyright Area */}
-        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500">
-          <p>&copy; {currentYear} {displayCompanyName}. All rights reserved.</p>
-          <p className="mt-2 md:mt-0">
+        {/* Footer Bottom Bar */}
+        <div className="border-t border-zinc-900 mt-16 pt-8 flex flex-col sm:flex-row items-center justify-between text-[10px] text-zinc-550 font-bold uppercase tracking-wider gap-4">
+          <p>&copy; {currentYear} {displayCompanyName}. ALL RIGHTS RESERVED.</p>
+          <p className="text-zinc-600 hover:text-zinc-400 transition-colors">
             {currentLang === 'en' 
               ? 'Engineered for premium performance.' 
               : 'صُمم لأداء متميز وعالٍ.'}
           </p>
         </div>
+
       </div>
     </footer>
   );

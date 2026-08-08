@@ -12,23 +12,18 @@ export function CartProvider({ children }) {
     localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (product, quantity = 1) => {
-    if (quantity < 1) return;
+  const addToCart = (product) => {
     setCartItems(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
-        return prev.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
+        return prev;
       }
       return [...prev, {
         id: product.id,
         name: product.name, // Bilingual name object { en, ar }
         price: product.price,
         imageBase64: product.imageBase64,
-        quantity
+        quantity: 1
       }];
     });
   };

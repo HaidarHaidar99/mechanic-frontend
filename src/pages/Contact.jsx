@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../contexts/SettingsContext';
 import { apiRequest } from '../services/api';
-import { Phone, Mail, MapPin, Send, MessageSquare, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Phone, Mail, MapPin, Send, MessageSquare, AlertCircle, CheckCircle2, RefreshCw } from 'lucide-react';
 
 export default function Contact() {
   const { t, i18n } = useTranslation();
@@ -32,13 +32,10 @@ export default function Contact() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    
-    // Prevent double clicks
     if (submitting) return;
 
     const { name, email: emailVal, phone: phoneVal, message } = formData;
 
-    // Front-end validations
     if (!name.trim() || !emailVal.trim() || !phoneVal.trim() || !message.trim()) {
       setErrorMsg(currentLang === 'en' ? 'All fields are required' : 'جميع الحقول مطلوبة');
       return;
@@ -91,38 +88,43 @@ export default function Contact() {
   };
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-12 pb-16">
       
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white uppercase tracking-wide">
+        <span className="text-[10px] font-black text-red-500 uppercase tracking-widest block font-heading">
+          {currentLang === 'en' ? 'Support Desk' : 'مكتب الدعم'}
+        </span>
+        <h1 className="text-3xl font-extrabold text-zinc-950 dark:text-white uppercase tracking-tight mt-1 font-heading">
           {t('contact.title')}
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm text-zinc-550 dark:text-zinc-450 mt-1 max-w-xl">
           {currentLang === 'en' 
             ? 'Have a question or want to book an appointment? Get in touch with us.' 
             : 'لديك استفسار أو ترغب في حجز موعد؟ تواصل معنا مباشرة.'}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
         {/* Contact details card */}
-        <div className="bg-white dark:bg-[#1f2028] border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-sm h-fit space-y-6 transition-colors">
+        <div className="bg-white dark:bg-[#121215] border border-zinc-200/60 dark:border-zinc-900/60 rounded-3xl p-8 shadow-sm space-y-8 transition-colors">
           
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white pb-3 border-b border-gray-150 dark:border-gray-800">
-            {currentLang === 'en' ? 'Store Info' : 'معلومات المحل'}
+          <h2 className="text-lg font-extrabold text-zinc-950 dark:text-white pb-3 border-b border-zinc-100 dark:border-zinc-900/60 font-heading">
+            {currentLang === 'en' ? 'Direct Contact' : 'الاتصال المباشر'}
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             {phone && (
               <div className="flex items-start gap-3">
-                <Phone className="w-5 h-5 text-red-500 mt-0.5" />
+                <div className="p-2.5 bg-red-500/10 text-red-500 rounded-xl">
+                  <Phone className="w-5 h-5 shrink-0" />
+                </div>
                 <div>
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <h3 className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-0.5">
                     {currentLang === 'en' ? 'Call Us' : 'اتصل بنا'}
                   </h3>
-                  <a href={`tel:${phone}`} className="text-sm font-medium text-gray-900 dark:text-white hover:text-red-500 transition-colors">
+                  <a href={`tel:${phone}`} className="text-xs sm:text-sm font-bold text-zinc-950 dark:text-white hover:text-red-500 transition-colors">
                     {phone}
                   </a>
                 </div>
@@ -131,16 +133,18 @@ export default function Contact() {
 
             {whatsapp && (
               <div className="flex items-start gap-3">
-                <MessageSquare className="w-5 h-5 text-green-500 mt-0.5" />
+                <div className="p-2.5 bg-red-500/10 text-red-500 rounded-xl">
+                  <MessageSquare className="w-5 h-5 shrink-0" />
+                </div>
                 <div>
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <h3 className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-0.5">
                     {currentLang === 'en' ? 'WhatsApp' : 'واتساب'}
                   </h3>
                   <a 
                     href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="text-sm font-medium text-gray-900 dark:text-white hover:text-green-500 transition-colors"
+                    className="text-xs sm:text-sm font-bold text-zinc-950 dark:text-white hover:text-green-500 transition-colors"
                   >
                     {currentLang === 'en' ? 'Start WhatsApp Chat' : 'بدء محادثة واتساب'}
                   </a>
@@ -150,12 +154,14 @@ export default function Contact() {
 
             {email && (
               <div className="flex items-start gap-3">
-                <Mail className="w-5 h-5 text-red-500 mt-0.5" />
+                <div className="p-2.5 bg-red-500/10 text-red-500 rounded-xl">
+                  <Mail className="w-5 h-5 shrink-0" />
+                </div>
                 <div>
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <h3 className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-0.5">
                     {currentLang === 'en' ? 'Email Address' : 'البريد الإلكتروني'}
                   </h3>
-                  <a href={`mailto:${email}`} className="text-sm font-medium text-gray-900 dark:text-white hover:text-red-500 transition-colors">
+                  <a href={`mailto:${email}`} className="text-xs sm:text-sm font-bold text-zinc-950 dark:text-white hover:text-red-500 transition-colors">
                     {email}
                   </a>
                 </div>
@@ -164,12 +170,14 @@ export default function Contact() {
 
             {address && (
               <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-red-500 mt-0.5" />
+                <div className="p-2.5 bg-red-500/10 text-red-500 rounded-xl">
+                  <MapPin className="w-5 h-5 shrink-0" />
+                </div>
                 <div>
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <h3 className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-0.5">
                     {currentLang === 'en' ? 'Location' : 'الموقع'}
                   </h3>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white leading-relaxed">
+                  <span className="text-xs sm:text-sm font-bold text-zinc-950 dark:text-white leading-relaxed">
                     {address}
                   </span>
                 </div>
@@ -180,9 +188,9 @@ export default function Contact() {
         </div>
 
         {/* Contact form card */}
-        <div className="lg:col-span-2 bg-white dark:bg-[#1f2028] border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-sm transition-colors">
+        <div className="lg:col-span-2 bg-white dark:bg-[#121215] border border-zinc-200/60 dark:border-zinc-900/60 rounded-3xl p-8 sm:p-10 shadow-sm transition-colors">
           
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white pb-3 border-b border-gray-150 dark:border-gray-800 mb-6">
+          <h2 className="text-lg font-extrabold text-zinc-950 dark:text-white pb-3 border-b border-zinc-100 dark:border-zinc-900/60 mb-6 font-heading">
             {currentLang === 'en' ? 'Send Us a Message' : 'أرسل لنا رسالة'}
           </h2>
 
@@ -190,15 +198,15 @@ export default function Contact() {
             
             {/* Feedback notifications */}
             {errorMsg && (
-              <div className="flex items-center gap-2 p-4 bg-red-50 dark:bg-red-950/20 text-red-650 dark:text-red-400 rounded-xl text-sm border border-red-200 dark:border-red-900">
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <div className="flex items-center gap-2 p-4 bg-red-955/20 text-red-400 rounded-xl text-xs border border-red-900/50">
+                <AlertCircle className="w-4.5 h-4.5 flex-shrink-0" />
                 <span>{errorMsg}</span>
               </div>
             )}
             
             {success && (
-              <div className="flex items-center gap-2 p-4 bg-green-55 dark:bg-green-950/20 text-green-700 dark:text-green-400 rounded-xl text-sm border border-green-200 dark:border-green-900">
-                <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+              <div className="flex items-center gap-2 p-4 bg-green-955/20 text-green-400 rounded-xl text-xs border border-green-900/50">
+                <CheckCircle2 className="w-4.5 h-4.5 flex-shrink-0" />
                 <span>{t('contact.form.success')}</span>
               </div>
             )}
@@ -207,7 +215,7 @@ export default function Contact() {
               
               {/* Name */}
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="name" className="text-xs font-bold text-gray-700 dark:text-gray-350 uppercase tracking-wider">
+                <label htmlFor="name" className="text-[10px] font-black text-zinc-550 dark:text-zinc-400 uppercase tracking-widest">
                   {t('contact.form.name')} <span className="text-red-500">*</span>
                 </label>
                 <input 
@@ -218,13 +226,13 @@ export default function Contact() {
                   onChange={handleInputChange}
                   required
                   placeholder={currentLang === 'en' ? 'John Doe' : 'اسمك الكريم'}
-                  className="px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-sm text-gray-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+                  className="px-4 py-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-sans"
                 />
               </div>
 
               {/* Email */}
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="email" className="text-xs font-bold text-gray-700 dark:text-gray-350 uppercase tracking-wider">
+                <label htmlFor="email" className="text-[10px] font-black text-zinc-550 dark:text-zinc-400 uppercase tracking-widest">
                   {t('contact.form.email')} <span className="text-red-500">*</span>
                 </label>
                 <input 
@@ -235,13 +243,13 @@ export default function Contact() {
                   onChange={handleInputChange}
                   required
                   placeholder="name@example.com"
-                  className="px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-sm text-gray-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+                  className="px-4 py-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-sans"
                 />
               </div>
 
               {/* Phone */}
               <div className="flex flex-col gap-1.5 sm:col-span-2">
-                <label htmlFor="phone" className="text-xs font-bold text-gray-700 dark:text-gray-350 uppercase tracking-wider">
+                <label htmlFor="phone" className="text-[10px] font-black text-zinc-550 dark:text-zinc-400 uppercase tracking-widest">
                   {t('contact.form.phone')} <span className="text-red-500">*</span>
                 </label>
                 <input 
@@ -252,38 +260,47 @@ export default function Contact() {
                   onChange={handleInputChange}
                   required
                   placeholder={currentLang === 'en' ? '+962790000000' : 'رقم هاتفك'}
-                  className="px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-sm text-gray-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+                  className="px-4 py-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-sans"
                 />
               </div>
 
               {/* Message */}
               <div className="flex flex-col gap-1.5 sm:col-span-2">
-                <label htmlFor="message" className="text-xs font-bold text-gray-700 dark:text-gray-350 uppercase tracking-wider">
+                <label htmlFor="message" className="text-[10px] font-black text-zinc-550 dark:text-zinc-400 uppercase tracking-widest">
                   {t('contact.form.message')} <span className="text-red-500">*</span>
                 </label>
                 <textarea 
                   id="message"
                   name="message"
-                  rows="4"
+                  rows="5"
                   value={formData.message}
                   onChange={handleInputChange}
                   required
                   placeholder={currentLang === 'en' ? 'Describe your request here...' : 'اكتب تفاصيل طلبك هنا...'}
-                  className="px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-sm text-gray-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all resize-none"
+                  className="px-4 py-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all resize-none font-sans"
                 />
               </div>
 
             </div>
 
             {/* Submit Button */}
-            <div className="pt-2">
+            <div className="pt-2 flex justify-end">
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:bg-gray-400 dark:disabled:bg-gray-800 text-white font-bold rounded-xl shadow hover:shadow-md transition-all cursor-pointer disabled:cursor-not-allowed"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-red-650 hover:bg-red-755 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 disabled:text-zinc-400 dark:disabled:text-zinc-600 text-white font-bold rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-sm hover:shadow active:scale-98"
               >
-                <Send className="w-4 h-4" />
-                <span>{submitting ? t('contact.form.submitting') : t('contact.form.submit')}</span>
+                {submitting ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <span>{t('contact.form.submitting')}</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    <span>{t('contact.form.submit')}</span>
+                  </>
+                )}
               </button>
             </div>
 

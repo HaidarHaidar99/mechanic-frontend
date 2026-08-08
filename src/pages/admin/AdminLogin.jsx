@@ -47,8 +47,8 @@ export default function AdminLogin() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="text-sm font-semibold text-gray-500 animate-pulse">
+      <div className="flex items-center justify-center min-h-screen bg-zinc-950">
+        <div className="text-xs font-black uppercase tracking-widest text-zinc-500 animate-pulse font-heading">
           Loading authentication gateway...
         </div>
       </div>
@@ -56,44 +56,44 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0e0f11] flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-zinc-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       
-      {/* Background aesthetics */}
+      {/* Background radial effects */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-650/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gray-800/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-zinc-800/10 rounded-full blur-3xl" />
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center">
-        <div className="inline-flex p-3 bg-red-600/10 rounded-2xl mb-4 border border-red-500/20">
-          <Wrench className="w-10 h-10 text-red-500 animate-pulse" />
+      <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-3">
+        <div className="inline-flex p-3.5 bg-red-500/10 rounded-2xl border border-red-500/20">
+          <Wrench className="w-8 h-8 text-red-500 animate-pulse" />
         </div>
-        <h2 className="text-3xl font-extrabold text-white tracking-wider uppercase">
+        <h2 className="text-3xl font-extrabold text-white tracking-wider uppercase font-heading">
           {currentLang === 'en' ? 'Admin Gateway' : 'بوابة الإدارة'}
         </h2>
-        <p className="mt-2 text-sm text-gray-400">
+        <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">
           {currentLang === 'en' ? 'Authorized personnel access only' : 'مخصص للموظفين المصرح لهم فقط'}
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
-        <div className="bg-[#16181c] py-8 px-4 shadow-xl rounded-2xl border border-gray-800/80 sm:px-10">
+        <div className="bg-[#121215] py-8 px-6 shadow-2xl rounded-3xl border border-zinc-900/60 sm:px-10">
           
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {errorMsg && (
-              <div className="flex items-center gap-2 p-4 bg-red-950/20 text-red-400 rounded-xl text-sm border border-red-900/50">
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <div className="flex items-center gap-2.5 p-4 bg-red-955/20 text-red-400 rounded-xl text-xs border border-red-900/50">
+                <AlertCircle className="w-4.5 h-4.5 flex-shrink-0" />
                 <span>{errorMsg}</span>
               </div>
             )}
 
             {/* Email Field */}
             <div className="space-y-1.5">
-              <label htmlFor="email" className="text-xs font-bold text-gray-400 uppercase tracking-wider block">
+              <label htmlFor="email" className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block">
                 {currentLang === 'en' ? 'Email Address' : 'البريد الإلكتروني'}
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
-                  <Mail className="w-4 h-4" />
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+                  <Mail className="w-4.5 h-4.5" />
                 </div>
                 <input
                   id="email"
@@ -102,19 +102,19 @@ export default function AdminLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@mechanic.com"
-                  className="block w-full pl-10 pr-3 py-2.5 bg-gray-900/80 border border-gray-850 rounded-xl text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
+                  className="block w-full pl-10 pr-3.5 py-3 bg-zinc-950 border border-zinc-905 rounded-xl text-white text-xs placeholder-zinc-700 focus:outline-none focus:border-red-500 transition-all font-sans"
                 />
               </div>
             </div>
 
             {/* Password Field */}
             <div className="space-y-1.5">
-              <label htmlFor="password" className="text-xs font-bold text-gray-400 uppercase tracking-wider block">
+              <label htmlFor="password" className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block">
                 {currentLang === 'en' ? 'Password' : 'كلمة المرور'}
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
-                  <KeyRound className="w-4 h-4" />
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+                  <KeyRound className="w-4.5 h-4.5" />
                 </div>
                 <input
                   id="password"
@@ -123,14 +123,14 @@ export default function AdminLogin() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="block w-full pl-10 pr-10 py-2.5 bg-gray-900/80 border border-gray-850 rounded-xl text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
+                  className="block w-full pl-10 pr-10 py-3 bg-zinc-950 border border-zinc-905 rounded-xl text-white text-xs placeholder-zinc-700 focus:outline-none focus:border-red-500 transition-all font-sans"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-white"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-zinc-500 hover:text-white cursor-pointer"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
                 </button>
               </div>
             </div>
@@ -140,7 +140,7 @@ export default function AdminLogin() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-red-650 hover:bg-red-750 active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-red-500 disabled:bg-gray-800 disabled:text-gray-500 transition-all cursor-pointer"
+                className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg text-xs font-black uppercase tracking-widest text-white bg-red-650 hover:bg-red-755 disabled:bg-zinc-800 disabled:text-zinc-600 transition-all cursor-pointer shadow-red-500/10 active:scale-98"
               >
                 {submitting 
                   ? (currentLang === 'en' ? 'Logging in...' : 'جاري الدخول...') 

@@ -4,7 +4,7 @@ import { apiRequest } from '../../services/api';
 import { useAdminAuth } from '../../contexts/AdminAuthContext';
 import { 
   Users, UserPlus, KeyRound, Shield, Trash2, 
-  ArrowLeftRight, AlertCircle, CheckCircle2, RefreshCw, X 
+  ArrowLeftRight, AlertCircle, CheckCircle2, RefreshCw, X, Save
 } from 'lucide-react';
 
 export default function ManageAdmins() {
@@ -170,10 +170,9 @@ export default function ManageAdmins() {
 
       if (res.success) {
         alert(currentLang === 'en' 
-          ? 'Super Admin role transferred successfully. Reloading profile...' 
-          : 'تم نقل صلاحيات المدير العام بنجاح. جاري تحديث بيانات الجلسة...');
+          ? 'Super Admin role transferred successfully. Demoting account...' 
+          : 'تم نقل صلاحيات المدير العام بنجاح. جاري تعديث الجلسة...');
         
-        // Update local session role
         setCurrentAdminState(prev => ({ ...prev, role: 'admin' }));
         setShowTransferForm(false);
         fetchAdminsList();
@@ -192,20 +191,20 @@ export default function ManageAdmins() {
   const otherAdmins = admins.filter(a => a.id !== currentAdmin.id && a.role === 'admin');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-250 dark:border-gray-855 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-900 pb-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-950 dark:text-white uppercase tracking-wider">
+          <h1 className="text-xl font-bold text-zinc-950 dark:text-white uppercase tracking-wider font-heading">
             {currentLang === 'en' ? 'Admin Accounts Management' : 'إدارة حسابات المشرفين'}
           </h1>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-zinc-400">
             {currentLang === 'en' ? 'Manage admin panel access credentials and promote super admins.' : 'إدارة بيانات حسابات الدخول إلى لوحة التحكم ونقل صلاحيات المشرفين.'}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {otherAdmins.length > 0 && (
             <button
               onClick={() => {
@@ -214,7 +213,7 @@ export default function ManageAdmins() {
                 setFormError(null);
                 setFormSuccess(null);
               }}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 cursor-pointer transition-colors"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 border border-zinc-300 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl text-xs font-bold uppercase tracking-wider text-zinc-650 dark:text-zinc-350 cursor-pointer transition-colors"
             >
               <ArrowLeftRight className="w-4 h-4" />
               <span>{currentLang === 'en' ? 'Transfer Role' : 'نقل الصلاحية'}</span>
@@ -228,7 +227,7 @@ export default function ManageAdmins() {
               setFormError(null);
               setFormSuccess(null);
             }}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-red-650 hover:bg-red-755 rounded-xl shadow cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white bg-red-650 hover:bg-red-755 rounded-xl shadow cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
             <span>{currentLang === 'en' ? 'New Admin' : 'مشرف جديد'}</span>
@@ -239,22 +238,22 @@ export default function ManageAdmins() {
       {/* Forms Popups / Drawer overlay */}
       {(showCreateForm || showTransferForm) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-[#16181c] w-full max-w-md rounded-2xl p-6 shadow-2xl relative border border-gray-150 dark:border-gray-800">
+          <div className="bg-white dark:bg-[#121215] w-full max-w-md rounded-3xl p-6 shadow-2xl relative border border-zinc-200 dark:border-zinc-900 animate-scale-up">
             
             <button 
               onClick={() => {
                 setShowCreateForm(false);
                 setShowTransferForm(false);
               }}
-              className="absolute top-4 right-4 rtl:left-4 rtl:right-auto p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 rounded-lg"
+              className="absolute top-4 right-4 rtl:left-4 rtl:right-auto p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-400 rounded-full cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4.5 h-4.5" />
             </button>
 
             {/* --- Form 1: Create Admin --- */}
             {showCreateForm && (
               <form onSubmit={handleCreateAdmin} className="space-y-4">
-                <h2 className="text-base font-bold text-gray-900 dark:text-white pb-2 border-b border-gray-150 dark:border-gray-850 flex items-center gap-1.5">
+                <h2 className="text-base font-bold text-zinc-950 dark:text-white pb-2 border-b border-zinc-100 dark:border-zinc-900/60 flex items-center gap-1.5 font-heading">
                   <UserPlus className="w-4.5 h-4.5 text-red-500" />
                   <span>{currentLang === 'en' ? 'Create Admin Account' : 'إنشاء حساب مشرف جديد'}</span>
                 </h2>
@@ -266,40 +265,41 @@ export default function ManageAdmins() {
                   </div>
                 )}
 
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-gray-450 uppercase">Full Name</label>
-                  <input type="text" required value={fullName} onChange={(e) => setFullName(e.target.value)} className="px-3 py-2 bg-gray-55 dark:bg-gray-900 border border-gray-305 dark:border-gray-705 rounded-lg text-sm text-gray-950 dark:text-white" />
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Full Name</label>
+                  <input type="text" required value={fullName} onChange={(e) => setFullName(e.target.value)} className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans" />
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-gray-455 uppercase">Username</label>
-                  <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)} className="px-3 py-2 bg-gray-55 dark:bg-gray-900 border border-gray-305 dark:border-gray-705 rounded-lg text-sm text-gray-950 dark:text-white" />
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Username</label>
+                  <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)} className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans" />
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-gray-455 uppercase">Email Address</label>
-                  <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="px-3 py-2 bg-gray-55 dark:bg-gray-900 border border-gray-305 dark:border-gray-705 rounded-lg text-sm text-gray-955 dark:text-white" />
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Email Address</label>
+                  <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs text-zinc-955 dark:text-white focus:outline-none focus:border-red-500 font-sans" />
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-gray-455 uppercase">Initial Password</label>
-                  <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="px-3 py-2 bg-gray-55 dark:bg-gray-900 border border-gray-305 dark:border-gray-705 rounded-lg text-sm text-gray-955 dark:text-white" />
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Initial Password</label>
+                  <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs text-zinc-955 dark:text-white focus:outline-none focus:border-red-500 font-sans" />
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-gray-455 uppercase">Administrative Role</label>
-                  <select value={role} onChange={(e) => setRole(e.target.value)} className="px-3 py-2 bg-gray-55 dark:bg-gray-900 border border-gray-305 dark:border-gray-705 rounded-lg text-sm text-gray-955 dark:text-white cursor-pointer">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Administrative Role</label>
+                  <select value={role} onChange={(e) => setRole(e.target.value)} className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs text-zinc-955 dark:text-white cursor-pointer font-sans">
                     <option value="admin">Standard Admin (No settings/carousel edits)</option>
                     <option value="super_admin">Super Admin (Full management access)</option>
                   </select>
                 </div>
 
-                <div className="flex justify-end gap-2 pt-4 border-t border-gray-150 dark:border-gray-850">
-                  <button type="button" onClick={() => setShowCreateForm(false)} className="px-4 py-2 border border-gray-300 dark:border-gray-700 text-gray-500 rounded-lg text-xs">
+                <div className="flex justify-end gap-2.5 pt-4 border-t border-zinc-100 dark:border-zinc-900/60">
+                  <button type="button" onClick={() => setShowCreateForm(false)} className="px-4 py-2 border border-zinc-300 dark:border-zinc-800 text-zinc-550 dark:text-zinc-400 rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer">
                     Cancel
                   </button>
-                  <button type="submit" disabled={formSubmitting} className="px-4 py-2 bg-red-650 hover:bg-red-750 text-white rounded-lg text-xs font-bold">
-                    {formSubmitting ? 'Creating...' : 'Create Account'}
+                  <button type="submit" disabled={formSubmitting} className="inline-flex items-center gap-1 px-4 py-2 bg-red-650 hover:bg-red-755 text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer shadow">
+                    <Save className="w-3.5 h-3.5" />
+                    <span>{formSubmitting ? 'Creating...' : 'Create Account'}</span>
                   </button>
                 </div>
               </form>
@@ -308,7 +308,7 @@ export default function ManageAdmins() {
             {/* --- Form 2: Transfer Super Admin Role --- */}
             {showTransferForm && (
               <form onSubmit={handleTransferRole} className="space-y-4">
-                <h2 className="text-base font-bold text-gray-900 dark:text-white pb-2 border-b border-gray-150 dark:border-gray-850 flex items-center gap-1.5">
+                <h2 className="text-base font-bold text-zinc-955 dark:text-white pb-2 border-b border-zinc-100 dark:border-zinc-900/60 flex items-center gap-1.5 font-heading">
                   <ArrowLeftRight className="w-4.5 h-4.5 text-blue-500" />
                   <span>{currentLang === 'en' ? 'Transfer Super Admin Role' : 'نقل منصب المدير العام'}</span>
                 </h2>
@@ -320,18 +320,18 @@ export default function ManageAdmins() {
                   </div>
                 )}
 
-                <p className="text-xs text-gray-400 leading-relaxed">
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-sans">
                   {currentLang === 'en'
                     ? 'Select a standard admin account to promote to Super Admin. Your account will automatically demote to standard admin. This is transaction-safe and atomic.'
                     : 'اختر أحد المشرفين الحاليين لترقيته إلى مدير عام. سيتم خفض مستوى حسابك تلقائياً إلى مشرف عادي.'}
                 </p>
 
                 <div className="flex flex-col gap-1.5 pt-2">
-                  <label className="text-[10px] font-bold text-gray-455 uppercase">Target Admin Account</label>
+                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Target Admin Account</label>
                   <select 
                     value={selectedAdminId} 
                     onChange={(e) => setSelectedAdminId(e.target.value)} 
-                    className="px-3 py-2 bg-gray-55 dark:bg-gray-900 border border-gray-305 dark:border-gray-705 rounded-lg text-sm text-gray-955 dark:text-white cursor-pointer"
+                    className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs text-zinc-955 dark:text-white cursor-pointer font-sans"
                   >
                     <option value="">-- Choose Admin Account --</option>
                     {otherAdmins.map(a => (
@@ -340,11 +340,11 @@ export default function ManageAdmins() {
                   </select>
                 </div>
 
-                <div className="flex justify-end gap-2 pt-4 border-t border-gray-150 dark:border-gray-850">
-                  <button type="button" onClick={() => setShowTransferForm(false)} className="px-4 py-2 border border-gray-300 dark:border-gray-700 text-gray-500 rounded-lg text-xs">
+                <div className="flex justify-end gap-2.5 pt-4 border-t border-zinc-100 dark:border-zinc-900/60">
+                  <button type="button" onClick={() => setShowTransferForm(false)} className="px-4 py-2 border border-zinc-300 dark:border-zinc-800 text-zinc-500 rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer">
                     Cancel
                   </button>
-                  <button type="submit" disabled={formSubmitting} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold">
+                  <button type="submit" disabled={formSubmitting} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer shadow">
                     {formSubmitting ? 'Transferring...' : 'Transfer Role Now'}
                   </button>
                 </div>
@@ -357,20 +357,20 @@ export default function ManageAdmins() {
 
       {/* Admins List Table */}
       {loading ? (
-        <div className="text-center py-12 text-sm text-gray-400 flex items-center justify-center gap-2">
-          <RefreshCw className="w-5 h-5 animate-spin" />
+        <div className="text-center py-12 text-xs text-zinc-400 flex items-center justify-center gap-2">
+          <RefreshCw className="w-4.5 h-4.5 animate-spin" />
           <span>Loading admin accounts...</span>
         </div>
       ) : error ? (
-        <div className="p-4 bg-red-955/20 text-red-400 rounded-xl text-sm border border-red-900/50 flex items-center gap-2">
+        <div className="p-4 bg-red-955/20 text-red-400 rounded-xl text-xs border border-red-900/50 flex items-center gap-2">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span>{error}</span>
         </div>
       ) : (
-        <div className="bg-white dark:bg-[#16181c] border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm transition-colors">
+        <div className="bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl overflow-hidden shadow-sm transition-colors">
           <table className="w-full text-left rtl:text-right border-collapse text-sm">
             <thead>
-              <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/10 text-gray-500 font-semibold text-xs tracking-wider uppercase">
+              <tr className="border-b border-zinc-200 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-950/10 text-zinc-400 font-semibold text-xs tracking-wider uppercase">
                 <th className="px-6 py-4">{currentLang === 'en' ? 'Admin Profile' : 'الملف'}</th>
                 <th className="px-6 py-4">{currentLang === 'en' ? 'Username' : 'اسم المستخدم'}</th>
                 <th className="px-6 py-4">{currentLang === 'en' ? 'Email' : 'البريد الإلكتروني'}</th>
@@ -378,39 +378,39 @@ export default function ManageAdmins() {
                 <th className="px-6 py-4 text-center">{currentLang === 'en' ? 'Actions' : 'العمليات'}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
+            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-900">
               {admins.map(a => (
-                <tr key={a.id} className="hover:bg-gray-55/30 dark:hover:bg-gray-800/10 transition-colors">
-                  <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
+                <tr key={a.id} className="hover:bg-zinc-50/20 dark:hover:bg-zinc-900/10 transition-colors">
+                  <td className="px-6 py-4 font-semibold text-zinc-900 dark:text-white font-heading">
                     {a.fullName}
                   </td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 text-zinc-500 dark:text-zinc-400">
                     @{a.username}
                   </td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 text-zinc-500 dark:text-zinc-400">
                     {a.email}
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 text-[9px] font-bold rounded-full uppercase tracking-wider ${
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-black rounded-full uppercase tracking-wider ${
                       a.role === 'super_admin' 
                         ? 'bg-red-500/10 text-red-500' 
-                        : 'bg-gray-500/10 text-gray-500'
+                        : 'bg-zinc-500/10 text-zinc-500'
                     }`}>
-                      <Shield className="w-3 h-3" />
+                      <Shield className="w-3 h-3 shrink-0" />
                       {a.role === 'super_admin' ? (currentLang === 'en' ? 'Super Admin' : 'مدير عام') : (currentLang === 'en' ? 'Admin' : 'مشرف')}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-6 py-4 text-center font-bold">
                     {a.id !== currentAdmin.id ? (
                       <button
                         onClick={() => handleDeleteAdmin(a.id, a.fullName)}
-                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+                        className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
                         title="Delete account"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     ) : (
-                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                      <span className="text-[9px] text-zinc-400 dark:text-zinc-500 font-black uppercase tracking-widest">
                         {currentLang === 'en' ? 'You' : 'أنت'}
                       </span>
                     )}

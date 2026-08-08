@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 // Context Providers
 import { ThemeProvider } from './contexts/ThemeContext';
 import { SettingsProvider } from './contexts/SettingsContext';
+import { AnnouncementsProvider } from './contexts/AnnouncementsContext';
 import { AdminAuthProvider, useAdminAuth } from './contexts/AdminAuthContext';
 import { CartProvider } from './contexts/CartContext';
 import { FavoritesProvider } from './contexts/FavoritesContext';
@@ -26,6 +27,7 @@ import Dashboard from './pages/admin/Dashboard';
 import ManageProducts from './pages/admin/ManageProducts';
 import ManageMessages from './pages/admin/ManageMessages';
 import ManageSettings from './pages/admin/ManageSettings';
+import ManageAnnouncements from './pages/admin/ManageAnnouncements';
 import Profile from './pages/admin/Profile';
 import ManageAdmins from './pages/admin/ManageAdmins';
 
@@ -61,59 +63,62 @@ export default function App() {
   return (
     <ThemeProvider>
       <SettingsProvider>
-        <AdminAuthProvider>
-          <CartProvider>
-            <FavoritesProvider>
-              <BrowserRouter>
-                <Routes>
-                  
-                  {/* Public Customer Facing Routes */}
-                  <Route element={<PublicLayout />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/products" element={<Products />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/favorites" element={<Favorites />} />
-                  </Route>
-
-                  {/* Admin Auth Route */}
-                  <Route path="/admin" element={<AdminLogin />} />
-
-                  {/* Protected Admin Console Routes */}
-                  <Route
-                    path="/admin"
-                    element={
-                      <ProtectedRoute>
-                        <AdminLayout />
-                      </ProtectedRoute>
-                    }
-                  >
-                    <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="products" element={<ManageProducts />} />
-                    <Route path="messages" element={<ManageMessages />} />
-                    <Route path="settings" element={<ManageSettings />} />
-                    <Route path="profile" element={<Profile />} />
+        <AnnouncementsProvider>
+          <AdminAuthProvider>
+            <CartProvider>
+              <FavoritesProvider>
+                <BrowserRouter>
+                  <Routes>
                     
-                    {/* Super Admin Restricted Route */}
-                    <Route 
-                      path="admins" 
+                    {/* Public Customer Facing Routes */}
+                    <Route element={<PublicLayout />}>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/products" element={<Products />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/cart" element={<Cart />} />
+                      <Route path="/favorites" element={<Favorites />} />
+                    </Route>
+
+                    {/* Admin Auth Route */}
+                    <Route path="/admin" element={<AdminLogin />} />
+
+                    {/* Protected Admin Console Routes */}
+                    <Route
+                      path="/admin"
                       element={
-                        <ProtectedRoute requireSuper>
-                          <ManageAdmins />
+                        <ProtectedRoute>
+                          <AdminLayout />
                         </ProtectedRoute>
-                      } 
-                    />
-                  </Route>
+                      }
+                    >
+                      <Route path="dashboard" element={<Dashboard />} />
+                      <Route path="products" element={<ManageProducts />} />
+                      <Route path="messages" element={<ManageMessages />} />
+                      <Route path="settings" element={<ManageSettings />} />
+                      <Route path="announcements" element={<ManageAnnouncements />} />
+                      <Route path="profile" element={<Profile />} />
+                      
+                      {/* Super Admin Restricted Route */}
+                      <Route 
+                        path="admins" 
+                        element={
+                          <ProtectedRoute requireSuper>
+                            <ManageAdmins />
+                          </ProtectedRoute>
+                        } 
+                      />
+                    </Route>
 
-                  {/* Fallback Route */}
-                  <Route path="*" element={<Navigate to="/" replace />} />
+                    {/* Fallback Route */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
 
-                </Routes>
-              </BrowserRouter>
-            </FavoritesProvider>
-          </CartProvider>
-        </AdminAuthProvider>
+                  </Routes>
+                </BrowserRouter>
+              </FavoritesProvider>
+            </CartProvider>
+          </AdminAuthProvider>
+        </AnnouncementsProvider>
       </SettingsProvider>
     </ThemeProvider>
   );
