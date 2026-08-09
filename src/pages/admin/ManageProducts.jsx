@@ -5,8 +5,13 @@ import { apiRequest } from '../../services/api';
 import { compressImage } from '../../utils/imageCompression';
 import { 
   Plus, Edit2, Trash2, Eye, EyeOff, Search, 
-  Upload, Sparkles, Check, AlertCircle, RefreshCw, X, Save
+  Upload, Sparkles, Check, AlertCircle, RefreshCw, X, Save 
 } from 'lucide-react';
+import Button from '../../components/common/Button';
+import IconButton from '../../components/common/IconButton';
+import Input from '../../components/common/Input';
+import Badge from '../../components/common/Badge';
+import Skeleton from '../../components/common/Skeleton';
 
 export default function ManageProducts() {
   const { i18n } = useTranslation();
@@ -16,7 +21,6 @@ export default function ManageProducts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Form states
   const [editingProduct, setEditingProduct] = useState(null); // null means list view, otherwise product object
   const [formType, setFormType] = useState('create'); // 'create' | 'edit'
 
@@ -98,12 +102,11 @@ export default function ManageProducts() {
     try {
       setCompressionLoading(true);
       setFormError(null);
-      
-      const base64Result = await compressImage(file);
-      setImageBase64(base64Result);
+      const base64 = await compressImage(file);
+      setImageBase64(base64);
     } catch (err) {
       console.error('Image compression error:', err);
-      setFormError(currentLang === 'en' ? 'Failed to process image file' : 'فشل معالجة ملف الصورة');
+      setFormError(err.message || (currentLang === 'en' ? 'Image compression failed' : 'فشل ضغط الصورة'));
     } finally {
       setCompressionLoading(false);
     }
@@ -114,46 +117,37 @@ export default function ManageProducts() {
     if (formSubmitting || compressionLoading) return;
 
     if (!nameEn.trim() || !nameAr.trim() || !descEn.trim() || !descAr.trim() || !catEn.trim() || !catAr.trim() || !price || !imageBase64) {
-      setFormError(currentLang === 'en' 
-        ? 'All fields are required, including an image.' 
-        : 'جميع الحقول مطلوبة، بما في ذلك صورة المنتج.');
+      setFormError(currentLang === 'en' ? 'Please fill in all fields and select a product image' : 'يرجى ملء جميع الحقول واختيار صورة للمنتج');
       return;
     }
 
     const priceNum = parseFloat(price);
     if (isNaN(priceNum) || priceNum < 0) {
-      setFormError(currentLang === 'en' 
-        ? 'Price must be a valid, positive number' 
-        : 'يجب أن يكون السعر رقماً صحيحاً وموجباً');
+      setFormError(currentLang === 'en' ? 'Price must be a valid positive number' : 'يجب أن يكون السعر رقماً إيجابياً صحيحاً');
       return;
     }
-
-    const payload = {
-      name: { en: nameEn.trim(), ar: nameAr.trim() },
-      description: { en: descEn.trim(), ar: descAr.trim() },
-      category: { en: catEn.trim(), ar: catAr.trim() },
-      price: priceNum,
-      imageBase64,
-      isActive,
-      featured
-    };
 
     try {
       setFormSubmitting(true);
       setFormError(null);
 
-      let res;
-      if (formType === 'create') {
-        res = await apiRequest('/products', {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-      } else {
-        res = await apiRequest(`/products/${editingProduct.id}`, {
-          method: 'PUT',
-          body: JSON.stringify(payload)
-        });
-      }
+      const payload = {
+        name: { en: nameEn.trim(), ar: nameAr.trim() },
+        description: { en: descEn.trim(), ar: descAr.trim() },
+        category: { en: catEn.trim(), ar: catAr.trim() },
+        price: priceNum,
+        imageBase64,
+        isActive,
+        featured
+      };
+
+      const url = formType === 'create' ? '/products' : `/products/${editingProduct.id}`;
+      const method = formType === 'create' ? 'POST' : 'PUT';
+
+      const res = await apiRequest(url, {
+        method,
+        body: JSON.stringify(payload)
+      });
 
       if (res.success) {
         setEditingProduct(null);
@@ -202,64 +196,80 @@ export default function ManageProducts() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 font-sans">
       
-      {/* 1. Header controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-900 pb-4">
+      {/* Header controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-5">
         <div>
-          <h1 className="text-xl font-bold text-zinc-950 dark:text-white uppercase tracking-wider font-heading">
+          <span className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest block font-heading">
+            Catalog inventory
+          </span>
+          <h1 className="text-2xl font-extrabold text-[var(--text-primary)] uppercase tracking-tight mt-1 font-heading">
             {currentLang === 'en' ? 'Product Inventory' : 'مخزون المنتجات'}
           </h1>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-[var(--text-secondary)] mt-1">
             {currentLang === 'en' ? 'Add, edit, or archive catalog products.' : 'إضافة، تعديل، أو أرشفة منتجات المتجر.'}
           </p>
         </div>
 
         {!editingProduct && (
-          <button
+          <Button
             onClick={openCreateForm}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-red-650 hover:bg-red-755 rounded-xl transition-all shadow cursor-pointer shrink-0"
+            variant="primary"
+            icon={Plus}
           >
-            <Plus className="w-4 h-4" />
-            <span>{currentLang === 'en' ? 'New Product' : 'منتج جديد'}</span>
-          </button>
+            {currentLang === 'en' ? 'New Product' : 'منتج جديد'}
+          </Button>
         )}
       </div>
 
-      {/* List / Form views conditional render */}
+      {error && (
+        <div className="flex items-center gap-2.5 p-4 bg-[var(--danger)]/10 text-[var(--danger)] rounded-xl text-xs font-bold border border-[var(--danger)]/20">
+          <AlertCircle className="w-4.5 h-4.5 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {/* List / Form views */}
       {!editingProduct ? (
         
-        // --- INVENTORY LIST VIEW ---
+        // --- LIST VIEW ---
         <div className="space-y-4">
           
           {/* Search bar */}
-          <div className="relative max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-450 rtl:right-3.5 rtl:left-auto" />
-            <input
-              type="text"
+          <div className="max-w-md">
+            <Input 
+              id="searchInventory"
               placeholder={currentLang === 'en' ? 'Search inventory...' : 'بحث في المخزون...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rtl:pr-10 rtl:pl-4 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all text-zinc-950 dark:text-white"
+              icon={Search}
             />
           </div>
 
-          {/* Table list of inventory */}
+          {/* Table list */}
           {loading ? (
-            <div className="text-center py-12 text-xs text-zinc-450 flex items-center justify-center gap-2">
-              <RefreshCw className="w-5 h-5 animate-spin" />
-              <span>Loading inventory...</span>
+            <div className="grid grid-cols-1 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-[var(--surface)] border border-[var(--border)] p-4 rounded-2xl flex items-center justify-between animate-pulse">
+                  <div className="flex items-center gap-3">
+                    <Skeleton variant="rect" width="36px" height="36px" />
+                    <Skeleton variant="text" width="120px" />
+                  </div>
+                  <Skeleton variant="text" width="60px" />
+                </div>
+              ))}
             </div>
           ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-16 border border-dashed border-zinc-200 dark:border-zinc-900 bg-white dark:bg-[#121215]/20 rounded-3xl">
-              <AlertCircle className="w-8 h-8 text-zinc-400 mx-auto mb-2" />
-              <p className="text-xs text-zinc-500 font-semibold">{currentLang === 'en' ? 'No inventory products match filter.' : 'لا توجد منتجات مطابقة للبحث.'}</p>
+            <div className="text-center py-16 border border-dashed border-[var(--border-strong)] rounded-3xl bg-[var(--surface-elevated)]/30">
+              <AlertCircle className="w-8 h-8 text-[var(--text-muted)] mx-auto mb-2" />
+              <p className="text-xs text-[var(--text-secondary)] font-bold uppercase tracking-wider">{currentLang === 'en' ? 'No inventory products match filter.' : 'لا توجد منتجات مطابقة للبحث.'}</p>
             </div>
           ) : (
-            <div className="bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl overflow-hidden shadow-sm transition-colors">
-              <table className="w-full text-left rtl:text-right border-collapse text-sm">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl overflow-hidden shadow-sm overflow-x-auto">
+              <table className="w-full text-left rtl:text-right border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-zinc-200 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-950/10 text-zinc-400 font-semibold text-xs tracking-wider uppercase">
+                  <tr className="border-b border-[var(--border)] bg-[var(--surface-elevated)] text-[var(--text-secondary)] font-black text-[10px] tracking-wider uppercase">
                     <th className="px-6 py-4">{currentLang === 'en' ? 'Product' : 'المنتج'}</th>
                     <th className="px-6 py-4">{currentLang === 'en' ? 'Category' : 'التصنيف'}</th>
                     <th className="px-6 py-4">{currentLang === 'en' ? 'Price' : 'السعر'}</th>
@@ -267,67 +277,63 @@ export default function ManageProducts() {
                     <th className="px-6 py-4 text-center">{currentLang === 'en' ? 'Actions' : 'العمليات'}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-900">
+                <tbody className="divide-y divide-[var(--border)]">
                   {filteredProducts.map(p => {
                     const name = p.name[currentLang] || p.name['en'] || '';
                     const cat = p.category[currentLang] || p.category['en'] || '';
                     
                     return (
-                      <tr key={p.id} className="hover:bg-zinc-50/20 dark:hover:bg-zinc-900/10 transition-colors">
+                      <tr key={p.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                         
                         {/* Title & image */}
                         <td className="px-6 py-4 flex items-center gap-3">
-                          <img src={p.imageBase64} alt={name} className="w-9 h-9 rounded-lg object-cover bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900/40 shrink-0" />
+                          <img src={p.imageBase64} alt={name} className="w-9 h-9 rounded-lg object-cover bg-[var(--page-bg)] border border-[var(--border)] shrink-0" />
                           <div>
-                            <div className="font-semibold text-zinc-900 dark:text-white line-clamp-1 font-heading">{name}</div>
+                            <div className="font-extrabold text-[var(--text-primary)] font-heading uppercase">{name}</div>
                             {p.featured && (
-                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 bg-red-500/10 text-red-500 text-[8px] font-black rounded uppercase tracking-wider mt-0.5 font-heading">
-                                <Sparkles className="w-2.5 h-2.5 animate-pulse" />
-                                {currentLang === 'en' ? 'FEATURED' : 'مميز'}
-                              </span>
+                              <div className="mt-1">
+                                <Badge variant="primary" icon={Sparkles}>
+                                  {currentLang === 'en' ? 'Featured' : 'مميز'}
+                                </Badge>
+                              </div>
                             )}
                           </div>
                         </td>
 
                         {/* Category */}
-                        <td className="px-6 py-4 text-zinc-500 dark:text-zinc-400 font-bold text-xs uppercase tracking-wider">
+                        <td className="px-6 py-4 text-[var(--text-secondary)] font-bold uppercase tracking-widest text-[10px]">
                           {cat}
                         </td>
 
                         {/* Price */}
-                        <td className="px-6 py-4 font-extrabold text-zinc-950 dark:text-white font-heading">
+                        <td className="px-6 py-4 font-extrabold text-[var(--text-primary)] font-heading">
                           ${p.price.toFixed(2)}
                         </td>
 
                         {/* Status */}
                         <td className="px-6 py-4">
-                          <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                            p.isActive 
-                              ? 'bg-green-500/10 text-green-500' 
-                              : 'bg-red-500/10 text-red-500'
-                          }`}>
-                            {p.isActive ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                          <Badge variant={p.isActive ? 'success' : 'danger'}>
                             {p.isActive ? (currentLang === 'en' ? 'Active' : 'نشط') : (currentLang === 'en' ? 'Inactive' : 'غير نشط')}
-                          </span>
+                          </Badge>
                         </td>
 
                         {/* Actions */}
                         <td className="px-6 py-4 text-center">
                           <div className="flex items-center justify-center gap-2">
-                            <button
+                            <IconButton
+                              icon={Edit2}
+                              variant="ghost"
                               onClick={() => openEditForm(p)}
-                              className="p-1.5 text-zinc-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors cursor-pointer"
                               title="Edit product"
-                            >
-                              <Edit2 className="w-3.5 h-3.5" />
-                            </button>
-                            <button
+                            />
+                            
+                            <IconButton
+                              icon={Trash2}
+                              variant="ghost"
+                              className="text-[var(--danger)] hover:bg-[var(--danger)]/10"
                               onClick={() => handleDeleteProduct(p.id, name)}
-                              className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
                               title="Delete product"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
+                            />
                           </div>
                         </td>
 
@@ -343,148 +349,135 @@ export default function ManageProducts() {
 
       ) : (
         
-        // --- EDIT/CREATE VIEW ---
-        <div className="bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl shadow-sm p-6 sm:p-8 transition-colors max-w-4xl mx-auto">
+        // --- EDIT/CREATE PANEL ---
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl shadow-sm p-6 sm:p-8 max-w-4xl mx-auto space-y-6">
           
-          <div className="flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-900/60 mb-6">
-            <h2 className="text-base font-bold text-zinc-950 dark:text-white uppercase tracking-wider font-heading">
+          <div className="flex items-center justify-between pb-4 border-b border-[var(--border)]">
+            <h2 className="text-base font-extrabold text-[var(--text-primary)] uppercase tracking-widest font-heading">
               {formType === 'create' 
                 ? (currentLang === 'en' ? 'Create New Product' : 'إضافة منتج جديد') 
                 : (currentLang === 'en' ? 'Edit Product Details' : 'تعديل بيانات المنتج')}
             </h2>
-            <button 
-              onClick={() => setEditingProduct(null)} 
-              className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-400 rounded-full"
-            >
-              <X className="w-4.5 h-4.5" />
-            </button>
+            <IconButton 
+              icon={X}
+              variant="ghost"
+              onClick={() => setEditingProduct(null)}
+            />
           </div>
 
           <form onSubmit={handleFormSubmit} className="space-y-6">
             
             {formError && (
-              <div className="flex items-center gap-2 p-4 bg-red-955/20 text-red-400 rounded-2xl text-xs border border-red-900/50">
-                <AlertCircle className="w-4.5 h-4.5 flex-shrink-0" />
+              <div className="flex items-center gap-2.5 p-4 bg-[var(--danger)]/10 text-[var(--danger)] rounded-xl text-xs font-bold border border-[var(--danger)]/20 font-sans">
+                <AlertCircle className="w-4.5 h-4.5 shrink-0" />
                 <span>{formError}</span>
               </div>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
-              {/* Left Column: English details */}
-              <div className="space-y-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 p-5 rounded-2xl">
-                <h3 className="text-[10px] font-black text-red-500 uppercase tracking-widest border-b border-zinc-150 dark:border-zinc-900/60 pb-2 font-heading">
+              {/* English details */}
+              <div className="space-y-4 bg-[var(--surface-elevated)] border border-[var(--border)] p-5 rounded-2xl">
+                <h3 className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest border-b border-[var(--border)] pb-2 font-heading">
                   English Fields (EN)
                 </h3>
                 
-                {/* Name EN */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-black text-zinc-550 dark:text-zinc-400 uppercase tracking-widest">Product Name (EN) *</label>
-                  <input
-                    type="text"
-                    required
-                    value={nameEn}
-                    onChange={(e) => setNameEn(e.target.value)}
-                    placeholder="Premium Brake Pads"
-                    className="px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all text-zinc-950 dark:text-white font-sans"
-                  />
-                </div>
+                <Input 
+                  label="Product Name (EN) *"
+                  id="nameEn"
+                  value={nameEn}
+                  onChange={(e) => setNameEn(e.target.value)}
+                  required
+                  placeholder="Premium Brake Pads"
+                />
 
-                {/* Category EN */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Category (EN) *</label>
-                  <input
-                    type="text"
-                    required
-                    value={catEn}
-                    onChange={(e) => setCatEn(e.target.value)}
-                    placeholder="Brakes"
-                    className="px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all text-zinc-950 dark:text-white font-sans"
-                  />
-                </div>
+                <Input 
+                  label="Category (EN) *"
+                  id="catEn"
+                  value={catEn}
+                  onChange={(e) => setCatEn(e.target.value)}
+                  required
+                  placeholder="Brakes"
+                />
 
-                {/* Desc EN */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Description (EN) *</label>
+                  <label htmlFor="descEn" className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block font-heading">
+                    Description (EN) *
+                  </label>
                   <textarea
+                    id="descEn"
                     rows="4"
                     required
                     value={descEn}
                     onChange={(e) => setDescEn(e.target.value)}
                     placeholder="High performance carbon formula..."
-                    className="px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all resize-none text-zinc-950 dark:text-white font-sans"
+                    className="px-3.5 py-2.5 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] rounded-xl text-xs placeholder-[var(--input-placeholder)] focus:outline-none focus:border-[var(--input-focus)] focus:ring-4 focus:ring-[var(--input-focus)]/10 transition-all resize-none font-sans"
                   />
                 </div>
               </div>
 
-              {/* Right Column: Arabic details */}
-              <div className="space-y-4 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 p-5 rounded-2xl" dir="rtl">
-                <h3 className="text-[10px] font-black text-red-500 uppercase tracking-widest border-b border-zinc-150 dark:border-zinc-900/60 pb-2 font-heading text-right">
+              {/* Arabic details */}
+              <div className="space-y-4 bg-[var(--surface-elevated)] border border-[var(--border)] p-5 rounded-2xl" dir="rtl">
+                <h3 className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest border-b border-[var(--border)] pb-2 font-heading text-right">
                   الحقول باللغة العربية (AR)
                 </h3>
                 
-                {/* Name AR */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest text-right">اسم المنتج (العربية) *</label>
-                  <input
-                    type="text"
-                    required
-                    value={nameAr}
-                    onChange={(e) => setNameAr(e.target.value)}
-                    placeholder="فحمات فرامل متميزة"
-                    className="px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all text-zinc-950 dark:text-white font-sans text-right"
-                  />
-                </div>
+                <Input 
+                  label="اسم المنتج (العربية) *"
+                  id="nameAr"
+                  value={nameAr}
+                  onChange={(e) => setNameAr(e.target.value)}
+                  required
+                  dir="rtl"
+                  placeholder="فحمات فرامل متميزة"
+                />
 
-                {/* Category AR */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest text-right">التصنيف (العربية) *</label>
-                  <input
-                    type="text"
-                    required
-                    value={catAr}
-                    onChange={(e) => setCatAr(e.target.value)}
-                    placeholder="الفرامل"
-                    className="px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all text-zinc-950 dark:text-white font-sans text-right"
-                  />
-                </div>
+                <Input 
+                  label="التصنيف (العربية) *"
+                  id="catAr"
+                  value={catAr}
+                  onChange={(e) => setCatAr(e.target.value)}
+                  required
+                  dir="rtl"
+                  placeholder="الفرامل"
+                />
 
-                {/* Desc AR */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest text-right">الوصف (العربية) *</label>
+                <div className="flex flex-col gap-1.5" dir="rtl">
+                  <label htmlFor="descAr" className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block font-heading text-right">
+                    الوصف (العربية) *
+                  </label>
                   <textarea
+                    id="descAr"
                     rows="4"
                     required
                     value={descAr}
                     onChange={(e) => setDescAr(e.target.value)}
                     placeholder="تركيبة كربون معدنية عالية الأداء..."
-                    className="px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all resize-none text-zinc-950 dark:text-white font-sans text-right"
+                    className="px-3.5 py-2.5 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] rounded-xl text-xs placeholder-[var(--input-placeholder)] focus:outline-none focus:border-[var(--input-focus)] focus:ring-4 focus:ring-[var(--input-focus)]/10 transition-all resize-none font-sans text-right"
                   />
                 </div>
               </div>
 
-              {/* Shared parameters */}
-              <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-6 items-start border-t border-zinc-100 dark:border-zinc-900/60 pt-6">
+              {/* Parameters */}
+              <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-6 items-start border-t border-[var(--border)] pt-6">
                 
-                {/* Price input */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Price (USD) *</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    required
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    placeholder="49.99"
-                    className="px-3.5 py-2.5 bg-zinc-50 dark:bg-[#121215] border border-zinc-250 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:border-red-500 transition-all text-zinc-950 dark:text-white font-sans"
-                  />
-                </div>
+                {/* Price */}
+                <Input 
+                  label="Price (USD) *"
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  required
+                  placeholder="49.99"
+                />
 
-                {/* Image Upload Box */}
+                {/* Image picker */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Product Image *</label>
-                  <div className="relative border border-dashed border-zinc-300 dark:border-zinc-800 hover:bg-zinc-50/50 dark:hover:bg-zinc-950/10 rounded-xl p-2 transition-colors flex items-center justify-center gap-3">
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block font-heading">Product Image *</label>
+                  <div className="relative border border-dashed border-[var(--border-strong)] hover:bg-[var(--surface-hover)] rounded-xl p-2.5 transition-colors flex items-center justify-center gap-3">
                     <input
                       type="file"
                       accept="image/*"
@@ -494,42 +487,41 @@ export default function ManageProducts() {
                     
                     {imageBase64 ? (
                       <div className="flex items-center gap-2">
-                        <img src={imageBase64} alt="Upload Preview" className="w-12 h-12 object-cover rounded-lg border border-zinc-200 dark:border-zinc-800" />
-                        <span className="text-[9px] text-green-500 font-black uppercase tracking-widest flex items-center gap-0.5">
-                          <Check className="w-3.5 h-3.5" />
+                        <img src={imageBase64} alt="Upload Preview" className="w-12 h-12 object-cover rounded-lg border border-[var(--border)]" />
+                        <Badge variant="success" icon={Check}>
                           {currentLang === 'en' ? 'Loaded' : 'تم التحميل'}
-                        </span>
+                        </Badge>
                       </div>
                     ) : (
-                      <div className="text-center py-2.5 text-zinc-400 flex flex-col items-center">
-                        <Upload className="w-5 h-5 mb-0.5" />
+                      <div className="text-center py-2 text-[var(--text-secondary)] flex flex-col items-center">
+                        <Upload className="w-5 h-5 mb-1" />
                         <span className="text-[9px] font-black uppercase tracking-widest">{currentLang === 'en' ? 'Upload Image' : 'اختر صورة'}</span>
                       </div>
                     )}
                   </div>
                   {compressionLoading && (
-                    <span className="text-[9px] text-zinc-400 animate-pulse font-bold">{currentLang === 'en' ? 'Compressing image...' : 'جاري ضغط الصورة...'}</span>
+                    <span className="text-[9px] text-[var(--text-muted)] animate-pulse font-bold">{currentLang === 'en' ? 'Compressing image...' : 'جاري ضغط الصورة...'}</span>
                   )}
                 </div>
 
-                {/* Toggles (Active & Featured) */}
-                <div className="flex flex-row sm:flex-col items-center justify-around sm:items-start gap-4 py-2 border-l border-zinc-150 dark:border-zinc-850 pl-6 rtl:border-l-0 rtl:border-r rtl:pl-0 rtl:pr-6 sm:h-full">
-                  <label className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-zinc-650 dark:text-zinc-350 cursor-pointer">
+                {/* Flags switches */}
+                <div className="flex flex-row sm:flex-col items-center justify-around sm:items-start gap-4 py-2 border-l border-[var(--border)] pl-6 rtl:border-l-0 rtl:border-r rtl:pl-0 rtl:pr-6 sm:h-full">
+                  <label className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={isActive}
                       onChange={(e) => setIsActive(e.target.checked)}
-                      className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-800 text-red-655 focus:ring-red-500 cursor-pointer"
+                      className="w-4 h-4 rounded border-[var(--border-strong)] text-[var(--accent)] focus:ring-[var(--accent)]/10 cursor-pointer bg-[var(--surface-elevated)]"
                     />
                     <span>{currentLang === 'en' ? 'Active (Visible)' : 'نشط (مرئي)'}</span>
                   </label>
 
-                  <label className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-zinc-655 dark:text-zinc-350 cursor-pointer">
+                  <label className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={featured}
                       onChange={(e) => setFeatured(e.target.checked)}
-                      className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-800 text-red-655 focus:ring-red-500 cursor-pointer"
+                      className="w-4 h-4 rounded border-[var(--border-strong)] text-[var(--accent)] focus:ring-[var(--accent)]/10 cursor-pointer bg-[var(--surface-elevated)]"
                     />
                     <span>{currentLang === 'en' ? 'Featured Item' : 'منتج مميز'}</span>
                   </label>
@@ -540,25 +532,25 @@ export default function ManageProducts() {
             </div>
 
             {/* Buttons */}
-            <div className="flex items-center justify-end gap-3 border-t border-zinc-100 dark:border-zinc-900/60 pt-6">
-              <button
-                type="button"
+            <div className="flex items-center justify-end gap-3 border-t border-[var(--border)] pt-6">
+              <Button
+                variant="outline"
                 onClick={() => setEditingProduct(null)}
-                className="px-4 py-2 text-xs font-bold text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 border border-zinc-300 dark:border-zinc-800 rounded-xl uppercase tracking-wider cursor-pointer"
               >
                 {currentLang === 'en' ? 'Cancel' : 'إلغاء'}
-              </button>
+              </Button>
               
-              <button
+              <Button
                 type="submit"
+                variant="primary"
+                loading={formSubmitting}
                 disabled={formSubmitting || compressionLoading}
-                className="inline-flex items-center gap-1.5 px-5 py-2 bg-red-650 hover:bg-red-755 disabled:bg-zinc-200 dark:disabled:bg-zinc-850 text-white font-bold rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow"
+                icon={Save}
               >
-                <Save className="w-3.5 h-3.5" />
-                <span>{formSubmitting
+                {formSubmitting
                   ? (currentLang === 'en' ? 'Saving...' : 'جاري الحفظ...')
-                  : (currentLang === 'en' ? 'Save Product' : 'حفظ المنتج')}</span>
-              </button>
+                  : (currentLang === 'en' ? 'Save Product' : 'حفظ المنتج')}
+              </Button>
             </div>
 
           </form>

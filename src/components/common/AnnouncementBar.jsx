@@ -15,7 +15,6 @@ export default function AnnouncementBar() {
 
     const interval = setInterval(() => {
       setIsVisible(false);
-      // Wait for fade out animation before changing index
       setTimeout(() => {
         setCurrentIndex(prevIndex => (prevIndex + 1) % announcements.length);
         setIsVisible(true);
@@ -33,14 +32,14 @@ export default function AnnouncementBar() {
   const displayText = activeAnnouncement?.text?.[currentLang] || activeAnnouncement?.text?.['en'] || '';
 
   return (
-    <div className="w-full bg-[#1b1c21] dark:bg-black border-b border-gray-800 text-white text-[11px] sm:text-xs font-semibold py-2.5 px-4 text-center select-none uppercase tracking-widest relative z-50">
+    <div className="w-full bg-zinc-950 dark:bg-black border-b border-zinc-900 text-white text-[10px] sm:text-xs font-bold py-2.5 px-4 text-center select-none uppercase tracking-widest relative z-50 font-heading">
       <div 
         className={`transition-all duration-300 ease-out flex items-center justify-center gap-2 ${
           isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-1'
         }`}
       >
-        <span className="inline-block w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0" />
-        <span className="truncate max-w-full font-heading">
+        <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse shrink-0" />
+        <span className="truncate max-w-full">
           {displayText}
         </span>
       </div>

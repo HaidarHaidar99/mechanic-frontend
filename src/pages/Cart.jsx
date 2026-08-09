@@ -5,6 +5,10 @@ import { useCart } from '../contexts/CartContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { buildWhatsAppLink } from '../utils/whatsapp';
 import { Plus, Minus, Trash2, ShoppingBag, ArrowRight, MessageSquare, AlertCircle } from 'lucide-react';
+import Button from '../components/common/Button';
+import IconButton from '../components/common/IconButton';
+import Container from '../components/common/Container';
+import EmptyState from '../components/common/EmptyState';
 
 export default function Cart() {
   const { t, i18n } = useTranslation();
@@ -34,132 +38,126 @@ export default function Cart() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[55vh] space-y-6 text-center max-w-md mx-auto py-12 animate-fade-in">
-        <div className="p-5 bg-zinc-100 dark:bg-zinc-900 rounded-2xl text-zinc-400 dark:text-zinc-600 animate-pulse">
-          <ShoppingBag className="w-12 h-12" />
-        </div>
-        <div className="space-y-2">
-          <h2 className="text-2xl font-extrabold text-zinc-950 dark:text-white font-heading uppercase tracking-tight">
-            {t('cart.empty')}
-          </h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-450 leading-relaxed">
-            {currentLang === 'en' 
-              ? 'Browse our catalogs and add genuine parts or services to your cart to checkout.'
-              : 'تصفح قائمة المنتجات لدينا وأضف قطع الغيار أو الخدمات إلى سلتك لإتمام الطلب.'}
-          </p>
-        </div>
-        <Link 
-          to="/products"
-          className="inline-flex items-center gap-1.5 px-6 py-3.5 bg-red-650 hover:bg-red-755 text-white font-bold rounded-xl text-xs uppercase tracking-widest transition-all hover:scale-102 cursor-pointer shadow-md shadow-red-500/10"
-        >
-          <span>{currentLang === 'en' ? 'Start Shopping' : 'ابدأ التسوق'}</span>
-          <ArrowRight className="w-4 h-4 rtl:rotate-180" />
-        </Link>
-      </div>
+      <Container className="py-20 flex items-center justify-center">
+        <EmptyState 
+          icon={ShoppingBag} 
+          title={t('cart.empty')}
+          description={currentLang === 'en' 
+            ? 'Browse our catalogs and add genuine parts or services to your cart to checkout.'
+            : 'تصفح قائمة المنتجات لدينا وأضف قطع الغيار أو الخدمات إلى سلتك لإتمام الطلب.'}
+          actionText={currentLang === 'en' ? 'Start Shopping' : 'ابدأ التسوق'}
+          actionLink={Link}
+          actionTo="/products"
+        />
+      </Container>
     );
   }
 
   return (
-    <div className="space-y-12 pb-16 animate-fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Container className="py-8 space-y-8 animate-fade-in">
       
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-900 pb-5">
+      <div className="flex items-center justify-between border-b border-[var(--border)] pb-5">
         <div>
-          <span className="text-[10px] font-black text-red-500 uppercase tracking-widest block font-heading">
+          <span className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest block font-heading">
             {currentLang === 'en' ? 'Shopping Cart' : 'حقيبة التسوق'}
           </span>
-          <h1 className="text-3xl font-extrabold text-zinc-950 dark:text-white uppercase tracking-tight mt-1 font-heading">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] uppercase tracking-tight mt-1 font-heading">
             {t('cart.title')}
           </h1>
-          <p className="text-xs text-zinc-500 dark:text-zinc-450 mt-1 font-bold">
+          <p className="text-[11px] font-bold text-[var(--text-secondary)] mt-1 uppercase tracking-wider">
             {cartItems.length} {t('cart.items')} {currentLang === 'en' ? 'in your cart' : 'في سلتك'}
           </p>
         </div>
         
         <button
           onClick={clearCart}
-          className="inline-flex items-center gap-1 text-xs font-black text-red-500 hover:text-red-600 uppercase tracking-widest cursor-pointer hover:underline"
+          className="inline-flex items-center gap-1 text-[10px] font-black text-[var(--accent)] hover:text-red-750 uppercase tracking-widest cursor-pointer hover:underline font-heading"
         >
-          <Trash2 className="w-4 h-4" />
+          <Trash2 className="w-3.5 h-3.5" />
           <span>{t('cart.clear')}</span>
         </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
-        {/* Cart items list */}
+        {/* Cart items list (Left side on Desktop, Stacked on Mobile) */}
         <div className="lg:col-span-2 space-y-4">
           {cartItems.map((item) => {
             const name = item.name[currentLang] || item.name['en'] || '';
+            const category = item.category[currentLang] || item.category['en'] || '';
             const subtotal = item.price * item.quantity;
             
             return (
               <div 
                 key={item.id}
-                className="flex items-center gap-4 bg-white dark:bg-[#121215] p-4 sm:p-5 rounded-2xl border border-zinc-200/60 dark:border-zinc-900/60 shadow-sm transition-colors"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[var(--surface)] p-4 sm:p-5 rounded-2xl border border-[var(--border)] shadow-sm hover:border-[var(--border-strong)] transition-all"
               >
-                {/* Product Image */}
-                <div className="w-16 sm:w-20 aspect-square rounded-xl overflow-hidden bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900/50 shrink-0">
-                  <img 
-                    src={item.imageBase64} 
-                    alt={name} 
-                    className="w-full h-full object-cover"
-                  />
+                
+                {/* Details left section */}
+                <div className="flex items-center gap-4">
+                  {/* Image */}
+                  <div className="w-16 sm:w-20 aspect-square rounded-xl overflow-hidden bg-[var(--page-bg)] border border-[var(--border)] shrink-0">
+                    <img 
+                      src={item.imageBase64} 
+                      alt={name} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Info details */}
+                  <div className="min-w-0 space-y-1">
+                    <span className="text-[9px] font-black text-[var(--accent)] uppercase tracking-widest block font-heading">
+                      {category}
+                    </span>
+                    <h3 className="text-sm font-extrabold text-[var(--text-primary)] line-clamp-1 font-heading uppercase">
+                      {name}
+                    </h3>
+                    <div className="text-xs font-bold text-[var(--text-secondary)]">
+                      ${item.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Details */}
-                <div className="flex-grow min-w-0">
-                  <h3 className="text-sm sm:text-base font-extrabold text-zinc-900 dark:text-white line-clamp-1 font-heading">
-                    {name}
-                  </h3>
-                  <div className="text-xs font-bold text-zinc-500 dark:text-zinc-400 mt-1">
-                    ${item.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                  </div>
+                {/* Controls right section */}
+                <div className="flex items-center justify-between sm:justify-end gap-6 pt-3 sm:pt-0 border-t sm:border-t-0 border-[var(--border)]">
                   
-                  {/* Remove mobile button */}
-                  <button 
-                    onClick={() => removeFromCart(item.id)}
-                    className="sm:hidden text-xs font-bold text-red-500 hover:underline mt-2 flex items-center gap-0.5"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                    <span>{currentLang === 'en' ? 'Remove' : 'حذف'}</span>
-                  </button>
-                </div>
-
-                {/* Quantity Modifier */}
-                <div className="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden bg-zinc-50 dark:bg-zinc-950 shrink-0">
-                  <button 
-                    onClick={() => updateQuantity(item.id, item.quantity > 1 ? item.quantity - 1 : 1)}
-                    className="p-2 hover:bg-zinc-150 dark:hover:bg-zinc-900 text-zinc-500 transition-colors cursor-pointer"
-                    aria-label="Decrease quantity"
-                  >
-                    <Minus className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="px-3.5 text-xs font-extrabold text-zinc-950 dark:text-white font-heading">
-                    {item.quantity}
-                  </span>
-                  <button 
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    className="p-2 hover:bg-zinc-150 dark:hover:bg-zinc-900 text-zinc-500 transition-colors cursor-pointer"
-                    aria-label="Increase quantity"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-
-                {/* Subtotal & Action */}
-                <div className="text-right shrink-0 pl-4 rtl:pl-0 rtl:pr-4 hidden sm:block">
-                  <div className="text-sm font-extrabold text-zinc-950 dark:text-white font-heading">
-                    ${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  {/* Quantity Modifier */}
+                  <div className="flex items-center border border-[var(--border-strong)] rounded-xl overflow-hidden bg-[var(--surface-elevated)] shrink-0">
+                    <button 
+                      onClick={() => updateQuantity(item.id, item.quantity > 1 ? item.quantity - 1 : 1)}
+                      className="p-2 hover:bg-[var(--surface-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                      aria-label="Decrease quantity"
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="px-3.5 text-xs font-extrabold text-[var(--text-primary)] font-heading">
+                      {item.quantity}
+                    </span>
+                    <button 
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      className="p-2 hover:bg-[var(--surface-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                      aria-label="Increase quantity"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  <button 
-                    onClick={() => removeFromCart(item.id)}
-                    className="text-xs font-bold text-red-500 hover:text-red-600 hover:underline mt-1 inline-flex items-center gap-0.5 cursor-pointer"
-                    title="Remove item"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                    <span>{currentLang === 'en' ? 'Remove' : 'حذف'}</span>
-                  </button>
+
+                  {/* Subtotal & Delete Action */}
+                  <div className="text-right shrink-0 min-w-[90px]">
+                    <div className="text-sm font-extrabold text-[var(--text-primary)] font-heading">
+                      ${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </div>
+                    <button 
+                      onClick={() => removeFromCart(item.id)}
+                      className="text-[10px] font-bold text-[var(--danger)] hover:underline mt-1 inline-flex items-center gap-0.5 cursor-pointer font-heading uppercase tracking-wider"
+                      title="Remove item"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span>{currentLang === 'en' ? 'Remove' : 'حذف'}</span>
+                    </button>
+                  </div>
+
                 </div>
 
               </div>
@@ -168,26 +166,26 @@ export default function Cart() {
         </div>
 
         {/* Checkout Summary Card */}
-        <div className="bg-white dark:bg-[#121215] border border-zinc-200/60 dark:border-zinc-900/60 rounded-3xl p-6 sm:p-8 shadow-sm transition-colors space-y-6">
-          <h2 className="text-lg font-extrabold text-zinc-950 dark:text-white pb-3 border-b border-zinc-100 dark:border-zinc-900/60 font-heading">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 lg:sticky lg:top-24">
+          <h2 className="text-base font-extrabold text-[var(--text-primary)] pb-3 border-b border-[var(--border)] font-heading uppercase tracking-widest">
             {currentLang === 'en' ? 'Order Summary' : 'ملخص الطلب'}
           </h2>
 
-          <div className="space-y-4 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+          <div className="space-y-4 text-xs font-bold text-[var(--text-secondary)]">
             <div className="flex justify-between">
               <span>{t('cart.subtotal')}</span>
-              <span className="font-extrabold text-zinc-950 dark:text-white">${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+              <span className="text-[var(--text-primary)] font-extrabold">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
             
-            <div className="flex justify-between border-t border-zinc-100 dark:border-zinc-900/60 pt-4 text-sm font-black text-zinc-950 dark:text-white font-heading">
+            <div className="flex justify-between border-t border-[var(--border)] pt-4 text-sm font-black text-[var(--text-primary)] font-heading">
               <span>{t('cart.total')}</span>
-              <span>${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+              <span>${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
 
-          {/* Warning check */}
+          {/* Warnings */}
           {(!settings || !settings.whatsapp) && (
-            <div className="flex gap-2.5 p-4 bg-yellow-955/20 text-yellow-500 rounded-2xl text-[11px] font-bold border border-yellow-900/50">
+            <div className="flex gap-2.5 p-4 bg-[var(--warning)]/10 text-[var(--warning)] rounded-2xl text-[10px] font-bold border border-[var(--warning)]/20 font-sans">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>
                 {currentLang === 'en'
@@ -197,17 +195,17 @@ export default function Cart() {
             </div>
           )}
 
-          {/* Checkout Button */}
+          {/* Checkout Action Button */}
           <button
             onClick={handleCheckout}
             disabled={!settings || !settings.whatsapp}
-            className="w-full inline-flex items-center justify-center gap-2 py-4 bg-green-650 hover:bg-green-700 active:bg-green-750 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 disabled:text-zinc-400 dark:disabled:text-zinc-650 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-lg transition-all hover:scale-102 cursor-pointer disabled:cursor-not-allowed"
+            className="w-full inline-flex items-center justify-center gap-2.5 py-4 bg-green-650 hover:bg-green-700 active:bg-green-750 disabled:bg-[var(--button-disabled-bg)] disabled:text-[var(--button-disabled-text)] text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer font-heading"
           >
-            <MessageSquare className="w-4.5 h-4.5 fill-white" />
+            <MessageSquare className="w-4.5 h-4.5 fill-white shrink-0" />
             <span>{t('cart.checkout')}</span>
           </button>
 
-          <p className="text-center text-[10px] text-zinc-500 font-medium leading-relaxed">
+          <p className="text-center text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest leading-relaxed">
             {currentLang === 'en'
               ? 'No payment is required online. Your order will be sent to our WhatsApp, and our agent will follow up.'
               : 'لا يلزم الدفع عبر الإنترنت. سيتم إرسال طلبك إلى واتساب الخاص بنا، وسيقوم وكيلنا بمتابعة الطلب معك.'}
@@ -217,6 +215,6 @@ export default function Cart() {
 
       </div>
 
-    </div>
+    </Container>
   );
 }

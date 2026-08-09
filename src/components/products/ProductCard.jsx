@@ -3,6 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useCart } from '../../contexts/CartContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
 import { Heart, ShoppingCart, Eye, Check } from 'lucide-react';
+import Button from '../common/Button';
+import IconButton from '../common/IconButton';
+import Badge from '../common/Badge';
 
 export default function ProductCard({ product, onOpenDetails }) {
   const { t, i18n } = useTranslation();
@@ -19,7 +22,6 @@ export default function ProductCard({ product, onOpenDetails }) {
   const isAdded = cartItems.some(item => item.id === product.id);
   const favorited = isFavorite(product.id);
 
-  // Favorite pop animation state
   const [popHeart, setPopHeart] = useState(false);
 
   const handleFavoriteClick = (e) => {
@@ -38,75 +40,73 @@ export default function ProductCard({ product, onOpenDetails }) {
   return (
     <div 
       onClick={() => onOpenDetails(product)}
-      className="group bg-white dark:bg-[#121215] rounded-2xl overflow-hidden border border-zinc-200/60 dark:border-zinc-900/60 transition-all duration-500 hover:-translate-y-1 hover:shadow-lg flex flex-col h-full cursor-pointer relative"
+      className="group bg-[var(--surface)] hover:bg-[var(--surface-elevated)] rounded-3xl overflow-hidden border border-[var(--border)] hover:border-[var(--border-strong)] transition-all duration-300 flex flex-col h-full cursor-pointer relative shadow-sm hover:shadow-md"
     >
-      
       {/* Product Image Wrapper */}
-      <div className="relative aspect-square w-full bg-zinc-50 dark:bg-zinc-950 overflow-hidden shrink-0 border-b border-zinc-100 dark:border-zinc-900/40">
+      <div className="relative aspect-square w-full bg-[var(--page-bg)] overflow-hidden shrink-0 border-b border-[var(--border)]">
         <img 
           src={product.imageBase64} 
           alt={name} 
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[600ms] ease-out"
+          className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-500 ease-out"
           loading="lazy"
         />
         
-        {/* Top Badges (Featured / Inactive) */}
-        <div className="absolute top-3 left-3 rtl:left-auto rtl:right-3 flex flex-col gap-1.5 z-10">
-          {product.featured && (
-            <span className="px-2.5 py-1 text-[8px] font-black tracking-widest text-white bg-red-600 rounded-lg">
-              {currentLang === 'en' ? 'FEATURED' : 'مميز'}
-            </span>
-          )}
+        {/* Top Left Featured Badge */}
+        {product.featured && (
+          <div className="absolute top-4 left-4 rtl:left-auto rtl:right-4 z-10">
+            <Badge variant="primary" icon={SparklesIcon}>
+              {currentLang === 'en' ? 'Featured' : 'مميز'}
+            </Badge>
+          </div>
+        )}
+
+        {/* Top Right Heart Favorite Action */}
+        <div className="absolute top-4 right-4 rtl:right-auto rtl:left-4 z-20">
+          <button
+            onClick={handleFavoriteClick}
+            className={`p-2.5 rounded-full border shadow-sm transition-all cursor-pointer ${
+              favorited 
+                ? 'bg-rose-500 border-rose-500 text-white' 
+                : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-secondary)] hover:text-rose-500'
+            } ${popHeart ? 'scale-115' : ''}`}
+            title={t('nav.favorites')}
+          >
+            <Heart className={`w-4.5 h-4.5 transition-all ${favorited ? 'fill-current' : ''}`} />
+          </button>
         </div>
 
-        {/* Top Right Heart button (Always visible, pop animation) */}
-        <button
-          onClick={handleFavoriteClick}
-          className={`absolute top-3 right-3 rtl:right-auto rtl:left-3 z-20 p-2 rounded-full border bg-white/95 dark:bg-zinc-900/95 shadow-sm text-zinc-500 dark:text-zinc-400 hover:text-red-500 hover:scale-105 transition-all cursor-pointer ${
-            favorited 
-              ? 'border-red-500/20 text-red-550' 
-              : 'border-zinc-200/50 dark:border-zinc-800'
-          } ${popHeart ? 'scale-125' : ''}`}
-          title={t('nav.favorites')}
-        >
-          <Heart className={`w-4 h-4 transition-all ${favorited ? 'fill-red-500 text-red-500' : ''}`} />
-        </button>
-
-        {/* Hover overlay quick action */}
-        <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
-          <span className="inline-flex items-center gap-1.5 px-4.5 py-2.5 bg-white text-zinc-950 rounded-xl text-xs font-bold uppercase tracking-wider shadow-lg transform translate-y-3 group-hover:translate-y-0 transition-all duration-300">
-            <Eye className="w-4 h-4" />
+        {/* Quick View Details Overlay */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
+          <span className="inline-flex items-center gap-2 px-5 py-3 bg-[var(--surface)] text-[var(--text-primary)] rounded-xl text-xs font-bold uppercase tracking-wider shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+            <Eye className="w-4 h-4 text-[var(--accent)]" />
             <span>{t('products.details')}</span>
           </span>
         </div>
-
       </div>
 
-      {/* Product Info content */}
-      <div className="p-5 flex flex-col flex-grow justify-between gap-4">
-        
-        <div className="space-y-1.5">
+      {/* Info Blocks */}
+      <div className="p-5 flex flex-col flex-grow justify-between gap-5">
+        <div className="space-y-2">
           {/* Category */}
-          <span className="text-[9px] font-black text-red-500 uppercase tracking-widest block font-heading">
+          <span className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest block font-heading">
             {category}
           </span>
 
           {/* Title */}
-          <h3 className="text-sm font-extrabold text-zinc-900 dark:text-white line-clamp-1 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors font-heading">
+          <h3 className="text-sm font-extrabold text-[var(--text-primary)] line-clamp-1 group-hover:text-[var(--accent)] transition-colors font-heading uppercase">
             {name}
           </h3>
 
-          {/* Description Preview */}
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+          {/* Description */}
+          <p className="text-xs text-[var(--text-secondary)] line-clamp-2 leading-relaxed">
             {description}
           </p>
         </div>
 
-        {/* Bottom pricing / cart action bar */}
-        <div className="pt-3 border-t border-zinc-100 dark:border-zinc-900/60 flex items-center justify-between gap-4 mt-auto">
-          
+        {/* Bottom Details & Add button */}
+        <div className="pt-4 border-t border-[var(--border)] flex items-center justify-between gap-4 mt-auto">
           {/* Price */}
-          <div className="text-sm font-extrabold text-zinc-950 dark:text-white font-heading">
+          <div className="text-sm sm:text-base font-extrabold text-[var(--text-primary)] font-heading">
             ${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
 
@@ -114,16 +114,16 @@ export default function ProductCard({ product, onOpenDetails }) {
           <button
             onClick={handleAddToCart}
             disabled={isAdded}
-            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer select-none ${
+            className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all cursor-pointer font-heading ${
               isAdded
-                ? 'bg-zinc-100 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-650 cursor-not-allowed border border-transparent'
-                : 'bg-red-650 hover:bg-red-755 text-white hover:-translate-y-0.5 active:translate-y-0 shadow-sm'
+                ? 'bg-[var(--success)]/10 border-[var(--success)]/20 text-[var(--success)] cursor-not-allowed opacity-100 font-bold'
+                : 'bg-[var(--button-primary-bg)] border-transparent text-[var(--button-primary-text)] hover:bg-[var(--button-primary-hover)] active:scale-95 shadow-sm'
             }`}
           >
             {isAdded ? (
               <>
-                <Check className="w-3.5 h-3.5" />
-                <span>{currentLang === 'en' ? 'Added' : 'تمت الإضافة'}</span>
+                <Check className="w-3.5 h-3.5 stroke-[3px]" />
+                <span>{currentLang === 'en' ? 'Added to Cart' : 'تمت الإضافة'}</span>
               </>
             ) : (
               <>
@@ -132,11 +132,31 @@ export default function ProductCard({ product, onOpenDetails }) {
               </>
             )}
           </button>
-
         </div>
-
       </div>
-
     </div>
+  );
+}
+
+// Simple internal icon for Featured Badge
+function SparklesIcon(props) {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className="w-3 h-3 text-current"
+      {...props}
+    >
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z" />
+      <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5Z" />
+      <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1Z" />
+    </svg>
   );
 }

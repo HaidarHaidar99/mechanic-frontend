@@ -3,267 +3,199 @@ import { useTranslation } from 'react-i18next';
 import { apiRequest } from '../../services/api';
 import { useAdminAuth } from '../../contexts/AdminAuthContext';
 import { 
-  ShoppingBag, Mail, Users, AlertCircle, MessageSquare, 
-  Calendar, ArrowUpRight, Plus, Eye, ShieldCheck, Wrench
+  ShoppingBag, Mail, Users, Trash2, CheckCircle2, 
+  Archive, ShieldCheck, MailOpen, ArrowUpRight 
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import Badge from '../../components/common/Badge';
+import Skeleton from '../../components/common/Skeleton';
 
 export default function Dashboard() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { admin } = useAdminAuth();
-  const navigate = useNavigate();
   const currentLang = i18n.language || 'en';
 
-  const [data, setData] = useState(null);
+  const [stats, setStats] = useState({
+    productsCount: 0,
+    messagesCount: 0,
+    adminsCount: 0
+  });
+
+  const [recentMessages, setRecentMessages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const res = await apiRequest('/stats');
-        if (res.success) {
-          setData(res.data);
-        } else {
-          throw new Error(res.message || 'Failed to fetch dashboard stats');
+        const [statsRes, messagesRes] = await Promise.all([
+          apiRequest('/admin/stats'),
+          apiRequest('/messages?limit=5')
+        ]);
+
+        if (statsRes.success && statsRes.data) {
+          setStats(statsRes.data);
+        }
+        if (messagesRes.success && messagesRes.data) {
+          setRecentMessages(messagesRes.data);
         }
       } catch (err) {
-        console.error('Dashboard load error:', err);
-        setError(err.message || 'Could not load dashboard statistics');
+        console.error('Error fetching admin dashboard stats:', err);
       } finally {
         setLoading(false);
       }
     };
-    fetchStats();
+    fetchDashboardData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="space-y-8 animate-pulse">
-        {/* Title skeleton */}
-        <div className="h-6 bg-zinc-200 dark:bg-zinc-800 rounded w-1/4" />
-        
-        {/* Stats Grid skeleton */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, idx) => (
-            <div key={idx} className="h-28 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl p-6" />
-          ))}
-        </div>
-
-        {/* Lists grid skeleton */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="h-96 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl p-6" />
-          <div className="h-96 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl p-6" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-6 bg-red-955/20 text-red-400 rounded-2xl border border-red-900/50 flex items-center gap-3">
-        <AlertCircle className="w-6 h-6 flex-shrink-0" />
-        <span>{error}</span>
-      </div>
-    );
-  }
-
-  const { stats, recentProducts, recentMessages } = data;
-  const isSuper = admin && admin.role === 'super_admin';
-
   return (
-    <div className="space-y-8 pb-8 animate-fade-in">
+    <div className="space-y-10 animate-fade-in font-sans">
       
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span className="text-[9px] font-black text-red-500 uppercase tracking-widest block font-heading">
-            {currentLang === 'en' ? 'Console Statistics' : 'إحصائيات النظام الفنية'}
-          </span>
-          <h1 className="text-xl font-bold text-zinc-950 dark:text-white uppercase tracking-wider font-heading mt-1">
-            {currentLang === 'en' ? 'Dashboard Overview' : 'نظرة عامة على لوحة التحكم'}
-          </h1>
-        </div>
-        <Link 
-          to="/admin/products" 
-          className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-red-650 hover:bg-red-755 rounded-xl transition-all shadow cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>{currentLang === 'en' ? 'Add Product' : 'إضافة منتج'}</span>
-        </Link>
+      {/* Header Greeting */}
+      <div>
+        <span className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest block font-heading">
+          {currentLang === 'en' ? 'Console Overview' : 'نظرة عامة على لوحة التحكم'}
+        </span>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] uppercase tracking-tight mt-1 font-heading">
+          {t('admin.nav.dashboard') || 'Dashboard'}
+        </h1>
+        {admin && (
+          <p className="text-xs text-[var(--text-secondary)] mt-1 font-semibold leading-relaxed">
+            {currentLang === 'en' 
+              ? `Welcome back, ${admin.fullName}. Manage your products, announcements, and customer inbox.`
+              : `أهلاً بك مجدداً، ${admin.fullName}. قم بإدارة منتجاتك، وإعلاناتك، وصندوق رسائل العملاء.`}
+          </p>
+        )}
       </div>
 
-      {/* Stats Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* KPI Stats widgets grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         
-        {/* Total Products */}
-        <div className="bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl p-6 shadow-sm flex items-center justify-between transition-colors">
+        {/* Products KPI */}
+        <Link 
+          to="/admin/products"
+          className="bg-[var(--surface)] border border-[var(--border)] p-6 rounded-3xl shadow-sm hover:border-[var(--border-strong)] transition-all flex items-center justify-between group"
+        >
           <div className="space-y-1">
-            <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-              {currentLang === 'en' ? 'Total Products' : 'إجمالي المنتجات'}
+            <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest block font-heading">
+              {t('admin.dashboard.products') || 'Total Products'}
             </span>
-            <div className="text-2xl font-black text-zinc-950 dark:text-white font-heading">
-              {stats.totalProducts}
+            <div className="text-3xl font-black text-[var(--text-primary)] font-heading">
+              {loading ? <Skeleton variant="text" width="40px" height="30px" className="mt-1" /> : stats.productsCount}
             </div>
           </div>
-          <div className="p-3 bg-red-500/10 text-red-500 rounded-xl">
-            <ShoppingBag className="w-5 h-5" />
+          <div className="p-3.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-2xl group-hover:scale-105 transition-all">
+            <ShoppingBag className="w-6 h-6" />
           </div>
-        </div>
+        </Link>
 
-        {/* Total Messages */}
-        <div className="bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl p-6 shadow-sm flex items-center justify-between transition-colors">
+        {/* Messages KPI */}
+        <Link 
+          to="/admin/messages"
+          className="bg-[var(--surface)] border border-[var(--border)] p-6 rounded-3xl shadow-sm hover:border-[var(--border-strong)] transition-all flex items-center justify-between group"
+        >
           <div className="space-y-1">
-            <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-              {currentLang === 'en' ? 'Total Messages' : 'إجمالي الرسائل'}
+            <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest block font-heading">
+              {t('admin.dashboard.messages') || 'Total Messages'}
             </span>
-            <div className="text-2xl font-black text-zinc-950 dark:text-white font-heading">
-              {stats.totalMessages}
+            <div className="text-3xl font-black text-[var(--text-primary)] font-heading">
+              {loading ? <Skeleton variant="text" width="40px" height="30px" className="mt-1" /> : stats.messagesCount}
             </div>
           </div>
-          <div className="p-3 bg-red-500/10 text-red-500 rounded-xl">
-            <Mail className="w-5 h-5" />
+          <div className="p-3.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-2xl group-hover:scale-105 transition-all">
+            <Mail className="w-6 h-6" />
           </div>
-        </div>
+        </Link>
 
-        {/* Unread/New Messages */}
-        <div className="bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl p-6 shadow-sm flex items-center justify-between transition-colors">
+        {/* Admins KPI */}
+        <Link 
+          to={admin?.role === 'super_admin' ? '/admin/admins' : '#'}
+          className={`bg-[var(--surface)] border border-[var(--border)] p-6 rounded-3xl shadow-sm transition-all flex items-center justify-between group ${
+            admin?.role === 'super_admin' ? 'hover:border-[var(--border-strong)]' : 'cursor-default'
+          }`}
+        >
           <div className="space-y-1">
-            <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-              {currentLang === 'en' ? 'New Messages' : 'الرسائل الجديدة'}
+            <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest block font-heading">
+              {t('admin.dashboard.admins') || 'Total Admins'}
             </span>
-            <div className="text-2xl font-black text-red-600 dark:text-red-500 font-heading">
-              {stats.unreadMessages}
+            <div className="text-3xl font-black text-[var(--text-primary)] font-heading">
+              {loading ? <Skeleton variant="text" width="40px" height="30px" className="mt-1" /> : stats.adminsCount}
             </div>
           </div>
-          <div className="p-3 bg-red-500/10 text-red-500 rounded-xl">
-            <MessageSquare className="w-5 h-5" />
+          <div className="p-3.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-2xl group-hover:scale-105 transition-all">
+            <Users className="w-6 h-6" />
           </div>
+        </Link>
+
+      </div>
+
+      {/* Recent Messages list grid */}
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl shadow-sm p-6 sm:p-8 space-y-6">
+        
+        <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
+          <h2 className="text-sm font-extrabold uppercase tracking-widest text-[var(--text-primary)] font-heading">
+            {t('admin.dashboard.recent_messages') || 'Recent Messages'}
+          </h2>
+          <Link 
+            to="/admin/messages" 
+            className="text-[10px] font-black text-[var(--accent)] hover:underline uppercase tracking-widest inline-flex items-center gap-1 font-heading"
+          >
+            <span>{currentLang === 'en' ? 'Go to Inbox' : 'اذهب إلى الوارد'}</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
 
-        {/* Total Admins */}
-        {isSuper ? (
-          <div className="bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl p-6 shadow-sm flex items-center justify-between transition-colors">
-            <div className="space-y-1">
-              <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                {currentLang === 'en' ? 'Total Admins' : 'إجمالي المشرفين'}
-              </span>
-              <div className="text-2xl font-black text-zinc-950 dark:text-white font-heading">
-                {stats.totalAdmins}
+        {loading ? (
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="flex gap-4 p-4 border border-[var(--border)] rounded-2xl animate-pulse">
+                <Skeleton variant="circle" width="32px" height="32px" />
+                <div className="flex-grow space-y-2">
+                  <Skeleton variant="text" width="40%" />
+                  <Skeleton variant="text" width="20%" />
+                  <Skeleton variant="text" width="80%" />
+                </div>
               </div>
-            </div>
-            <div className="p-3 bg-red-500/10 text-red-500 rounded-xl">
-              <Users className="w-5 h-5" />
-            </div>
+            ))}
+          </div>
+        ) : recentMessages.length === 0 ? (
+          <div className="text-center py-10">
+            <Mail className="w-8 h-8 text-[var(--text-muted)] mx-auto mb-3" />
+            <p className="text-xs text-[var(--text-secondary)] font-bold">
+              {currentLang === 'en' ? 'No incoming messages found' : 'لا يوجد رسائل واردة'}
+            </p>
           </div>
         ) : (
-          <div className="bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl p-6 shadow-sm flex items-center justify-between transition-colors opacity-40">
-            <div className="space-y-1">
-              <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                {currentLang === 'en' ? 'Admins Panel' : 'لوحة المشرفين'}
-              </span>
-              <div className="text-xs font-bold text-zinc-400 mt-1 uppercase tracking-wider">
-                {currentLang === 'en' ? 'Restricted' : 'محدود'}
-              </div>
-            </div>
-            <div className="p-3 bg-zinc-500/10 text-zinc-500 rounded-xl">
-              <Users className="w-5 h-5" />
-            </div>
+          <div className="divide-y divide-[var(--border)]">
+            {recentMessages.map((msg) => {
+              const statusVariants = {
+                new: 'primary',
+                read: 'neutral',
+                archived: 'neutral'
+              };
+
+              return (
+                <div key={msg.id} className="py-4.5 first:pt-0 last:pb-0 flex items-start justify-between gap-4 font-sans text-xs">
+                  <div className="space-y-1.5 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-extrabold text-[var(--text-primary)]">{msg.name}</span>
+                      <span className="text-[10px] text-[var(--text-muted)]">({msg.email})</span>
+                      <Badge variant={statusVariants[msg.status || 'new']}>
+                        {msg.status || 'new'}
+                      </Badge>
+                    </div>
+                    <p className="text-[var(--text-secondary)] line-clamp-1 truncate pr-4">
+                      {msg.message}
+                    </p>
+                    <div className="text-[10px] text-[var(--text-muted)] font-medium">
+                      {msg.createdAt ? new Date(msg.createdAt).toLocaleString() : ''}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
-
-      </div>
-
-      {/* Lists Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-        {/* Recent Products */}
-        <div className="bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl shadow-sm overflow-hidden flex flex-col transition-colors">
-          <div className="px-6 py-4 border-b border-zinc-100 dark:border-zinc-900/60 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-950/10">
-            <h2 className="text-xs font-black text-zinc-950 dark:text-white uppercase tracking-widest font-heading">
-              {currentLang === 'en' ? 'Recent Products' : 'أحدث المنتجات'}
-            </h2>
-            <Link to="/admin/products" className="text-[10px] font-black text-red-500 uppercase tracking-widest hover:underline flex items-center gap-0.5">
-              <span>{currentLang === 'en' ? 'Manage Inventory' : 'إدارة المخزون'}</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          <div className="p-5 flex-grow">
-            {recentProducts.length === 0 ? (
-              <div className="text-center py-12 text-zinc-450 text-xs font-semibold">
-                {currentLang === 'en' ? 'No products registered yet.' : 'لا توجد منتجات مسجلة بعد.'}
-              </div>
-            ) : (
-              <div className="divide-y divide-zinc-100 dark:divide-zinc-900">
-                {recentProducts.map(p => {
-                  const name = p.name[currentLang] || p.name['en'] || '';
-                  return (
-                    <div key={p.id} className="flex items-center gap-3 py-3.5 first:pt-0 last:pb-0">
-                      <img src={p.imageBase64} alt={name} className="w-9 h-9 rounded-lg object-cover bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900/40 shrink-0" />
-                      <div className="flex-grow min-w-0">
-                        <div className="text-xs font-bold text-zinc-900 dark:text-white truncate font-heading">{name}</div>
-                        <div className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">{p.category[currentLang] || p.category['en']}</div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <div className="text-xs font-extrabold text-zinc-950 dark:text-white font-heading">${p.price.toFixed(2)}</div>
-                        <span className={`inline-block text-[8px] font-black tracking-widest uppercase mt-0.5 ${p.isActive ? 'text-green-500' : 'text-red-500'}`}>
-                          {p.isActive ? (currentLang === 'en' ? 'ACTIVE' : 'نشط') : (currentLang === 'en' ? 'INACTIVE' : 'غير نشط')}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Recent Messages */}
-        <div className="bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl shadow-sm overflow-hidden flex flex-col transition-colors">
-          <div className="px-6 py-4 border-b border-zinc-100 dark:border-zinc-900/60 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-950/10">
-            <h2 className="text-xs font-black text-zinc-950 dark:text-white uppercase tracking-widest font-heading">
-              {currentLang === 'en' ? 'Recent Messages' : 'أحدث الرسائل الواردة'}
-            </h2>
-            <Link to="/admin/messages" className="text-[10px] font-black text-red-500 uppercase tracking-widest hover:underline flex items-center gap-0.5">
-              <span>{currentLang === 'en' ? 'Open Messages Box' : 'فتح صندوق الرسائل'}</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          <div className="p-5 flex-grow">
-            {recentMessages.length === 0 ? (
-              <div className="text-center py-12 text-zinc-455 text-xs font-semibold">
-                {currentLang === 'en' ? 'No messages received yet.' : 'لا توجد رسائل واردة بعد.'}
-              </div>
-            ) : (
-              <div className="divide-y divide-zinc-100 dark:divide-zinc-900">
-                {recentMessages.map(m => (
-                  <div key={m.id} className="py-3.5 first:pt-0 last:pb-0 space-y-1">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="text-xs font-bold text-zinc-900 dark:text-white font-heading">{m.name}</div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest ${
-                          m.status === 'new' 
-                            ? 'bg-red-500/10 text-red-550' 
-                            : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500'
-                        }`}>
-                          {m.status}
-                        </span>
-                        <div className="text-[9px] text-zinc-400 flex items-center gap-1 font-bold">
-                          <Calendar className="w-3 h-3" />
-                          <span>{new Date(m.createdAt).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-[11px] text-zinc-500 dark:text-zinc-450 line-clamp-1 leading-relaxed">{m.message}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
 
       </div>
 

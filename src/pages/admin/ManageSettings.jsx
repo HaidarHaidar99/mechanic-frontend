@@ -5,8 +5,13 @@ import { useSettings } from '../../contexts/SettingsContext';
 import { compressImage } from '../../utils/imageCompression';
 import { 
   Settings, Image, Plus, Trash2, Upload, AlertCircle, 
-  CheckCircle2, RefreshCw, ChevronUp, ChevronDown, Save
+  CheckCircle2, RefreshCw, ChevronUp, ChevronDown, Save 
 } from 'lucide-react';
+import Button from '../../components/common/Button';
+import IconButton from '../../components/common/IconButton';
+import Input from '../../components/common/Input';
+import Select from '../../components/common/Select';
+import Badge from '../../components/common/Badge';
 
 export default function ManageSettings() {
   const { i18n } = useTranslation();
@@ -85,7 +90,7 @@ export default function ManageSettings() {
     }
   }, [settings]);
 
-  // Load Carousel slides on tab switch
+  // Load Carousel slides
   useEffect(() => {
     if (activeTab === 'carousel') {
       const fetchCarousel = async () => {
@@ -154,7 +159,7 @@ export default function ManageSettings() {
 
       if (res.success) {
         setSuccessMsg(currentLang === 'en' ? 'Settings updated successfully' : 'تم تحديث الإعدادات العامة بنجاح');
-        refreshSettings(); // Refresh context
+        refreshSettings();
       } else {
         throw new Error(res.message || 'Update failed');
       }
@@ -262,488 +267,356 @@ export default function ManageSettings() {
       });
 
       if (res.success) {
-        setSuccessMsg(currentLang === 'en' ? 'Carousel slides updated successfully' : 'تم تحديث شرائح العرض بنجاح');
+        setSuccessMsg(currentLang === 'en' ? 'Homepage slides saved successfully' : 'تم حفظ شرائح العرض بنجاح');
       } else {
-        throw new Error(res.message || 'Operation failed');
+        throw new Error(res.message || 'Carousel save failed');
       }
     } catch (err) {
-      console.error('Carousel save error:', err);
-      setErrorMsg(err.message || 'Could not update homepage carousel');
+      console.error(err);
+      setErrorMsg(err.message || 'Error saving slides details.');
     } finally {
       setCarouselSubmitting(false);
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 font-sans">
       
       {/* Header */}
-      <div className="border-b border-zinc-200 dark:border-zinc-900 pb-4">
-        <h1 className="text-xl font-bold text-zinc-955 dark:text-white uppercase tracking-wider font-heading">
-          {currentLang === 'en' ? 'Website Settings' : 'إعدادات الموقع العام'}
-        </h1>
-        <p className="text-xs text-zinc-400">
-          {currentLang === 'en' ? 'Modify text content, logos, themes, and hero slide images.' : 'تعديل النصوص والشعارات والألوان الافتراضية وصور العرض في الواجهة.'}
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-5">
+        <div>
+          <span className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest block font-heading">
+            System configuration
+          </span>
+          <h1 className="text-2xl font-extrabold text-[var(--text-primary)] uppercase tracking-tight mt-1 font-heading">
+            {t('admin.nav.settings')}
+          </h1>
+          <p className="text-xs text-[var(--text-secondary)] mt-1">
+            {currentLang === 'en' ? 'Configure global store profiles, slides, and default themes.' : 'تعديل الإعدادات العامة لبيانات المتجر، الشرائح، والسمة الافتراضية.'}
+          </p>
+        </div>
+
+        {/* Tab Controls */}
+        <div className="flex bg-[var(--surface-elevated)] border border-[var(--border)] p-1 rounded-xl shrink-0 font-heading">
+          <button
+            onClick={() => setActiveTab('global')}
+            className={`px-4 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer ${
+              activeTab === 'global'
+                ? 'bg-[var(--accent)] text-white'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+            }`}
+          >
+            Store Profile
+          </button>
+          <button
+            onClick={() => setActiveTab('carousel')}
+            className={`px-4 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer ${
+              activeTab === 'carousel'
+                ? 'bg-[var(--accent)] text-white'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+            }`}
+          >
+            Hero Slides
+          </button>
+        </div>
       </div>
 
-      {/* Tab selectors */}
-      <div className="flex border-b border-zinc-200 dark:border-zinc-900 text-xs">
-        <button
-          onClick={() => setActiveTab('global')}
-          className={`flex items-center gap-2 px-6 py-3 font-bold uppercase tracking-widest border-b-2 transition-all cursor-pointer ${
-            activeTab === 'global'
-              ? 'border-red-600 text-red-650 dark:border-red-500 dark:text-red-500'
-              : 'border-transparent text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300'
-          }`}
-        >
-          <Settings className="w-4 h-4" />
-          <span>{currentLang === 'en' ? 'Global Settings' : 'الإعدادات العامة'}</span>
-        </button>
-        
-        <button
-          onClick={() => setActiveTab('carousel')}
-          className={`flex items-center gap-2 px-6 py-3 font-bold uppercase tracking-widest border-b-2 transition-all cursor-pointer ${
-            activeTab === 'carousel'
-              ? 'border-red-600 text-red-650 dark:border-red-500 dark:text-red-500'
-              : 'border-transparent text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300'
-          }`}
-        >
-          <Image className="w-4 h-4" />
-          <span>{currentLang === 'en' ? 'Homepage Carousel' : 'شرائح واجهة الموقع'}</span>
-        </button>
-      </div>
-
-      {/* Alerts */}
+      {/* Notifications */}
       {errorMsg && (
-        <div className="flex items-center gap-2 p-4 bg-red-955/20 text-red-400 rounded-xl text-xs border border-red-900/50">
-          <AlertCircle className="w-4.5 h-4.5 flex-shrink-0" />
+        <div className="flex items-center gap-2.5 p-4 bg-[var(--danger)]/10 text-[var(--danger)] rounded-xl text-xs font-bold border border-[var(--danger)]/20">
+          <AlertCircle className="w-4.5 h-4.5 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
       
       {successMsg && (
-        <div className="flex items-center gap-2 p-4 bg-green-955/20 text-green-400 rounded-xl text-xs border border-green-900/50">
-          <CheckCircle2 className="w-4.5 h-4.5 flex-shrink-0" />
+        <div className="flex items-center gap-2.5 p-4 bg-[var(--success)]/10 text-[var(--success)] rounded-xl text-xs font-bold border border-[var(--success)]/20">
+          <CheckCircle2 className="w-4.5 h-4.5 shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
-      {/* Tab contents */}
+      {/* Tab Panels */}
       {activeTab === 'global' ? (
         
-        <form onSubmit={handleGlobalSubmit} className="space-y-8 bg-white dark:bg-[#121215] p-6 sm:p-8 rounded-3xl border border-zinc-200 dark:border-zinc-900 shadow-sm transition-colors animate-fade-in">
+        // --- GLOBAL STORE PROFILE FORM ---
+        <form onSubmit={handleGlobalSubmit} className="space-y-8 max-w-4xl">
           
-          {/* Section: Contact & Identity */}
-          <div className="space-y-5">
-            <h2 className="text-xs font-black uppercase tracking-widest text-red-500 border-b border-zinc-100 dark:border-zinc-900/60 pb-2 font-heading">
-              {currentLang === 'en' ? '1. Brand & Contact Information' : '١. الهوية ومعلومات الاتصال'}
+          {/* Section: Brand details */}
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 space-y-6">
+            <h2 className="text-xs font-extrabold uppercase tracking-widest text-[var(--text-primary)] pb-3 border-b border-[var(--border)] font-heading">
+              Brand & Contacts
             </h2>
-            
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              
-              {/* Co Name EN */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-black text-zinc-550 dark:text-zinc-400 uppercase tracking-widest">Company Name (EN)</label>
-                <input
-                  type="text"
-                  required
-                  value={companyNameEn}
-                  onChange={(e) => setCompanyNameEn(e.target.value)}
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans"
-                />
-              </div>
-
-              {/* Co Name AR */}
-              <div className="flex flex-col gap-1.5" dir="rtl">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest text-right">اسم الشركة (العربية)</label>
-                <input
-                  type="text"
-                  required
-                  value={companyNameAr}
-                  onChange={(e) => setCompanyNameAr(e.target.value)}
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans text-right"
-                />
-              </div>
-
-              {/* Phone */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Phone Number</label>
-                <input
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans"
-                />
-              </div>
-
-              {/* WhatsApp */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">WhatsApp (e.g. 962790000000)</label>
-                <input
-                  type="text"
-                  required
-                  value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans"
-                />
-              </div>
-
-              {/* Email */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Public Store Email</label>
-                <input
+              <Input 
+                label="Company Name (EN) *"
+                id="companyNameEn"
+                value={companyNameEn}
+                onChange={(e) => setCompanyNameEn(e.target.value)}
+                required
+              />
+              <Input 
+                label="اسم الشركة (AR) *"
+                id="companyNameAr"
+                value={companyNameAr}
+                onChange={(e) => setCompanyNameAr(e.target.value)}
+                required
+                dir="rtl"
+              />
+              <Input 
+                label="Store Contact Phone *"
+                id="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+              />
+              <Input 
+                label="WhatsApp Phone (Include Country Code) *"
+                id="whatsapp"
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(e.target.value)}
+                required
+                placeholder="962790000000"
+              />
+              <div className="sm:col-span-2">
+                <Input 
+                  label="Support Email Address *"
+                  id="email"
                   type="email"
-                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans"
-                />
-              </div>
-
-              {/* Address EN */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Store Address (EN)</label>
-                <input
-                  type="text"
                   required
-                  value={addressEn}
-                  onChange={(e) => setAddressEn(e.target.value)}
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans"
                 />
               </div>
-
-              {/* Address AR */}
-              <div className="flex flex-col gap-1.5" dir="rtl">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest text-right">العنوان (العربية)</label>
-                <input
-                  type="text"
-                  required
-                  value={addressAr}
-                  onChange={(e) => setAddressAr(e.target.value)}
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans text-right"
-                />
-              </div>
-
-              {/* Instagram */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Instagram Link</label>
-                <input
-                  type="url"
-                  value={instagram}
-                  onChange={(e) => setInstagram(e.target.value)}
-                  placeholder="https://instagram.com/..."
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans"
-                />
-              </div>
-
-              {/* Facebook */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Facebook Page Link</label>
-                <input
-                  type="url"
-                  value={facebook}
-                  onChange={(e) => setFacebook(e.target.value)}
-                  placeholder="https://facebook.com/..."
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans"
-                />
-              </div>
-
-              {/* Default Theme */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Default Theme for visitors</label>
-                <select
-                  value={defaultTheme}
-                  onChange={(e) => setDefaultTheme(e.target.value)}
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-955 dark:text-white cursor-pointer font-sans"
-                >
-                  <option value="light">Light Theme</option>
-                  <option value="dark">Dark Theme</option>
-                </select>
-              </div>
-
+              <Input 
+                label="Address Location (EN) *"
+                id="addressEn"
+                value={addressEn}
+                onChange={(e) => setAddressEn(e.target.value)}
+                required
+              />
+              <Input 
+                label="الموقع (AR) *"
+                id="addressAr"
+                value={addressAr}
+                onChange={(e) => setAddressAr(e.target.value)}
+                required
+                dir="rtl"
+              />
+              <Input 
+                label="Instagram Profile Link"
+                id="instagram"
+                value={instagram}
+                onChange={(e) => setInstagram(e.target.value)}
+              />
+              <Input 
+                label="Facebook Page Link"
+                id="facebook"
+                value={facebook}
+                onChange={(e) => setFacebook(e.target.value)}
+              />
             </div>
           </div>
 
-          {/* Section: Landing Hero */}
-          <div className="space-y-5 pt-6 border-t border-zinc-150 dark:border-zinc-900/60">
-            <h2 className="text-xs font-black uppercase tracking-widest text-red-500 border-b border-zinc-105 dark:border-zinc-900/60 pb-2 font-heading">
-              {currentLang === 'en' ? '2. Landing Hero Text' : '٢. نصوص واجهة العرض الرئيسية'}
+          {/* Section: Landing details */}
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 space-y-6">
+            <h2 className="text-xs font-extrabold uppercase tracking-widest text-[var(--text-primary)] pb-3 border-b border-[var(--border)] font-heading">
+              Hero & Default settings
             </h2>
-            
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              
-              {/* Hero Title EN */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Hero Title (EN)</label>
-                <input
-                  type="text"
-                  required
-                  value={heroTitleEn}
-                  onChange={(e) => setHeroTitleEn(e.target.value)}
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans"
-                />
-              </div>
-
-              {/* Hero Title AR */}
-              <div className="flex flex-col gap-1.5" dir="rtl">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest text-right">العنوان الرئيسي للواجهة (العربية)</label>
-                <input
-                  type="text"
-                  required
-                  value={heroTitleAr}
-                  onChange={(e) => setHeroTitleAr(e.target.value)}
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans text-right"
-                />
-              </div>
-
-              {/* Hero Subtitle EN */}
-              <div className="flex flex-col gap-1.5 sm:col-span-2">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Hero Subtitle (EN)</label>
-                <input
-                  type="text"
-                  required
+              <Input 
+                label="Hero Title Default (EN) *"
+                id="heroTitleEn"
+                value={heroTitleEn}
+                onChange={(e) => setHeroTitleEn(e.target.value)}
+                required
+              />
+              <Input 
+                label="عنوان البانر الرئيسي (AR) *"
+                id="heroTitleAr"
+                value={heroTitleAr}
+                onChange={(e) => setHeroTitleAr(e.target.value)}
+                required
+                dir="rtl"
+              />
+              <div className="sm:col-span-2">
+                <Input 
+                  label="Hero Subtitle Default (EN) *"
+                  id="heroSubEn"
                   value={heroSubEn}
                   onChange={(e) => setHeroSubEn(e.target.value)}
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans"
+                  required
                 />
               </div>
-
-              {/* Hero Subtitle AR */}
-              <div className="flex flex-col gap-1.5 sm:col-span-2" dir="rtl">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest text-right font-sans">العنوان الفرعي للواجهة (العربية)</label>
-                <input
-                  type="text"
-                  required
+              <div className="sm:col-span-2">
+                <Input 
+                  label="وصف البانر الرئيسي (AR) *"
+                  id="heroSubAr"
                   value={heroSubAr}
                   onChange={(e) => setHeroSubAr(e.target.value)}
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-955 dark:text-white focus:outline-none focus:border-red-500 font-sans text-right"
+                  required
+                  dir="rtl"
                 />
               </div>
-
+              <div className="sm:col-span-2">
+                <Select 
+                  label="Default Website UI Theme *"
+                  id="defaultTheme"
+                  value={defaultTheme}
+                  onChange={(e) => setDefaultTheme(e.target.value)}
+                  options={[
+                    { value: 'dark', label: 'Luxury Dark Mode' },
+                    { value: 'light', label: 'Clean Light Mode' }
+                  ]}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Section: About, Mission, Vision */}
-          <div className="space-y-6 pt-6 border-t border-zinc-150 dark:border-zinc-900/60">
-            <h2 className="text-xs font-black uppercase tracking-widest text-red-500 border-b border-zinc-105 dark:border-zinc-900/60 pb-2 font-heading">
-              {currentLang === 'en' ? '3. About, Mission, & Vision Text Blocks' : '٣. نصوص "عن المحل"، "مهمتنا"، و "رؤيتنا"'}
+          {/* Section: Corporate about details */}
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 space-y-6">
+            <h2 className="text-xs font-extrabold uppercase tracking-widest text-[var(--text-primary)] pb-3 border-b border-[var(--border)] font-heading">
+              Bilingual Corporate Profile
             </h2>
-            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
-              {/* About BLOCK */}
-              <div className="space-y-4 p-5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-205 dark:border-zinc-900 rounded-2xl">
-                <h3 className="text-xs font-extrabold text-zinc-950 dark:text-white uppercase tracking-wider font-heading">About Us</h3>
-                
-                <div className="flex flex-col gap-1">
-                  <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Title (EN)</label>
-                  <input type="text" required value={aboutTitleEn} onChange={(e) => setAboutTitleEn(e.target.value)} className="px-3 py-2 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white font-sans" />
+              {/* EN */}
+              <div className="space-y-4 bg-[var(--surface-elevated)] border border-[var(--border)] p-5 rounded-2xl">
+                <h3 className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest font-heading">English Contents</h3>
+                <Input label="About Us Section Title *" id="aboutTitleEn" value={aboutTitleEn} onChange={(e) => setAboutTitleEn(e.target.value)} required />
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest font-heading">About Us Description *</label>
+                  <textarea rows="4" value={aboutDescEn} onChange={(e) => setAboutDescEn(e.target.value)} required className="px-3.5 py-2.5 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] rounded-xl text-xs resize-none focus:outline-none focus:border-[var(--input-focus)] transition-all font-sans" />
                 </div>
-                <div className="flex flex-col gap-1" dir="rtl">
-                  <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-right">العنوان (AR)</label>
-                  <input type="text" required value={aboutTitleAr} onChange={(e) => setAboutTitleAr(e.target.value)} className="px-3 py-2 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white font-sans text-right" />
+                <Input label="Mission Section Title *" id="missionTitleEn" value={missionTitleEn} onChange={(e) => setMissionTitleEn(e.target.value)} required />
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest font-heading">Mission Description *</label>
+                  <textarea rows="3" value={missionDescEn} onChange={(e) => setMissionDescEn(e.target.value)} required className="px-3.5 py-2.5 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] rounded-xl text-xs resize-none focus:outline-none focus:border-[var(--input-focus)] transition-all font-sans" />
                 </div>
-                
-                <div className="flex flex-col gap-1">
-                  <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Description (EN)</label>
-                  <textarea rows="4" required value={aboutDescEn} onChange={(e) => setAboutDescEn(e.target.value)} className="px-3 py-2 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs resize-none text-zinc-950 dark:text-white font-sans animate-none" />
-                </div>
-                <div className="flex flex-col gap-1" dir="rtl">
-                  <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-right">الوصف (AR)</label>
-                  <textarea rows="4" required value={aboutDescAr} onChange={(e) => setAboutDescAr(e.target.value)} className="px-3 py-2 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs resize-none text-zinc-950 dark:text-white font-sans text-right animate-none" />
+                <Input label="Vision Section Title *" id="visionTitleEn" value={visionTitleEn} onChange={(e) => setVisionTitleEn(e.target.value)} required />
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest font-heading">Vision Description *</label>
+                  <textarea rows="3" value={visionDescEn} onChange={(e) => setVisionDescEn(e.target.value)} required className="px-3.5 py-2.5 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] rounded-xl text-xs resize-none focus:outline-none focus:border-[var(--input-focus)] transition-all font-sans" />
                 </div>
               </div>
 
-              {/* Mission BLOCK */}
-              <div className="space-y-4 p-5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-205 dark:border-zinc-900 rounded-2xl">
-                <h3 className="text-xs font-extrabold text-zinc-950 dark:text-white uppercase tracking-wider font-heading">Our Mission</h3>
-                
-                <div className="flex flex-col gap-1">
-                  <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Title (EN)</label>
-                  <input type="text" required value={missionTitleEn} onChange={(e) => setMissionTitleEn(e.target.value)} className="px-3 py-2 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white font-sans" />
+              {/* AR */}
+              <div className="space-y-4 bg-[var(--surface-elevated)] border border-[var(--border)] p-5 rounded-2xl" dir="rtl">
+                <h3 className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest font-heading text-right">المحتوى باللغة العربية</h3>
+                <Input label="عنوان قسم من نحن *" id="aboutTitleAr" value={aboutTitleAr} onChange={(e) => setAboutTitleAr(e.target.value)} required dir="rtl" />
+                <div className="flex flex-col gap-1.5" dir="rtl">
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest font-heading text-right">وصف قسم من نحن *</label>
+                  <textarea rows="4" value={aboutDescAr} onChange={(e) => setAboutDescAr(e.target.value)} required className="px-3.5 py-2.5 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] rounded-xl text-xs resize-none focus:outline-none focus:border-[var(--input-focus)] transition-all text-right font-sans" />
                 </div>
-                <div className="flex flex-col gap-1" dir="rtl">
-                  <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-right">العنوان (AR)</label>
-                  <input type="text" required value={missionTitleAr} onChange={(e) => setMissionTitleAr(e.target.value)} className="px-3 py-2 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white font-sans text-right" />
+                <Input label="عنوان قسم رسالتنا *" id="missionTitleAr" value={missionTitleAr} onChange={(e) => setMissionTitleAr(e.target.value)} required dir="rtl" />
+                <div className="flex flex-col gap-1.5" dir="rtl">
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest font-heading text-right">وصف قسم رسالتنا *</label>
+                  <textarea rows="3" value={missionDescAr} onChange={(e) => setMissionDescAr(e.target.value)} required className="px-3.5 py-2.5 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] rounded-xl text-xs resize-none focus:outline-none focus:border-[var(--input-focus)] transition-all text-right font-sans" />
                 </div>
-                
-                <div className="flex flex-col gap-1">
-                  <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Description (EN)</label>
-                  <textarea rows="4" required value={missionDescEn} onChange={(e) => setMissionDescEn(e.target.value)} className="px-3 py-2 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs resize-none text-zinc-950 dark:text-white font-sans animate-none" />
-                </div>
-                <div className="flex flex-col gap-1" dir="rtl">
-                  <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-right">الوصف (AR)</label>
-                  <textarea rows="4" required value={missionDescAr} onChange={(e) => setMissionDescAr(e.target.value)} className="px-3 py-2 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs resize-none text-zinc-950 dark:text-white font-sans text-right animate-none" />
+                <Input label="عنوان قسم رؤيتنا *" id="visionTitleAr" value={visionTitleAr} onChange={(e) => setVisionTitleAr(e.target.value)} required dir="rtl" />
+                <div className="flex flex-col gap-1.5" dir="rtl">
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest font-heading text-right">وصف قسم رؤيتنا *</label>
+                  <textarea rows="3" value={visionDescAr} onChange={(e) => setVisionDescAr(e.target.value)} required className="px-3.5 py-2.5 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] rounded-xl text-xs resize-none focus:outline-none focus:border-[var(--input-focus)] transition-all text-right font-sans" />
                 </div>
               </div>
-
-              {/* Vision BLOCK */}
-              <div className="space-y-4 p-5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-205 dark:border-zinc-900 rounded-2xl md:col-span-2">
-                <h3 className="text-xs font-extrabold text-zinc-950 dark:text-white uppercase tracking-wider font-heading">Our Vision</h3>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Title (EN)</label>
-                    <input type="text" required value={visionTitleEn} onChange={(e) => setVisionTitleEn(e.target.value)} className="px-3 py-2 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white font-sans" />
-                  </div>
-                  
-                  <div className="flex flex-col gap-1" dir="rtl">
-                    <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-right">العنوان (AR)</label>
-                    <input type="text" required value={visionTitleAr} onChange={(e) => setVisionTitleAr(e.target.value)} className="px-3 py-2 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white font-sans text-right" />
-                  </div>
-                  
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Description (EN)</label>
-                    <textarea rows="3" required value={visionDescEn} onChange={(e) => setVisionDescEn(e.target.value)} className="px-3 py-2 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs resize-none text-zinc-950 dark:text-white font-sans animate-none" />
-                  </div>
-                  
-                  <div className="flex flex-col gap-1" dir="rtl">
-                    <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-right font-sans">الوصف (AR)</label>
-                    <textarea rows="3" required value={visionDescAr} onChange={(e) => setVisionDescAr(e.target.value)} className="px-3 py-2 bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs resize-none text-zinc-950 dark:text-white font-sans text-right animate-none" />
-                  </div>
-                  
-                </div>
-              </div>
-
             </div>
           </div>
 
-          {/* Action button */}
-          <div className="flex justify-end pt-4 border-t border-zinc-100 dark:border-zinc-900/60">
-            <button
+          {/* Submit */}
+          <div className="flex justify-end pt-2">
+            <Button
               type="submit"
-              disabled={globalSubmitting}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-red-650 hover:bg-red-755 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 disabled:text-zinc-450 dark:disabled:text-zinc-600 text-white font-bold rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow"
+              variant="primary"
+              loading={globalSubmitting}
+              icon={Save}
             >
-              <Save className="w-3.5 h-3.5" />
-              <span>{globalSubmitting ? 'Saving Settings...' : 'Save Settings'}</span>
-            </button>
+              {globalSubmitting ? 'Saving settings...' : 'Save Settings'}
+            </Button>
           </div>
 
         </form>
 
       ) : (
         
-        // --- HOMEPAGE CAROUSEL MANAGER ---
-        <div className="space-y-6 bg-white dark:bg-[#121215] p-6 sm:p-8 rounded-3xl border border-zinc-200 dark:border-zinc-900 shadow-sm transition-colors animate-fade-in">
-          
-          <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-900/60 pb-4">
-            <div>
-              <h2 className="text-xs font-black uppercase tracking-widest text-red-500 font-heading">
-                {currentLang === 'en' ? 'Slides Configuration' : 'إعدادات شرائح العرض'}
-              </h2>
-              <p className="text-[10px] text-zinc-400 mt-0.5 font-semibold">
-                {currentLang === 'en' 
-                  ? 'Configure images shown on the home page (min 1, max 3).' 
-                  : 'إدارة شرائح العرض المعروضة في الصفحة الرئيسية للموقع (بحد أدنى شريحة واحدة وأقصى ٣).'}
-              </p>
-            </div>
-            
-            <button
+        // --- HOMEPAGE SLIDES CAROUSEL EDIT VIEW ---
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 max-w-4xl space-y-6">
+          <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]">
+            <h2 className="text-sm font-extrabold text-[var(--text-primary)] uppercase tracking-widest font-heading">
+              Hero Slide Customization
+            </h2>
+            <Button
               onClick={handleAddSlide}
+              variant="outline"
               disabled={slides.length >= 3}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-white bg-red-600 hover:bg-red-700 disabled:bg-zinc-200 dark:disabled:bg-zinc-900 disabled:text-zinc-400 dark:disabled:text-zinc-650 rounded-xl shadow transition-all cursor-pointer"
+              icon={Plus}
             >
-              <Plus className="w-4 h-4" />
-              <span>{currentLang === 'en' ? 'Add Slide' : 'إضافة شريحة'}</span>
-            </button>
+              Add Slide
+            </Button>
           </div>
 
           {carouselLoading ? (
-            <div className="text-center py-8 text-xs text-zinc-400 flex items-center justify-center gap-2">
-              <RefreshCw className="w-4 h-4 animate-spin" />
-              <span>Loading slides...</span>
-            </div>
-          ) : slides.length === 0 ? (
-            <div className="text-center py-12 text-xs text-zinc-450 font-semibold">
-              {currentLang === 'en' ? 'No slides configured yet.' : 'لا توجد شرائح حالياً.'}
+            <div className="text-center py-16 text-xs text-[var(--text-secondary)] flex items-center justify-center gap-2 font-bold uppercase tracking-widest">
+              <RefreshCw className="w-5 h-5 animate-spin text-[var(--accent)]" />
+              <span>Loading slide decks...</span>
             </div>
           ) : (
             <div className="space-y-6">
               {slides.map((slide, idx) => (
                 <div 
-                  key={slide.id} 
-                  className="border border-zinc-200 dark:border-zinc-900 rounded-2xl p-4 sm:p-6 bg-zinc-50/50 dark:bg-zinc-950/10 flex flex-col md:flex-row gap-6 relative"
+                  key={slide.id}
+                  className="flex flex-col md:flex-row gap-5 p-5 border border-[var(--border)] rounded-2xl bg-[var(--surface-elevated)]"
                 >
-                  {/* Image picker box */}
-                  <div className="w-full md:w-48 aspect-video md:aspect-auto md:h-36 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-800 relative overflow-hidden flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 shrink-0">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleSlideImageUpload(slide.id, e.target.files[0])}
-                      className="absolute inset-0 opacity-0 cursor-pointer z-10 font-sans"
+                  {/* Image Upload Box */}
+                  <div className="w-full md:w-36 aspect-[2/1] md:aspect-square border border-dashed border-[var(--border-strong)] hover:bg-[var(--surface-hover)] rounded-xl relative flex items-center justify-center shrink-0 overflow-hidden">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={(e) => handleSlideImageUpload(slide.id, e.target.files[0])} 
+                      className="absolute inset-0 opacity-0 cursor-pointer z-10 font-sans" 
                     />
                     {slide.imageBase64 ? (
                       <img src={slide.imageBase64} alt="Slide Preview" className="w-full h-full object-cover" />
                     ) : (
-                      <div className="text-center text-zinc-400 flex flex-col items-center p-2">
-                        <Upload className="w-5 h-5 mb-1" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">Upload Slide Image</span>
+                      <div className="text-center text-[var(--text-secondary)] flex flex-col items-center">
+                        <Upload className="w-5 h-5 mb-0.5" />
+                        <span className="text-[9px] font-black uppercase tracking-widest">Choose Image</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Input fields */}
+                  {/* Texts details input */}
                   <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    
-                    {/* Title EN */}
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Slide Title (EN)</label>
-                      <input 
-                        type="text" 
-                        value={slide.title.en} 
-                        onChange={(e) => handleSlideChange(slide.id, 'title', e.target.value, 'en')} 
-                        className="px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-250 dark:border-zinc-800 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans" 
-                      />
-                    </div>
-
-                    {/* Title AR */}
-                    <div className="flex flex-col gap-1" dir="rtl">
-                      <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-right">عنوان الشريحة (AR)</label>
-                      <input 
-                        type="text" 
-                        value={slide.title.ar} 
-                        onChange={(e) => handleSlideChange(slide.id, 'title', e.target.value, 'ar')} 
-                        className="px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-250 dark:border-zinc-800 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans text-right" 
-                      />
-                    </div>
-
-                    {/* Subtitle EN */}
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Slide Subtitle (EN)</label>
-                      <input 
-                        type="text" 
-                        value={slide.subtitle.en} 
-                        onChange={(e) => handleSlideChange(slide.id, 'subtitle', e.target.value, 'en')} 
-                        className="px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-250 dark:border-zinc-800 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans" 
-                      />
-                    </div>
-
-                    {/* Subtitle AR */}
-                    <div className="flex flex-col gap-1" dir="rtl">
-                      <label className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-right">وصف الشريحة (AR)</label>
-                      <input 
-                        type="text" 
-                        value={slide.subtitle.ar} 
-                        onChange={(e) => handleSlideChange(slide.id, 'subtitle', e.target.value, 'ar')} 
-                        className="px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-250 dark:border-zinc-800 rounded-xl text-xs text-zinc-955 dark:text-white focus:outline-none focus:border-red-500 font-sans text-right" 
-                      />
-                    </div>
-
+                    <Input 
+                      label="Slide Title (EN)"
+                      value={slide.title.en}
+                      onChange={(e) => handleSlideChange(slide.id, 'title', e.target.value, 'en')}
+                    />
+                    <Input 
+                      label="عنوان الشريحة (AR)"
+                      value={slide.title.ar}
+                      onChange={(e) => handleSlideChange(slide.id, 'title', e.target.value, 'ar')}
+                      dir="rtl"
+                    />
+                    <Input 
+                      label="Slide Subtitle (EN)"
+                      value={slide.subtitle.en}
+                      onChange={(e) => handleSlideChange(slide.id, 'subtitle', e.target.value, 'en')}
+                    />
+                    <Input 
+                      label="وصف الشريحة (AR)"
+                      value={slide.subtitle.ar}
+                      onChange={(e) => handleSlideChange(slide.id, 'subtitle', e.target.value, 'ar')}
+                      dir="rtl"
+                    />
                   </div>
 
-                  {/* Actions / Ordering control bar */}
-                  <div className="flex md:flex-col items-center justify-between border-t md:border-t-0 md:border-l border-zinc-200 dark:border-zinc-900 pt-4 md:pt-0 md:pl-4 shrink-0 gap-3">
+                  {/* Controls / arrow selectors */}
+                  <div className="flex md:flex-col items-center justify-between border-t md:border-t-0 md:border-l border-[var(--border)] pt-4 md:pt-0 md:pl-4 shrink-0 gap-4">
                     
-                    {/* Ordering arrows */}
                     <div className="flex md:flex-col gap-1">
                       <button 
                         onClick={() => handleMoveSlide(idx, 'up')}
                         disabled={idx === 0}
-                        className="p-1 hover:bg-zinc-150 dark:hover:bg-zinc-900 rounded disabled:opacity-30 cursor-pointer"
+                        className="p-1 hover:bg-[var(--surface-hover)] text-[var(--text-secondary)] disabled:opacity-30 rounded-lg cursor-pointer"
                         title="Move Up"
                       >
                         <ChevronUp className="w-4 h-4" />
@@ -751,48 +624,45 @@ export default function ManageSettings() {
                       <button 
                         onClick={() => handleMoveSlide(idx, 'down')}
                         disabled={idx === slides.length - 1}
-                        className="p-1 hover:bg-zinc-150 dark:hover:bg-zinc-900 rounded disabled:opacity-30 cursor-pointer"
+                        className="p-1 hover:bg-[var(--surface-hover)] text-[var(--text-secondary)] disabled:opacity-30 rounded-lg cursor-pointer"
                         title="Move Down"
                       >
                         <ChevronDown className="w-4 h-4" />
                       </button>
                     </div>
 
-                    {/* Enable toggle */}
-                    <label className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-zinc-650 dark:text-zinc-350 cursor-pointer">
+                    <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] cursor-pointer select-none">
                       <input
                         type="checkbox"
                         checked={slide.enabled}
                         onChange={(e) => handleSlideChange(slide.id, 'enabled', e.target.checked)}
-                        className="w-3.5 h-3.5 rounded border-zinc-300 dark:border-zinc-800 text-red-655 focus:ring-red-500 cursor-pointer"
+                        className="w-3.5 h-3.5 rounded border-[var(--border-strong)] text-[var(--accent)] focus:ring-[var(--accent)]/10 cursor-pointer bg-[var(--surface-elevated)]"
                       />
                       <span>Active</span>
                     </label>
 
-                    {/* Delete button */}
-                    <button
+                    <IconButton
+                      icon={Trash2}
+                      variant="ghost"
+                      className="text-[var(--danger)] hover:bg-[var(--danger)]/10"
                       onClick={() => handleRemoveSlide(slide.id)}
-                      className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg cursor-pointer transition-colors"
                       title="Remove slide"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    />
 
                   </div>
 
                 </div>
               ))}
 
-              {/* Action buttons */}
-              <div className="flex justify-end pt-4 border-t border-zinc-100 dark:border-zinc-900/60">
-                <button
+              <div className="flex justify-end pt-4 border-t border-[var(--border)]">
+                <Button
                   onClick={handleSaveCarousel}
                   disabled={carouselSubmitting}
-                  className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-red-650 hover:bg-red-755 disabled:bg-zinc-200 dark:disabled:bg-zinc-850 text-white font-bold rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow"
+                  variant="primary"
+                  icon={Save}
                 >
-                  <Save className="w-3.5 h-3.5" />
-                  <span>{carouselSubmitting ? 'Saving Slides...' : 'Save Homepage Slides'}</span>
-                </button>
+                  {carouselSubmitting ? 'Saving Slides...' : 'Save Homepage Slides'}
+                </Button>
               </div>
             </div>
           )}

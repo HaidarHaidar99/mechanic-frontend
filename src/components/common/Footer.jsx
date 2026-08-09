@@ -20,16 +20,16 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#0b0c10] text-[#94a3b8] border-t border-zinc-900 transition-colors">
+    <footer className="bg-zinc-950 text-zinc-400 border-t border-zinc-900 font-sans transition-colors relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         
-        {/* Footer Top Grid */}
+        {/* Top Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           
           {/* Logo & Intro */}
           <div className="space-y-5">
-            <Link to="/" className="flex items-center gap-2.5 font-heading text-white font-extrabold text-lg uppercase tracking-widest transition-opacity hover:opacity-90">
-              <div className="p-2 rounded-lg bg-red-600 text-white shadow-md shadow-red-500/10">
+            <Link to="/" className="flex items-center gap-2.5 font-heading text-white font-black text-lg uppercase tracking-widest transition-opacity hover:opacity-90">
+              <div className="p-2 rounded-xl bg-red-600 text-white shadow-md">
                 <Wrench className="w-4 h-4" />
               </div>
               <span>{displayCompanyName}</span>
@@ -46,7 +46,7 @@ export default function Footer() {
                   href={facebook} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="p-2.5 bg-zinc-900 hover:bg-red-600 hover:text-white rounded-xl transition-all duration-300"
+                  className="p-2.5 bg-zinc-900 text-zinc-400 hover:bg-red-650 hover:text-white rounded-xl transition-all duration-300"
                   aria-label="Facebook"
                 >
                   <Facebook className="w-4 h-4" />
@@ -57,7 +57,7 @@ export default function Footer() {
                   href={instagram} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="p-2.5 bg-zinc-900 hover:bg-red-600 hover:text-white rounded-xl transition-all duration-300"
+                  className="p-2.5 bg-zinc-900 text-zinc-400 hover:bg-red-650 hover:text-white rounded-xl transition-all duration-300"
                   aria-label="Instagram"
                 >
                   <Instagram className="w-4 h-4" />
@@ -71,18 +71,18 @@ export default function Footer() {
             <h3 className="font-heading text-white text-xs font-black uppercase tracking-widest">
               {currentLang === 'en' ? 'Quick Navigation' : 'روابط سريعة'}
             </h3>
-            <ul className="space-y-2.5 text-xs font-semibold">
+            <ul className="space-y-2.5 text-xs font-bold">
               <li>
-                <Link to="/" className="hover:text-red-500 transition-colors uppercase tracking-wider block">{t('nav.home')}</Link>
+                <Link to="/" className="hover:text-red-500 transition-colors uppercase tracking-widest block">{t('nav.home')}</Link>
               </li>
               <li>
-                <Link to="/products" className="hover:text-red-500 transition-colors uppercase tracking-wider block">{t('nav.products')}</Link>
+                <Link to="/products" className="hover:text-red-500 transition-colors uppercase tracking-widest block">{t('nav.products')}</Link>
               </li>
               <li>
-                <Link to="/about" className="hover:text-red-500 transition-colors uppercase tracking-wider block">{t('nav.about')}</Link>
+                <Link to="/about" className="hover:text-red-500 transition-colors uppercase tracking-widest block">{t('nav.about')}</Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:text-red-500 transition-colors uppercase tracking-wider block">{t('nav.contact')}</Link>
+                <Link to="/contact" className="hover:text-red-500 transition-colors uppercase tracking-widest block">{t('nav.contact')}</Link>
               </li>
             </ul>
           </div>
@@ -92,17 +92,11 @@ export default function Footer() {
             <h3 className="font-heading text-white text-xs font-black uppercase tracking-widest">
               {currentLang === 'en' ? 'Store Location' : 'موقع المحل'}
             </h3>
-            <ul className="space-y-3 text-xs font-semibold">
+            <ul className="space-y-3 text-xs font-bold">
               {phone && (
                 <li className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-red-500 shrink-0" />
                   <a href={`tel:${phone}`} className="hover:text-white transition-colors">{phone}</a>
-                </li>
-              )}
-              {whatsapp && (
-                <li className="flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4 text-green-500 shrink-0" />
-                  <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">WhatsApp Chat</a>
                 </li>
               )}
               {email && (
@@ -114,43 +108,47 @@ export default function Footer() {
               {address && (
                 <li className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                  <span className="text-zinc-400">{address}</span>
+                  <span className="leading-relaxed">{address}</span>
                 </li>
               )}
             </ul>
           </div>
 
-          {/* Business Hours */}
+          {/* Business Support */}
           <div className="space-y-4">
             <h3 className="font-heading text-white text-xs font-black uppercase tracking-widest">
-              {currentLang === 'en' ? 'Business Hours' : 'ساعات العمل'}
+              {currentLang === 'en' ? 'Support Hours' : 'ساعات الدعم'}
             </h3>
-            <ul className="space-y-2.5 text-xs font-semibold text-zinc-400">
-              <li className="flex justify-between border-b border-zinc-900 pb-1.5">
-                <span>{currentLang === 'en' ? 'Monday - Friday:' : 'الاثنين - الجمعة:'}</span>
-                <span className="text-white">8:00 AM - 6:00 PM</span>
-              </li>
-              <li className="flex justify-between border-b border-zinc-900 pb-1.5">
-                <span>{currentLang === 'en' ? 'Saturday:' : 'السبت:'}</span>
-                <span className="text-white">9:00 AM - 4:00 PM</span>
-              </li>
-              <li className="flex justify-between">
-                <span>{currentLang === 'en' ? 'Sunday:' : 'الأحد:'}</span>
-                <span className="text-red-500 font-extrabold">{currentLang === 'en' ? 'CLOSED' : 'مغلق'}</span>
-              </li>
-            </ul>
+            <p className="text-xs leading-relaxed text-zinc-400">
+              {currentLang === 'en' 
+                ? 'Our customer support channels are active 24/7. Send your queries directly on WhatsApp for instant booking.'
+                : 'قنوات دعم العملاء لدينا نشطة على مدار الساعة طوال أيام الأسبوع. أرسل استفسارك مباشرة عبر واتساب للحصول على حجز فوري.'}
+            </p>
+            {whatsapp && (
+              <a 
+                href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`}
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="inline-flex items-center gap-2 text-xs font-black text-white hover:text-green-500 transition-colors uppercase tracking-widest font-heading"
+              >
+                <MessageSquare className="w-4.5 h-4.5 text-green-550 fill-green-550" />
+                <span>{currentLang === 'en' ? 'WhatsApp Support' : 'دعم واتساب'}</span>
+              </a>
+            )}
           </div>
 
         </div>
 
-        {/* Footer Bottom Bar */}
-        <div className="border-t border-zinc-900 mt-16 pt-8 flex flex-col sm:flex-row items-center justify-between text-[10px] text-zinc-550 font-bold uppercase tracking-wider gap-4">
-          <p>&copy; {currentYear} {displayCompanyName}. ALL RIGHTS RESERVED.</p>
-          <p className="text-zinc-600 hover:text-zinc-400 transition-colors">
-            {currentLang === 'en' 
-              ? 'Engineered for premium performance.' 
-              : 'صُمم لأداء متميز وعالٍ.'}
+        {/* Bottom copyright banner */}
+        <div className="border-t border-zinc-900 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-black uppercase tracking-widest text-zinc-500">
+          <p>
+            &copy; {currentYear} {displayCompanyName.toUpperCase()}. {currentLang === 'en' ? 'All Rights Reserved.' : 'جميع الحقوق محفوظة.'}
           </p>
+          <div className="flex gap-4">
+            <Link to="/admin" className="hover:text-red-500 transition-colors">
+              {currentLang === 'en' ? 'Console Login' : 'لوحة التحكم'}
+            </Link>
+          </div>
         </div>
 
       </div>

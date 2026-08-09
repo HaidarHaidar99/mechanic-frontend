@@ -3,8 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { useAnnouncements } from '../../contexts/AnnouncementsContext';
 import { 
   Megaphone, Plus, Trash2, Edit2, CheckCircle, 
-  AlertCircle, RefreshCw, X, ChevronUp, ChevronDown, Save
+  AlertCircle, RefreshCw, X, ChevronUp, ChevronDown, Save 
 } from 'lucide-react';
+import Button from '../../components/common/Button';
+import IconButton from '../../components/common/IconButton';
+import Input from '../../components/common/Input';
+import Modal from '../../components/common/Modal';
+import Badge from '../../components/common/Badge';
 
 export default function ManageAnnouncements() {
   const { i18n } = useTranslation();
@@ -15,17 +20,14 @@ export default function ManageAnnouncements() {
     createAnnouncement, updateAnnouncement, deleteAnnouncement 
   } = useAnnouncements();
 
-  // Dialog toggles
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 
-  // Form states
   const [textEn, setTextEn] = useState('');
   const [textAr, setTextAr] = useState('');
   const [enabled, setEnabled] = useState(true);
   const [order, setOrder] = useState('1');
 
-  // Submit alerts
   const [submitting, setSubmitting] = useState(false);
   const [actionError, setActionError] = useState(null);
   const [actionSuccess, setActionSuccess] = useState(null);
@@ -142,7 +144,6 @@ export default function ManageAnnouncements() {
     const targetItem = adminAnnouncements[nextIdx];
 
     try {
-      // Swap order values atomically in API calls
       const currentOrder = currentItem.order;
       const targetOrder = targetItem.order;
 
@@ -165,61 +166,64 @@ export default function ManageAnnouncements() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 font-sans">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-900 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-5">
         <div>
-          <h1 className="text-xl font-bold text-zinc-950 dark:text-white uppercase tracking-wider font-heading">
+          <span className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest block font-heading">
+            Top Banner Controls
+          </span>
+          <h1 className="text-2xl font-extrabold text-[var(--text-primary)] uppercase tracking-tight mt-1 font-heading">
             {currentLang === 'en' ? 'Manage Announcements' : 'إدارة الإعلانات الترويجية'}
           </h1>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-[var(--text-secondary)] mt-1">
             {currentLang === 'en' ? 'Configure promotion bars rotating above the main navigation.' : 'تعديل وترتيب إعلانات الشريط العلوي التي تدور في واجهة الموقع.'}
           </p>
         </div>
 
-        <button
+        <Button
           onClick={() => {
             resetForm();
             setShowAddForm(true);
           }}
-          className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-red-650 hover:bg-red-755 rounded-xl shadow cursor-pointer shrink-0"
+          variant="primary"
+          icon={Plus}
         >
-          <Plus className="w-4 h-4" />
-          <span>{currentLang === 'en' ? 'New Announcement' : 'إضافة إعلان جديد'}</span>
-        </button>
+          {currentLang === 'en' ? 'New Announcement' : 'إضافة إعلان جديد'}
+        </Button>
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-4 bg-red-955/20 text-red-400 rounded-xl text-sm border border-red-900/50">
-          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+        <div className="flex items-center gap-2.5 p-4 bg-[var(--danger)]/10 text-[var(--danger)] rounded-xl text-xs font-bold border border-[var(--danger)]/20">
+          <AlertCircle className="w-4.5 h-4.5 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {actionSuccess && (
-        <div className="flex items-center gap-2 p-4 bg-green-955/20 text-green-400 rounded-xl text-sm border border-green-900/50">
-          <CheckCircle className="w-5 h-5 flex-shrink-0" />
+        <div className="flex items-center gap-2.5 p-4 bg-[var(--success)]/10 text-[var(--success)] rounded-xl text-xs font-bold border border-[var(--success)]/20">
+          <CheckCircle className="w-4.5 h-4.5 shrink-0" />
           <span>{actionSuccess}</span>
         </div>
       )}
 
-      {/* Grid listing */}
+      {/* Announcements Table */}
       {loading ? (
-        <div className="text-center py-12 text-sm text-zinc-400 flex items-center justify-center gap-2">
-          <RefreshCw className="w-5 h-5 animate-spin" />
+        <div className="text-center py-16 text-xs text-[var(--text-secondary)] flex items-center justify-center gap-2 font-bold uppercase tracking-widest">
+          <RefreshCw className="w-5 h-5 animate-spin text-[var(--accent)]" />
           <span>Loading announcements...</span>
         </div>
       ) : adminAnnouncements.length === 0 ? (
-        <div className="text-center py-16 border border-dashed border-zinc-200 dark:border-zinc-900 rounded-3xl bg-white dark:bg-[#121215]/20">
-          <Megaphone className="w-10 h-10 text-zinc-400 mx-auto mb-3" />
-          <p className="text-zinc-550 dark:text-zinc-450 text-sm font-semibold">No announcements found. Add one to start.</p>
+        <div className="text-center py-16 border border-dashed border-[var(--border-strong)] rounded-3xl bg-[var(--surface-elevated)]/30">
+          <Megaphone className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" />
+          <p className="text-[var(--text-secondary)] text-xs font-bold uppercase tracking-wider">No announcements found. Add one to start.</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-900 rounded-3xl overflow-hidden shadow-sm transition-colors">
-          <table className="w-full text-left rtl:text-right border-collapse text-sm">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl overflow-hidden shadow-sm overflow-x-auto">
+          <table className="w-full text-left rtl:text-right border-collapse text-xs">
             <thead>
-              <tr className="border-b border-zinc-200 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-950/10 text-zinc-400 font-semibold text-xs tracking-wider uppercase">
+              <tr className="border-b border-[var(--border)] bg-[var(--surface-elevated)] text-[var(--text-secondary)] font-black text-[10px] tracking-wider uppercase">
                 <th className="px-6 py-4">Display Order</th>
                 <th className="px-6 py-4">Announcement Text (EN)</th>
                 <th className="px-6 py-4 text-right rtl:text-left">نص الإعلان (AR)</th>
@@ -227,63 +231,65 @@ export default function ManageAnnouncements() {
                 <th className="px-6 py-4 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-900">
+            <tbody className="divide-y divide-[var(--border)]">
               {adminAnnouncements.map((item, idx) => (
-                <tr key={item.id} className="hover:bg-zinc-50/20 dark:hover:bg-zinc-900/10 transition-colors">
+                <tr key={item.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                   
-                  {/* Order controls */}
-                  <td className="px-6 py-4 font-semibold text-zinc-900 dark:text-white">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs bg-zinc-100 dark:bg-zinc-900 px-2 py-1 rounded font-heading">
+                  {/* Order */}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-black bg-[var(--surface-elevated)] border border-[var(--border)] px-2.5 py-1.5 rounded-lg font-heading">
                         {item.order}
                       </span>
                       <div className="flex flex-col gap-0.5">
                         <button 
                           onClick={() => handleOrderChange(idx, 'up')}
                           disabled={idx === 0}
-                          className="p-0.5 hover:bg-zinc-150 dark:hover:bg-zinc-800 rounded disabled:opacity-30 cursor-pointer"
+                          className="p-1 hover:bg-[var(--surface-hover)] text-[var(--text-secondary)] disabled:opacity-30 rounded-lg cursor-pointer"
+                          title="Move up"
                         >
-                          <ChevronUp className="w-3 h-3" />
+                          <ChevronUp className="w-3.5 h-3.5" />
                         </button>
                         <button 
                           onClick={() => handleOrderChange(idx, 'down')}
                           disabled={idx === adminAnnouncements.length - 1}
-                          className="p-0.5 hover:bg-zinc-150 dark:hover:bg-zinc-800 rounded disabled:opacity-30 cursor-pointer"
+                          className="p-1 hover:bg-[var(--surface-hover)] text-[var(--text-secondary)] disabled:opacity-30 rounded-lg cursor-pointer"
+                          title="Move down"
                         >
-                          <ChevronDown className="w-3 h-3" />
+                          <ChevronDown className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
                   </td>
 
                   {/* Text EN */}
-                  <td className="px-6 py-4 text-xs font-semibold text-zinc-700 dark:text-zinc-300 max-w-xs truncate">
+                  <td className="px-6 py-4 font-bold text-[var(--text-primary)] max-w-xs truncate">
                     {item.text.en}
                   </td>
 
                   {/* Text AR */}
-                  <td className="px-6 py-4 text-xs font-semibold text-zinc-700 dark:text-zinc-300 max-w-xs truncate text-right rtl:text-left" dir="rtl">
+                  <td className="px-6 py-4 font-bold text-[var(--text-primary)] max-w-xs truncate text-right rtl:text-left" dir="rtl">
                     {item.text.ar}
                   </td>
 
-                  {/* Enabled Toggle */}
+                  {/* Toggle Visible Status */}
                   <td className="px-6 py-4 text-center">
                     <button
                       onClick={() => handleToggleEnable(item)}
-                      className={`inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-black rounded-full uppercase tracking-wider cursor-pointer ${
-                        item.enabled 
-                          ? 'bg-green-500/10 text-green-500' 
-                          : 'bg-zinc-500/10 text-zinc-500'
-                      }`}
+                      className="cursor-pointer"
                     >
-                      {item.enabled ? 'Active' : 'Disabled'}
+                      <Badge variant={item.enabled ? 'success' : 'neutral'}>
+                        {item.enabled ? 'Active' : 'Disabled'}
+                      </Badge>
                     </button>
                   </td>
 
                   {/* Actions */}
                   <td className="px-6 py-4 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <button
+                      <IconButton
+                        icon={Edit2}
+                        variant="ghost"
                         onClick={() => {
                           setEditingItem(item);
                           setTextEn(item.text.en);
@@ -291,19 +297,16 @@ export default function ManageAnnouncements() {
                           setEnabled(item.enabled);
                           setOrder(item.order.toString());
                         }}
-                        className="p-1.5 text-zinc-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors cursor-pointer"
                         title="Edit announcement"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
+                      />
                       
-                      <button
+                      <IconButton
+                        icon={Trash2}
+                        variant="ghost"
+                        className="text-[var(--danger)] hover:bg-[var(--danger)]/10"
                         onClick={() => handleDelete(item.id, item.text.en)}
-                        className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
                         title="Delete announcement"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      />
                     </div>
                   </td>
 
@@ -314,114 +317,90 @@ export default function ManageAnnouncements() {
         </div>
       )}
 
-      {/* Popups Forms */}
-      {(showAddForm || editingItem) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-[#121215] w-full max-w-md rounded-3xl p-6 shadow-2xl relative border border-zinc-200 dark:border-zinc-900 animate-scale-up">
-            
-            <button 
+      {/* Create / Edit modal dialogues */}
+      <Modal
+        isOpen={showAddForm || !!editingItem}
+        onClose={() => {
+          setShowAddForm(false);
+          setEditingItem(null);
+          resetForm();
+        }}
+        title={showAddForm ? 'Add New Announcement' : 'Edit Announcement'}
+      >
+        <form onSubmit={showAddForm ? handleAddSubmit : handleEditSubmit} className="space-y-5">
+          {actionError && (
+            <div className="flex items-center gap-2.5 p-4 bg-[var(--danger)]/10 text-[var(--danger)] border border-[var(--danger)]/20 rounded-xl text-xs font-bold font-sans">
+              <AlertCircle className="w-4.5 h-4.5 shrink-0" />
+              <span>{actionError}</span>
+            </div>
+          )}
+
+          {/* Text EN */}
+          <Input 
+            label="Text (EN)"
+            id="textEn"
+            value={textEn}
+            onChange={(e) => setTextEn(e.target.value)}
+            required
+            placeholder="Free delivery on orders over $150"
+          />
+
+          {/* Text AR */}
+          <Input 
+            label="النص (العربية)"
+            id="textAr"
+            value={textAr}
+            onChange={(e) => setTextAr(e.target.value)}
+            required
+            dir="rtl"
+            placeholder="شحن مجاني للطلبات فوق 150 دولار"
+          />
+
+          {/* Order */}
+          <Input 
+            label="Display Order"
+            id="order"
+            type="number"
+            min="1"
+            value={order}
+            onChange={(e) => setOrder(e.target.value)}
+            required
+          />
+
+          {/* Enabled toggle */}
+          <label className="flex items-center gap-2.5 cursor-pointer pt-1 select-none">
+            <input 
+              type="checkbox" 
+              checked={enabled} 
+              onChange={(e) => setEnabled(e.target.checked)} 
+              className="w-4 h-4 rounded border-[var(--border-strong)] text-[var(--accent)] focus:ring-[var(--accent)]/10 cursor-pointer bg-[var(--surface-elevated)]" 
+            />
+            <span className="text-xs font-bold text-[var(--text-secondary)]">Visible on top banner immediately</span>
+          </label>
+
+          <div className="flex justify-end gap-2.5 pt-4 border-t border-[var(--border)]">
+            <Button
+              variant="outline"
               onClick={() => {
                 setShowAddForm(false);
                 setEditingItem(null);
                 resetForm();
               }}
-              className="absolute top-4 right-4 rtl:left-4 rtl:right-auto p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 rounded-full"
             >
-              <X className="w-4.5 h-4.5" />
-            </button>
-
-            <form onSubmit={showAddForm ? handleAddSubmit : handleEditSubmit} className="space-y-5">
-              
-              <h2 className="text-base font-extrabold text-zinc-950 dark:text-white pb-2 border-b border-zinc-100 dark:border-zinc-900/60 flex items-center gap-1.5 font-heading">
-                <Megaphone className="w-4.5 h-4.5 text-red-500" />
-                <span>{showAddForm ? 'Add New Announcement' : 'Edit Announcement'}</span>
-              </h2>
-
-              {actionError && (
-                <div className="flex items-center gap-2 p-3 bg-red-955/20 text-red-400 rounded-xl text-xs border border-red-900/50">
-                  <AlertCircle className="w-4.5 h-4.5 flex-shrink-0" />
-                  <span>{actionError}</span>
-                </div>
-              )}
-
-              {/* Text EN */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-black text-zinc-550 dark:text-zinc-400 uppercase tracking-widest">Text (EN)</label>
-                <input 
-                  type="text" 
-                  required 
-                  value={textEn} 
-                  onChange={(e) => setTextEn(e.target.value)} 
-                  placeholder="Free installation today"
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans" 
-                />
-              </div>
-
-              {/* Text AR */}
-              <div className="flex flex-col gap-1.5" dir="rtl">
-                <label className="text-[10px] font-black text-zinc-550 dark:text-zinc-400 uppercase tracking-widest text-right">النص (العربية)</label>
-                <input 
-                  type="text" 
-                  required 
-                  value={textAr} 
-                  onChange={(e) => setTextAr(e.target.value)} 
-                  placeholder="تركيب مجاني اليوم"
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans" 
-                />
-              </div>
-
-              {/* Order */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-black text-zinc-555 dark:text-zinc-400 uppercase tracking-widest">Display Order</label>
-                <input 
-                  type="number" 
-                  required 
-                  min="1"
-                  value={order} 
-                  onChange={(e) => setOrder(e.target.value)} 
-                  className="px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 font-sans" 
-                />
-              </div>
-
-              {/* Enabled toggle */}
-              <label className="flex items-center gap-2 cursor-pointer pt-1">
-                <input 
-                  type="checkbox" 
-                  checked={enabled} 
-                  onChange={(e) => setEnabled(e.target.checked)} 
-                  className="w-4 h-4 rounded border-zinc-350 text-red-600 focus:ring-red-500 cursor-pointer" 
-                />
-                <span className="text-xs font-bold text-zinc-650 dark:text-zinc-300">Visible on top banner immediately</span>
-              </label>
-
-              {/* Buttons */}
-              <div className="flex justify-end gap-2.5 pt-4 border-t border-zinc-100 dark:border-zinc-900/60">
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    setShowAddForm(false);
-                    setEditingItem(null);
-                    resetForm();
-                  }} 
-                  className="px-4 py-2 border border-zinc-300 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  disabled={submitting} 
-                  className="inline-flex items-center gap-1 px-4 py-2 bg-red-650 hover:bg-red-755 text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer shadow"
-                >
-                  <Save className="w-3.5 h-3.5" />
-                  <span>{submitting ? 'Saving...' : 'Save'}</span>
-                </button>
-              </div>
-
-            </form>
-
+              Cancel
+            </Button>
+            
+            <Button
+              type="submit"
+              variant="primary"
+              loading={submitting}
+              icon={Save}
+            >
+              {submitting ? 'Saving...' : 'Save'}
+            </Button>
           </div>
-        </div>
-      )}
+        </form>
+      </Modal>
 
     </div>
   );

@@ -3,6 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { useSettings } from '../contexts/SettingsContext';
 import { apiRequest } from '../services/api';
 import { Phone, Mail, MapPin, Send, MessageSquare, AlertCircle, CheckCircle2, RefreshCw } from 'lucide-react';
+import Container from '../components/common/Container';
+import SectionHeader from '../components/common/SectionHeader';
+import Input from '../components/common/Input';
+import Button from '../components/common/Button';
 
 export default function Contact() {
   const { t, i18n } = useTranslation();
@@ -88,43 +92,37 @@ export default function Contact() {
   };
 
   return (
-    <div className="space-y-12 pb-16">
+    <Container className="py-8 space-y-12">
       
       {/* Header */}
-      <div>
-        <span className="text-[10px] font-black text-red-500 uppercase tracking-widest block font-heading">
-          {currentLang === 'en' ? 'Support Desk' : 'مكتب الدعم'}
-        </span>
-        <h1 className="text-3xl font-extrabold text-zinc-950 dark:text-white uppercase tracking-tight mt-1 font-heading">
-          {t('contact.title')}
-        </h1>
-        <p className="text-sm text-zinc-550 dark:text-zinc-450 mt-1 max-w-xl">
-          {currentLang === 'en' 
-            ? 'Have a question or want to book an appointment? Get in touch with us.' 
-            : 'لديك استفسار أو ترغب في حجز موعد؟ تواصل معنا مباشرة.'}
-        </p>
-      </div>
+      <SectionHeader 
+        category={currentLang === 'en' ? 'Support Desk' : 'مكتب الدعم'}
+        title={t('nav.contact')}
+        subtitle={currentLang === 'en' 
+          ? 'Have a question or want to book an appointment? Get in touch with us.' 
+          : 'لديك استفسار أو ترغب في حجز موعد؟ تواصل معنا مباشرة.'}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
         {/* Contact details card */}
-        <div className="bg-white dark:bg-[#121215] border border-zinc-200/60 dark:border-zinc-900/60 rounded-3xl p-8 shadow-sm space-y-8 transition-colors">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 shadow-sm space-y-8">
           
-          <h2 className="text-lg font-extrabold text-zinc-950 dark:text-white pb-3 border-b border-zinc-100 dark:border-zinc-900/60 font-heading">
+          <h2 className="text-sm font-extrabold text-[var(--text-primary)] pb-3 border-b border-[var(--border)] font-heading uppercase tracking-widest">
             {currentLang === 'en' ? 'Direct Contact' : 'الاتصال المباشر'}
           </h2>
 
           <div className="space-y-6">
             {phone && (
               <div className="flex items-start gap-3">
-                <div className="p-2.5 bg-red-500/10 text-red-500 rounded-xl">
-                  <Phone className="w-5 h-5 shrink-0" />
+                <div className="p-2.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-xl shrink-0">
+                  <Phone className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h3 className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-0.5">
+                  <h3 className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-0.5">
                     {currentLang === 'en' ? 'Call Us' : 'اتصل بنا'}
                   </h3>
-                  <a href={`tel:${phone}`} className="text-xs sm:text-sm font-bold text-zinc-950 dark:text-white hover:text-red-500 transition-colors">
+                  <a href={`tel:${phone}`} className="text-xs sm:text-sm font-bold text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors">
                     {phone}
                   </a>
                 </div>
@@ -133,18 +131,18 @@ export default function Contact() {
 
             {whatsapp && (
               <div className="flex items-start gap-3">
-                <div className="p-2.5 bg-red-500/10 text-red-500 rounded-xl">
-                  <MessageSquare className="w-5 h-5 shrink-0" />
+                <div className="p-2.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-xl shrink-0">
+                  <MessageSquare className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h3 className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-0.5">
+                  <h3 className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-0.5">
                     {currentLang === 'en' ? 'WhatsApp' : 'واتساب'}
                   </h3>
                   <a 
                     href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="text-xs sm:text-sm font-bold text-zinc-950 dark:text-white hover:text-green-500 transition-colors"
+                    className="text-xs sm:text-sm font-bold text-[var(--text-primary)] hover:text-green-600 transition-colors"
                   >
                     {currentLang === 'en' ? 'Start WhatsApp Chat' : 'بدء محادثة واتساب'}
                   </a>
@@ -154,14 +152,14 @@ export default function Contact() {
 
             {email && (
               <div className="flex items-start gap-3">
-                <div className="p-2.5 bg-red-500/10 text-red-500 rounded-xl">
-                  <Mail className="w-5 h-5 shrink-0" />
+                <div className="p-2.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-xl shrink-0">
+                  <Mail className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h3 className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-0.5">
+                  <h3 className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-0.5">
                     {currentLang === 'en' ? 'Email Address' : 'البريد الإلكتروني'}
                   </h3>
-                  <a href={`mailto:${email}`} className="text-xs sm:text-sm font-bold text-zinc-950 dark:text-white hover:text-red-500 transition-colors">
+                  <a href={`mailto:${email}`} className="text-xs sm:text-sm font-bold text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors">
                     {email}
                   </a>
                 </div>
@@ -170,14 +168,14 @@ export default function Contact() {
 
             {address && (
               <div className="flex items-start gap-3">
-                <div className="p-2.5 bg-red-500/10 text-red-500 rounded-xl">
-                  <MapPin className="w-5 h-5 shrink-0" />
+                <div className="p-2.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-xl shrink-0">
+                  <MapPin className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h3 className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-0.5">
+                  <h3 className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-0.5">
                     {currentLang === 'en' ? 'Location' : 'الموقع'}
                   </h3>
-                  <span className="text-xs sm:text-sm font-bold text-zinc-950 dark:text-white leading-relaxed">
+                  <span className="text-xs sm:text-sm font-bold text-[var(--text-primary)] leading-relaxed">
                     {address}
                   </span>
                 </div>
@@ -188,9 +186,9 @@ export default function Contact() {
         </div>
 
         {/* Contact form card */}
-        <div className="lg:col-span-2 bg-white dark:bg-[#121215] border border-zinc-200/60 dark:border-zinc-900/60 rounded-3xl p-8 sm:p-10 shadow-sm transition-colors">
+        <div className="lg:col-span-2 bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 sm:p-10 shadow-sm">
           
-          <h2 className="text-lg font-extrabold text-zinc-950 dark:text-white pb-3 border-b border-zinc-100 dark:border-zinc-900/60 mb-6 font-heading">
+          <h2 className="text-sm font-extrabold text-[var(--text-primary)] pb-3 border-b border-[var(--border)] mb-6 font-heading uppercase tracking-widest">
             {currentLang === 'en' ? 'Send Us a Message' : 'أرسل لنا رسالة'}
           </h2>
 
@@ -198,14 +196,14 @@ export default function Contact() {
             
             {/* Feedback notifications */}
             {errorMsg && (
-              <div className="flex items-center gap-2 p-4 bg-red-955/20 text-red-400 rounded-xl text-xs border border-red-900/50">
+              <div className="flex items-center gap-2.5 p-4 bg-[var(--danger)]/10 text-[var(--danger)] rounded-xl text-xs border border-[var(--danger)]/20 font-sans">
                 <AlertCircle className="w-4.5 h-4.5 flex-shrink-0" />
                 <span>{errorMsg}</span>
               </div>
             )}
             
             {success && (
-              <div className="flex items-center gap-2 p-4 bg-green-955/20 text-green-400 rounded-xl text-xs border border-green-900/50">
+              <div className="flex items-center gap-2.5 p-4 bg-[var(--success)]/10 text-[var(--success)] rounded-xl text-xs border border-[var(--success)]/20 font-sans">
                 <CheckCircle2 className="w-4.5 h-4.5 flex-shrink-0" />
                 <span>{t('contact.form.success')}</span>
               </div>
@@ -214,60 +212,46 @@ export default function Contact() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               
               {/* Name */}
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="name" className="text-[10px] font-black text-zinc-550 dark:text-zinc-400 uppercase tracking-widest">
-                  {t('contact.form.name')} <span className="text-red-500">*</span>
-                </label>
-                <input 
-                  type="text" 
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  placeholder={currentLang === 'en' ? 'John Doe' : 'اسمك الكريم'}
-                  className="px-4 py-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-sans"
-                />
-              </div>
+              <Input 
+                label={t('contact.form.name')}
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+                placeholder={currentLang === 'en' ? 'John Doe' : 'اسمك الكريم'}
+              />
 
               {/* Email */}
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="email" className="text-[10px] font-black text-zinc-550 dark:text-zinc-400 uppercase tracking-widest">
-                  {t('contact.form.email')} <span className="text-red-500">*</span>
-                </label>
-                <input 
-                  type="email" 
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="name@example.com"
-                  className="px-4 py-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-sans"
-                />
-              </div>
+              <Input 
+                label={t('contact.form.email')}
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                placeholder="name@example.com"
+              />
 
               {/* Phone */}
-              <div className="flex flex-col gap-1.5 sm:col-span-2">
-                <label htmlFor="phone" className="text-[10px] font-black text-zinc-550 dark:text-zinc-400 uppercase tracking-widest">
-                  {t('contact.form.phone')} <span className="text-red-500">*</span>
-                </label>
-                <input 
-                  type="tel" 
+              <div className="sm:col-span-2">
+                <Input 
+                  label={t('contact.form.phone')}
                   id="phone"
                   name="phone"
+                  type="tel"
                   value={formData.phone}
                   onChange={handleInputChange}
                   required
                   placeholder={currentLang === 'en' ? '+962790000000' : 'رقم هاتفك'}
-                  className="px-4 py-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-sans"
                 />
               </div>
 
               {/* Message */}
               <div className="flex flex-col gap-1.5 sm:col-span-2">
-                <label htmlFor="message" className="text-[10px] font-black text-zinc-550 dark:text-zinc-400 uppercase tracking-widest">
-                  {t('contact.form.message')} <span className="text-red-500">*</span>
+                <label htmlFor="message" className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block font-heading">
+                  {t('contact.form.message')} <span className="text-[var(--danger)]">*</span>
                 </label>
                 <textarea 
                   id="message"
@@ -277,7 +261,7 @@ export default function Contact() {
                   onChange={handleInputChange}
                   required
                   placeholder={currentLang === 'en' ? 'Describe your request here...' : 'اكتب تفاصيل طلبك هنا...'}
-                  className="px-4 py-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-xl text-xs text-zinc-950 dark:text-white focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all resize-none font-sans"
+                  className="px-4 py-3 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] rounded-xl text-xs placeholder-[var(--input-placeholder)] focus:outline-none focus:border-[var(--input-focus)] focus:ring-4 focus:ring-[var(--input-focus)]/10 transition-all resize-none font-sans"
                 />
               </div>
 
@@ -285,23 +269,14 @@ export default function Contact() {
 
             {/* Submit Button */}
             <div className="pt-2 flex justify-end">
-              <button
+              <Button
                 type="submit"
-                disabled={submitting}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-red-650 hover:bg-red-755 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 disabled:text-zinc-400 dark:disabled:text-zinc-600 text-white font-bold rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-sm hover:shadow active:scale-98"
+                variant="primary"
+                loading={submitting}
+                icon={Send}
               >
-                {submitting ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>{t('contact.form.submitting')}</span>
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-4 h-4" />
-                    <span>{t('contact.form.submit')}</span>
-                  </>
-                )}
-              </button>
+                {t('contact.form.submit')}
+              </Button>
             </div>
 
           </form>
@@ -310,6 +285,6 @@ export default function Contact() {
 
       </div>
 
-    </div>
+    </Container>
   );
 }
