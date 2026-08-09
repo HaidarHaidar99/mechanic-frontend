@@ -14,7 +14,7 @@ import Select from '../../components/common/Select';
 import Badge from '../../components/common/Badge';
 
 export default function ManageSettings() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currentLang = i18n.language || 'en';
   const { settings, refreshSettings } = useSettings();
 
@@ -181,6 +181,7 @@ export default function ManageSettings() {
       imageBase64: '',
       title: { en: '', ar: '' },
       subtitle: { en: '', ar: '' },
+      focalPoint: 'center center',
       order: slides.length + 1,
       enabled: true
     };
@@ -607,6 +608,20 @@ export default function ManageSettings() {
                       onChange={(e) => handleSlideChange(slide.id, 'subtitle', e.target.value, 'ar')}
                       dir="rtl"
                     />
+                    <div className="sm:col-span-2">
+                      <Select
+                        label="Image Focus / Crop Position (Mobile & Desktop)"
+                        value={slide.focalPoint || 'center center'}
+                        onChange={(e) => handleSlideChange(slide.id, 'focalPoint', e.target.value)}
+                        options={[
+                          { value: 'center center', label: 'Center (Default)' },
+                          { value: 'top center', label: 'Top Center' },
+                          { value: 'bottom center', label: 'Bottom Center' },
+                          { value: 'center left', label: 'Center Left' },
+                          { value: 'center right', label: 'Center Right' }
+                        ]}
+                      />
+                    </div>
                   </div>
 
                   {/* Controls / arrow selectors */}

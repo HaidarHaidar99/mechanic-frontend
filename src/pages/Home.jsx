@@ -6,12 +6,13 @@ import { getActiveProducts } from '../services/products.api';
 import { apiRequest } from '../services/api';
 import ProductCard from '../components/products/ProductCard';
 import ProductDetailModal from '../components/products/ProductDetailModal';
-import { ChevronLeft, ChevronRight, MessageSquare, Phone, Mail, MapPin, Wrench, ArrowRight, ShieldCheck, Cpu } from 'lucide-react';
+import { MessageSquare, Phone, Mail, MapPin, Wrench, ArrowRight, ShieldCheck, Cpu } from 'lucide-react';
 import Button from '../components/common/Button';
 import Container from '../components/common/Container';
 import Badge from '../components/common/Badge';
 import EmptyState from '../components/common/EmptyState';
 import Skeleton from '../components/common/Skeleton';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 let cachedCarousel = null;
 let cachedCarouselTime = null;
@@ -29,6 +30,10 @@ export default function Home() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [productsLoading, setProductsLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const featuredRef = useScrollReveal();
+  const aboutRef = useScrollReveal();
+  const ctaRef = useScrollReveal();
 
   const autoPlayRef = useRef(null);
 
@@ -84,16 +89,6 @@ export default function Home() {
     };
   }, [slides]);
 
-  const handleNextSlide = () => {
-    if (autoPlayRef.current) clearInterval(autoPlayRef.current);
-    setActiveSlide(current => (current + 1) % slides.length);
-  };
-
-  const handlePrevSlide = () => {
-    if (autoPlayRef.current) clearInterval(autoPlayRef.current);
-    setActiveSlide(current => (current === 0 ? slides.length - 1 : current - 1));
-  };
-
   const handleDotClick = (index) => {
     if (autoPlayRef.current) clearInterval(autoPlayRef.current);
     setActiveSlide(index);
@@ -118,12 +113,13 @@ export default function Home() {
       id: 'default',
       imageBase64: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" fill="%23000000"><rect width="1200" height="600" fill="%230a0a0c"/><path d="M0,0 L1200,600" stroke="%231a1a1e" stroke-width="6"/><path d="M1200,0 L0,600" stroke="%231a1a1e" stroke-width="6"/></svg>',
       title: { en: heroTitle, ar: heroTitle },
-      subtitle: { en: heroSubtitle, ar: heroSubtitle }
+      subtitle: { en: heroSubtitle, ar: heroSubtitle },
+      focalPoint: 'center center'
     }
   ];
 
   return (
-    <div className="space-y-24 pb-20">
+    <div className="space-y-24 pb-20 max-w-full overflow-hidden">
       
       {/* 1. Hero / Carousel Section (100dvh cover layout) */}
       <section className="relative h-[100dvh] w-full overflow-hidden bg-black select-none z-0">
@@ -140,72 +136,55 @@ export default function Home() {
               src={slide.imageBase64} 
               alt={slide.title[currentLang] || 'Hero Slide'} 
               className="w-full h-full object-cover brightness-[0.35]"
+              style={{ objectPosition: slide.focalPoint || 'center center' }}
             />
             {/* Dark Vignette Overlay to ensure text visibility */}
-            <div className="absolute inset-0 bg-black/45" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/60" />
           </div>
         ))}
 
         {/* Hero Text content (Strict White color to overlay dark images) */}
-        <div className="absolute inset-0 z-10 flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto h-full space-y-4">
+        <div className="absolute inset-0 z-10 flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto h-full space-y-4 pt-12 sm:pt-0">
           <span className="text-[10px] sm:text-xs font-black tracking-[0.25em] text-red-500 uppercase animate-fade-in">
             {currentLang === 'en' ? 'Performance Engineered' : 'هندسة الأداء المتميز'}
           </span>
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.15] uppercase drop-shadow-xl font-heading max-w-4xl">
+          <h1 className="text-3xl sm:text-5xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.15] uppercase drop-shadow-xl font-heading max-w-4xl">
             {activeSlides[activeSlide]?.title[currentLang] || activeSlides[activeSlide]?.title['en']}
           </h1>
-          <p className="text-xs sm:text-base text-zinc-350 max-w-2xl leading-relaxed font-sans drop-shadow-md pb-4">
+          <p className="text-xs sm:text-base text-zinc-300 max-w-2xl leading-relaxed font-sans drop-shadow-md pb-4 line-clamp-3 sm:line-clamp-none">
             {activeSlides[activeSlide]?.subtitle[currentLang] || activeSlides[activeSlide]?.subtitle['en']}
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3.5 items-center justify-center w-full max-w-xs sm:max-w-none sm:w-auto">
             <button
               onClick={() => navigate('/products')}
-              className="px-8 py-3.5 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-red-900/10 cursor-pointer w-full sm:w-auto font-heading"
+              className="px-8 py-3.5 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-red-900/20 cursor-pointer w-full sm:w-auto font-heading"
             >
               {t('home.explore')}
             </button>
             <button
               onClick={() => navigate('/about')}
-              className="px-8 py-3.5 bg-white/5 hover:bg-white/10 text-white border border-white/20 hover:border-white/40 font-black text-xs uppercase tracking-widest rounded-xl backdrop-blur transition-all cursor-pointer w-full sm:w-auto font-heading"
+              className="px-8 py-3.5 bg-white/10 hover:bg-white/20 text-white border border-white/25 hover:border-white/40 font-black text-xs uppercase tracking-widest rounded-xl backdrop-blur-md transition-all cursor-pointer w-full sm:w-auto font-heading"
             >
               {currentLang === 'en' ? 'Who We Are' : 'من نحن'}
             </button>
           </div>
         </div>
 
-        {/* Carousel Navigation Arrows */}
+        {/* Subtle Slider Dots (only if more than 1 slide) */}
         {activeSlides.length > 1 && (
-          <>
-            <button
-              onClick={handlePrevSlide}
-              className="absolute left-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-xl bg-black/40 hover:bg-red-655 text-white backdrop-blur border border-white/10 transition-all cursor-pointer scale-90 hover:scale-100"
-              aria-label="Previous Slide"
-            >
-              <ChevronLeft className="w-5 h-5 rtl:rotate-180" />
-            </button>
-            <button
-              onClick={handleNextSlide}
-              className="absolute right-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-xl bg-black/40 hover:bg-red-655 text-white backdrop-blur border border-white/10 transition-all cursor-pointer scale-90 hover:scale-100"
-              aria-label="Next Slide"
-            >
-              <ChevronRight className="w-5 h-5 rtl:rotate-180" />
-            </button>
-
-            {/* Slider Dots */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-2.5 rtl:space-x-reverse">
-              {activeSlides.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleDotClick(idx)}
-                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    idx === activeSlide ? 'w-8 bg-red-600' : 'w-2 bg-white/40 hover:bg-white/70'
-                  }`}
-                  aria-label={`Go to slide ${idx + 1}`}
-                />
-              ))}
-            </div>
-          </>
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-2.5 rtl:space-x-reverse">
+            {activeSlides.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleDotClick(idx)}
+                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  idx === activeSlide ? 'w-8 bg-red-600' : 'w-2 bg-white/40 hover:bg-white/70'
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
         )}
       </section>
 
@@ -213,7 +192,7 @@ export default function Home() {
       <Container className="space-y-28">
         
         {/* 2. Featured Products Section */}
-        <section className="space-y-8 animate-fade-in">
+        <section ref={featuredRef} className="space-y-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 border-b border-[var(--border)] pb-6">
             <div>
               <span className="text-[10px] font-black tracking-widest text-[var(--accent)] uppercase font-heading">
@@ -269,7 +248,7 @@ export default function Home() {
         </section>
 
         {/* 3. About Us Preview */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+        <section ref={aboutRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
           
           {/* Left card */}
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-sm">
@@ -339,7 +318,7 @@ export default function Home() {
         </section>
 
         {/* 4. Contact / WhatsApp CTA */}
-        <section className="bg-gradient-to-br from-red-650 to-red-755 text-white rounded-3xl p-8 sm:p-12 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-8 relative overflow-hidden">
+        <section ref={ctaRef} className="bg-gradient-to-br from-red-650 to-red-755 text-white rounded-3xl p-8 sm:p-12 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full filter blur-3xl" />
           
           <div className="space-y-4 max-w-xl text-center lg:text-left rtl:lg:text-right z-10">

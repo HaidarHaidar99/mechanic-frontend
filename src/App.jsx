@@ -40,8 +40,8 @@ function ProtectedRoute({ children, requireSuper }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-[#121214]">
-        <div className="text-sm font-semibold text-gray-500 animate-pulse">
+      <div className="flex items-center justify-center min-h-screen bg-[var(--page-bg)]">
+        <div className="text-sm font-semibold text-[var(--text-secondary)] animate-pulse">
           Verifying security credentials...
         </div>
       </div>
@@ -49,7 +49,7 @@ function ProtectedRoute({ children, requireSuper }) {
   }
 
   if (!admin) {
-    return <Navigate to="/admin" replace />;
+    return <Navigate to="/admin/login" replace />;
   }
 
   if (requireSuper && admin.role !== 'super_admin') {
@@ -80,8 +80,8 @@ export default function App() {
                       <Route path="/favorites" element={<Favorites />} />
                     </Route>
 
-                    {/* Admin Auth Route */}
-                    <Route path="/admin" element={<AdminLogin />} />
+                    {/* Admin Login Route (standalone, no layout wrapper) */}
+                    <Route path="/admin/login" element={<AdminLogin />} />
 
                     {/* Protected Admin Console Routes */}
                     <Route
@@ -92,6 +92,8 @@ export default function App() {
                         </ProtectedRoute>
                       }
                     >
+                      {/* Index redirect: /admin → /admin/dashboard */}
+                      <Route index element={<Navigate to="/admin/dashboard" replace />} />
                       <Route path="dashboard" element={<Dashboard />} />
                       <Route path="products" element={<ManageProducts />} />
                       <Route path="messages" element={<ManageMessages />} />

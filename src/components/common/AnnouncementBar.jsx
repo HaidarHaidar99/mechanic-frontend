@@ -10,31 +10,34 @@ export default function AnnouncementBar() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
+  // Filter only active announcements
+  const activeList = announcements.filter(a => a.enabled !== false);
+
   useEffect(() => {
-    if (announcements.length <= 1) return;
+    if (activeList.length <= 1) return;
 
     const interval = setInterval(() => {
       setIsVisible(false);
       setTimeout(() => {
-        setCurrentIndex(prevIndex => (prevIndex + 1) % announcements.length);
+        setCurrentIndex(prevIndex => (prevIndex + 1) % activeList.length);
         setIsVisible(true);
       }, 300);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [announcements]);
+  }, [activeList.length]);
 
-  if (!announcements || announcements.length === 0) {
+  if (!activeList || activeList.length === 0) {
     return null;
   }
 
-  const activeAnnouncement = announcements[currentIndex];
+  const activeAnnouncement = activeList[currentIndex];
   const displayText = activeAnnouncement?.text?.[currentLang] || activeAnnouncement?.text?.['en'] || '';
 
   return (
-    <div className="w-full bg-zinc-950 dark:bg-black border-b border-zinc-900 text-white text-[10px] sm:text-xs font-bold py-2.5 px-4 text-center select-none uppercase tracking-widest relative z-50 font-heading">
+    <div className="w-full max-w-full overflow-hidden bg-zinc-950 dark:bg-black border-b border-zinc-900 text-white text-[10px] sm:text-xs font-extrabold py-2 px-4 text-center select-none uppercase tracking-widest relative z-50 font-heading shrink-0">
       <div 
-        className={`transition-all duration-300 ease-out flex items-center justify-center gap-2 ${
+        className={`transition-all duration-300 ease-out flex items-center justify-center gap-2 max-w-full ${
           isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-1'
         }`}
       >

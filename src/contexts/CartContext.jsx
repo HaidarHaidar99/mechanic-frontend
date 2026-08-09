@@ -21,6 +21,7 @@ export function CartProvider({ children }) {
       return [...prev, {
         id: product.id,
         name: product.name, // Bilingual name object { en, ar }
+        category: product.category, // Bilingual category object { en, ar }
         price: product.price,
         imageBase64: product.imageBase64,
         quantity: 1

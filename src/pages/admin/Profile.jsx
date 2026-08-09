@@ -11,7 +11,7 @@ import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 
 export default function Profile() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currentLang = i18n.language || 'en';
   const { admin, setAdmin, logout } = useAdminAuth();
   const navigate = useNavigate();

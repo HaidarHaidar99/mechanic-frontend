@@ -84,8 +84,8 @@ export default function Cart() {
         {/* Cart items list (Left side on Desktop, Stacked on Mobile) */}
         <div className="lg:col-span-2 space-y-4">
           {cartItems.map((item) => {
-            const name = item.name[currentLang] || item.name['en'] || '';
-            const category = item.category[currentLang] || item.category['en'] || '';
+            const name = item.name?.[currentLang] || item.name?.['en'] || '';
+            const category = item.category ? (item.category[currentLang] || item.category['en'] || '') : '';
             const subtotal = item.price * item.quantity;
             
             return (
