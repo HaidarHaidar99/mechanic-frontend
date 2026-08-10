@@ -56,9 +56,14 @@ export function AnnouncementsProvider({ children }) {
       // Update local state immediately on successful API response
       setAdminAnnouncements(prev => {
         const updated = [...prev, res.data];
-        return updated.sort((a, b) => a.order - b.order);
+        return updated.sort((a, b) => (parseInt(a.order, 10) || 0) - (parseInt(b.order, 10) || 0));
       });
-      // Refetch public list so the banner updates instantly if toggled
+      if (res.data.enabled !== false) {
+        setAnnouncements(prev => {
+          const updated = [...prev, res.data];
+          return updated.sort((a, b) => (parseInt(a.order, 10) || 0) - (parseInt(b.order, 10) || 0));
+        });
+      }
       fetchPublicAnnouncements();
       return res.data;
     } else {
@@ -76,7 +81,7 @@ export function AnnouncementsProvider({ children }) {
       // Update local state immediately on successful API response
       setAdminAnnouncements(prev => {
         const updated = prev.map(item => item.id === id ? res.data : item);
-        return updated.sort((a, b) => a.order - b.order);
+        return updated.sort((a, b) => (parseInt(a.order, 10) || 0) - (parseInt(b.order, 10) || 0));
       });
       fetchPublicAnnouncements();
       return res.data;
@@ -93,6 +98,7 @@ export function AnnouncementsProvider({ children }) {
     if (res.success) {
       // Update local state immediately on successful API response
       setAdminAnnouncements(prev => prev.filter(item => item.id !== id));
+      setAnnouncements(prev => prev.filter(item => item.id !== id));
       fetchPublicAnnouncements();
     } else {
       throw new Error(res.message || 'Failed to delete announcement');

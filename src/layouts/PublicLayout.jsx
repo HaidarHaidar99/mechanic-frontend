@@ -11,9 +11,11 @@ export default function PublicLayout() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[var(--page-bg)] text-[var(--text-primary)] transition-colors">
-      <AnnouncementBar />
-      <Navbar />
-      <main className={`flex-grow w-full ${isHome ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 lg:pt-32 pb-12 animate-fade-in'}`}>
+      <header className="sticky top-0 z-40 w-full">
+        <AnnouncementBar />
+        <Navbar />
+      </header>
+      <main className={`flex-grow w-full ${isHome ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-fade-in'}`}>
         <Outlet />
       </main>
       {!hideFooter && <Footer />}

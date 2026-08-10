@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../contexts/CartContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
-import { Heart, ShoppingCart, Eye, Check } from 'lucide-react';
+import { useSettings } from '../../contexts/SettingsContext';
+import { Heart, ShoppingCart, Eye, Check, MessageSquare } from 'lucide-react';
 import Button from '../common/Button';
 import IconButton from '../common/IconButton';
 import Badge from '../common/Badge';
@@ -11,6 +12,7 @@ export default function ProductCard({ product, onOpenDetails }) {
   const { t, i18n } = useTranslation();
   const { cartItems, addToCart } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { settings } = useSettings();
   
   const currentLang = i18n.language || 'en';
 
@@ -35,6 +37,20 @@ export default function ProductCard({ product, onOpenDetails }) {
     e.stopPropagation();
     if (isAdded) return;
     addToCart(product);
+  };
+
+  const handleBuyNow = (e) => {
+    e.stopPropagation();
+    const whatsappNum = settings?.whatsapp ? settings.whatsapp.replace(/[^0-9]/g, '') : '';
+    const message = currentLang === 'ar'
+      ? `مرحباً! أود شراء المنتج التالي:\n*${name}*\nالسعر: $${price.toFixed(2)}`
+      : `Hello! I would like to buy this product:\n*${name}*\nPrice: $${price.toFixed(2)}`;
+    
+    if (whatsappNum) {
+      window.open(`https://wa.me/${whatsappNum}?text=${encodeURIComponent(message)}`, '_blank');
+    } else {
+      alert(currentLang === 'ar' ? 'رقم الواتساب غير متوفر حالياً' : 'WhatsApp contact number is not set.');
+    }
   };
 
   return (
@@ -103,35 +119,46 @@ export default function ProductCard({ product, onOpenDetails }) {
           </p>
         </div>
 
-        {/* Bottom Details & Add button */}
-        <div className="pt-4 border-t border-[var(--border)] flex items-center justify-between gap-4 mt-auto">
+        {/* Bottom Details & Buttons */}
+        <div className="pt-4 border-t border-[var(--border)] space-y-3 mt-auto">
           {/* Price */}
-          <div className="text-sm sm:text-base font-extrabold text-[var(--text-primary)] font-heading">
+          <div className="text-base font-extrabold text-[var(--text-primary)] font-heading">
             ${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
 
-          {/* Add to Cart button */}
-          <button
-            onClick={handleAddToCart}
-            disabled={isAdded}
-            className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all cursor-pointer font-heading ${
-              isAdded
-                ? 'bg-[var(--success)]/10 border-[var(--success)]/20 text-[var(--success)] cursor-not-allowed opacity-100 font-bold'
-                : 'bg-[var(--button-primary-bg)] border-transparent text-[var(--button-primary-text)] hover:bg-[var(--button-primary-hover)] active:scale-95 shadow-sm'
-            }`}
-          >
-            {isAdded ? (
-              <>
-                <Check className="w-3.5 h-3.5 stroke-[3px]" />
-                <span>{currentLang === 'en' ? 'Added to Cart' : 'تمت الإضافة'}</span>
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="w-3.5 h-3.5" />
-                <span>{t('products.add_to_cart')}</span>
-              </>
-            )}
-          </button>
+          {/* Action buttons (Add to cart & Buy now) */}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={handleAddToCart}
+              disabled={isAdded}
+              className={`inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all cursor-pointer font-heading ${
+                isAdded
+                  ? 'bg-[var(--success)]/10 border-[var(--success)]/20 text-[var(--success)] cursor-not-allowed opacity-100 font-bold'
+                  : 'bg-[var(--surface-elevated)] border-[var(--border-strong)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:scale-95'
+              }`}
+            >
+              {isAdded ? (
+                <>
+                  <Check className="w-3.5 h-3.5 stroke-[3px]" />
+                  <span>{currentLang === 'en' ? 'Added' : 'تمت'}</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-3.5 h-3.5" />
+                  <span>{t('products.add_to_cart')}</span>
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={handleBuyNow}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white transition-all cursor-pointer font-heading shadow-sm"
+              title={currentLang === 'en' ? 'Buy Now via WhatsApp' : 'شراء الآن عبر واتساب'}
+            >
+              <MessageSquare className="w-3.5 h-3.5 fill-current" />
+              <span>{currentLang === 'en' ? 'Buy Now' : 'شراء الآن'}</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

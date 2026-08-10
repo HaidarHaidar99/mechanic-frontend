@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../contexts/CartContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
-import { X, Heart, ShoppingCart, Check } from 'lucide-react';
+import { useSettings } from '../../contexts/SettingsContext';
+import { X, Heart, ShoppingCart, Check, MessageSquare } from 'lucide-react';
 import Button from '../common/Button';
 import IconButton from '../common/IconButton';
 import Badge from '../common/Badge';
@@ -11,6 +12,7 @@ export default function ProductDetailModal({ product, onClose }) {
   const { t, i18n } = useTranslation();
   const { cartItems, addToCart } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { settings } = useSettings();
 
   const currentLang = i18n.language || 'en';
   const [popHeart, setPopHeart] = useState(false);
@@ -45,6 +47,19 @@ export default function ProductDetailModal({ product, onClose }) {
   const handleAddToCart = () => {
     if (isAdded) return;
     addToCart(product);
+  };
+
+  const handleBuyNow = () => {
+    const whatsappNum = settings?.whatsapp ? settings.whatsapp.replace(/[^0-9]/g, '') : '';
+    const message = currentLang === 'ar'
+      ? `مرحباً! أود شراء المنتج التالي:\n*${name}*\nالسعر: $${price.toFixed(2)}`
+      : `Hello! I would like to buy this product:\n*${name}*\nPrice: $${price.toFixed(2)}`;
+    
+    if (whatsappNum) {
+      window.open(`https://wa.me/${whatsappNum}?text=${encodeURIComponent(message)}`, '_blank');
+    } else {
+      alert(currentLang === 'ar' ? 'رقم الواتساب غير متوفر حالياً' : 'WhatsApp contact number is not set.');
+    }
   };
 
   const handleFavoriteClick = () => {
@@ -110,22 +125,22 @@ export default function ProductDetailModal({ product, onClose }) {
           </div>
 
           {/* Actions Section */}
-          <div className="mt-8 border-t border-[var(--border)] pt-6 flex items-center gap-3">
+          <div className="mt-8 border-t border-[var(--border)] pt-6 flex flex-col sm:flex-row items-center gap-3">
             
             {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
               disabled={isAdded}
-              className={`flex-grow flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-black uppercase tracking-widest border transition-all cursor-pointer font-heading ${
+              className={`w-full sm:w-auto flex-grow flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-black uppercase tracking-widest border transition-all cursor-pointer font-heading ${
                 isAdded
                   ? 'bg-[var(--success)]/10 border-[var(--success)]/20 text-[var(--success)] cursor-not-allowed opacity-100'
-                  : 'bg-[var(--button-primary-bg)] border-transparent text-[var(--button-primary-text)] hover:bg-[var(--button-primary-hover)] active:scale-98 shadow-md'
+                  : 'bg-[var(--surface-elevated)] border-[var(--border-strong)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:scale-98'
               }`}
             >
               {isAdded ? (
                 <>
                   <Check className="w-4 h-4 stroke-[3px]" />
-                  <span>{currentLang === 'en' ? 'Added to Cart' : 'تمت الإضافة'}</span>
+                  <span>{currentLang === 'en' ? 'Added' : 'تمت'}</span>
                 </>
               ) : (
                 <>
@@ -135,10 +150,20 @@ export default function ProductDetailModal({ product, onClose }) {
               )}
             </button>
 
+            {/* Buy Now (WhatsApp Direct) */}
+            <button
+              onClick={handleBuyNow}
+              className="w-full sm:w-auto flex items-center justify-center gap-2 py-3 px-5 rounded-xl text-xs font-black uppercase tracking-widest bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white transition-all cursor-pointer font-heading shadow-md shrink-0"
+              title={currentLang === 'en' ? 'Buy Now via WhatsApp' : 'شراء الآن عبر واتساب'}
+            >
+              <MessageSquare className="w-4 h-4 fill-current shrink-0" />
+              <span>{currentLang === 'en' ? 'Buy Now' : 'شراء الآن'}</span>
+            </button>
+
             {/* Favorites Toggle */}
             <button
               onClick={handleFavoriteClick}
-              className={`p-3 rounded-xl border transition-all cursor-pointer ${
+              className={`p-3 rounded-xl border transition-all cursor-pointer shrink-0 ${
                 favorited 
                   ? 'bg-rose-500 border-rose-500 text-white' 
                   : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-hover)]'

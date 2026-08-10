@@ -7,7 +7,8 @@ import { useFavorites } from '../../contexts/FavoritesContext';
 import { useSettings } from '../../contexts/SettingsContext';
 import { 
   ShoppingCart, Heart, Sun, Moon, Globe, Wrench, 
-  Search, MessageSquare, ChevronRight, X 
+  Search, MessageSquare, ChevronRight, X,
+  Home as HomeIcon, Package, Info, PhoneCall
 } from 'lucide-react';
 import SearchOverlay from './SearchOverlay';
 
@@ -52,10 +53,10 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { name: t('nav.home'), path: '/' },
-    { name: t('nav.products'), path: '/products' },
-    { name: t('nav.about'), path: '/about' },
-    { name: t('nav.contact'), path: '/contact' }
+    { name: t('nav.home'), path: '/', icon: HomeIcon },
+    { name: t('nav.products'), path: '/products', icon: Package },
+    { name: t('nav.about'), path: '/about', icon: Info },
+    { name: t('nav.contact'), path: '/contact', icon: PhoneCall }
   ];
 
   const currentLang = i18n.language || 'en';
@@ -67,28 +68,19 @@ export default function Navbar() {
   return (
     <>
       <nav 
-        className={`z-40 w-full transition-all duration-300 ${
-          isTransparent 
-            ? 'absolute left-0 bg-transparent text-white border-transparent py-4' 
-            : 'fixed top-0 left-0 bg-[var(--surface)]/85 backdrop-blur-md shadow-md border-b border-[var(--border)] text-[var(--text-primary)] py-2.5'
-        }`}
+        className="w-full transition-all duration-300 bg-[var(--surface)]/90 backdrop-blur-md shadow-sm border-b border-[var(--border)] text-[var(--text-primary)] py-3"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* ================= DESKTOP NAVBAR ================= */}
           <div className="hidden md:flex items-center justify-between h-14">
             
-            {/* Logo */}
+            {/* Logo - Clean Text Title (Logo box removed as requested) */}
             <Link 
               to="/" 
-              className="flex items-center gap-3 font-heading text-lg font-black uppercase tracking-widest transition-transform duration-300 active:scale-98 shrink-0"
+              className="flex items-center font-heading text-xl font-black uppercase tracking-widest transition-transform duration-300 active:scale-98 shrink-0 hover:text-[var(--accent)] text-[var(--text-primary)]"
             >
-              <div className="p-2 rounded-xl bg-[var(--accent)] text-white shadow-md">
-                <Wrench className="w-4 h-4" />
-              </div>
-              <span className={`font-heading tracking-widest font-black ${isTransparent ? 'text-white' : 'text-[var(--text-primary)]'}`}>
-                {displayCompanyName}
-              </span>
+              <span>{displayCompanyName}</span>
             </Link>
 
             {/* Desktop Navigation Links */}
@@ -291,6 +283,7 @@ export default function Navbar() {
         <div className="flex-grow flex flex-col justify-center space-y-4 py-6 font-heading">
           {navLinks.map((link) => {
             const isActive = location.pathname === link.path;
+            const IconComponent = link.icon;
             return (
               <Link
                 key={link.path}
@@ -302,7 +295,12 @@ export default function Navbar() {
                     : 'text-[var(--text-primary)] hover:bg-[var(--surface-hover)]'
                 }`}
               >
-                <span>{link.name}</span>
+                <div className="flex items-center gap-3.5">
+                  {IconComponent && (
+                    <IconComponent className={`w-5 h-5 shrink-0 ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`} />
+                  )}
+                  <span>{link.name}</span>
+                </div>
                 <ChevronRight className="w-5 h-5 text-[var(--text-muted)] shrink-0 rtl:rotate-180" />
               </Link>
             );

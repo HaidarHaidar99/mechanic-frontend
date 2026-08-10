@@ -181,6 +181,8 @@ export default function ManageSettings() {
       imageBase64: '',
       title: { en: '', ar: '' },
       subtitle: { en: '', ar: '' },
+      titleColor: '#ffffff',
+      subtitleColor: '#d4d4d8',
       focalPoint: 'center center',
       order: slides.length + 1,
       enabled: true
@@ -608,6 +610,86 @@ export default function ManageSettings() {
                       onChange={(e) => handleSlideChange(slide.id, 'subtitle', e.target.value, 'ar')}
                       dir="rtl"
                     />
+                    <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-[var(--surface)] border border-[var(--border)] mt-1">
+                      
+                      {/* Title Color Picker */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-wider text-[var(--text-secondary)] block font-heading">
+                          {currentLang === 'en' ? 'Title Color' : 'لون العنوان'}
+                        </label>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {[
+                            { name: 'White', hex: '#ffffff' },
+                            { name: 'Red', hex: '#ef4444' },
+                            { name: 'Blue', hex: '#3b82f6' },
+                            { name: 'Gold', hex: '#eab308' },
+                            { name: 'Green', hex: '#22c55e' },
+                            { name: 'Purple', hex: '#a855f7' },
+                            { name: 'Black', hex: '#000000' }
+                          ].map(c => (
+                            <button
+                              key={c.hex}
+                              type="button"
+                              onClick={() => handleSlideChange(slide.id, 'titleColor', c.hex)}
+                              className={`w-6 h-6 rounded-full border-2 transition-all cursor-pointer shadow-sm ${
+                                (slide.titleColor || '#ffffff').toLowerCase() === c.hex.toLowerCase()
+                                  ? 'scale-125 border-[var(--accent)] ring-2 ring-[var(--accent)]/40'
+                                  : 'border-zinc-500/40 hover:scale-110'
+                              }`}
+                              style={{ backgroundColor: c.hex }}
+                              title={c.name}
+                            />
+                          ))}
+                          <input 
+                            type="color"
+                            value={slide.titleColor || '#ffffff'}
+                            onChange={(e) => handleSlideChange(slide.id, 'titleColor', e.target.value)}
+                            className="w-6 h-6 p-0 border border-[var(--border)] rounded-md cursor-pointer bg-transparent shrink-0"
+                            title="Custom Color"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Subtitle Color Picker */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-wider text-[var(--text-secondary)] block font-heading">
+                          {currentLang === 'en' ? 'Subtitle Color' : 'لون الوصف'}
+                        </label>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {[
+                            { name: 'Light Grey', hex: '#d4d4d8' },
+                            { name: 'White', hex: '#ffffff' },
+                            { name: 'Red', hex: '#ef4444' },
+                            { name: 'Blue', hex: '#3b82f6' },
+                            { name: 'Gold', hex: '#eab308' },
+                            { name: 'Green', hex: '#22c55e' },
+                            { name: 'Black', hex: '#000000' }
+                          ].map(c => (
+                            <button
+                              key={c.hex}
+                              type="button"
+                              onClick={() => handleSlideChange(slide.id, 'subtitleColor', c.hex)}
+                              className={`w-6 h-6 rounded-full border-2 transition-all cursor-pointer shadow-sm ${
+                                (slide.subtitleColor || '#d4d4d8').toLowerCase() === c.hex.toLowerCase()
+                                  ? 'scale-125 border-[var(--accent)] ring-2 ring-[var(--accent)]/40'
+                                  : 'border-zinc-500/40 hover:scale-110'
+                              }`}
+                              style={{ backgroundColor: c.hex }}
+                              title={c.name}
+                            />
+                          ))}
+                          <input 
+                            type="color"
+                            value={slide.subtitleColor || '#d4d4d8'}
+                            onChange={(e) => handleSlideChange(slide.id, 'subtitleColor', e.target.value)}
+                            className="w-6 h-6 p-0 border border-[var(--border)] rounded-md cursor-pointer bg-transparent shrink-0"
+                            title="Custom Color"
+                          />
+                        </div>
+                      </div>
+
+                    </div>
+
                     <div className="sm:col-span-2">
                       <Select
                         label="Image Focus / Crop Position (Mobile & Desktop)"

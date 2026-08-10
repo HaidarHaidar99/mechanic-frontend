@@ -114,6 +114,8 @@ export default function Home() {
       imageBase64: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" fill="%23000000"><rect width="1200" height="600" fill="%230a0a0c"/><path d="M0,0 L1200,600" stroke="%231a1a1e" stroke-width="6"/><path d="M1200,0 L0,600" stroke="%231a1a1e" stroke-width="6"/></svg>',
       title: { en: heroTitle, ar: heroTitle },
       subtitle: { en: heroSubtitle, ar: heroSubtitle },
+      titleColor: '#ffffff',
+      subtitleColor: '#d4d4d8',
       focalPoint: 'center center'
     }
   ];
@@ -121,8 +123,8 @@ export default function Home() {
   return (
     <div className="space-y-24 pb-20 max-w-full overflow-hidden">
       
-      {/* 1. Hero / Carousel Section (100dvh cover layout) */}
-      <section className="relative h-[100dvh] w-full overflow-hidden bg-black select-none z-0">
+      {/* 1. Hero / Carousel Section (Stable cover layout, avoids mobile resize jitter) */}
+      <section className="relative min-h-[520px] h-[82vh] md:h-[88vh] w-full overflow-hidden bg-black select-none z-0">
         
         {/* Stacked Images */}
         {activeSlides.map((slide, idx) => (
@@ -143,15 +145,21 @@ export default function Home() {
           </div>
         ))}
 
-        {/* Hero Text content (Strict White color to overlay dark images) */}
+        {/* Hero Text content (Admin configured custom text colors) */}
         <div className="absolute inset-0 z-10 flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto h-full space-y-4 pt-12 sm:pt-0">
           <span className="text-[10px] sm:text-xs font-black tracking-[0.25em] text-red-500 uppercase animate-fade-in">
             {currentLang === 'en' ? 'Performance Engineered' : 'هندسة الأداء المتميز'}
           </span>
-          <h1 className="text-3xl sm:text-5xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.15] uppercase drop-shadow-xl font-heading max-w-4xl">
+          <h1 
+            className="text-3xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight leading-[1.15] uppercase drop-shadow-xl font-heading max-w-4xl transition-colors duration-500"
+            style={{ color: activeSlides[activeSlide]?.titleColor || '#ffffff' }}
+          >
             {activeSlides[activeSlide]?.title[currentLang] || activeSlides[activeSlide]?.title['en']}
           </h1>
-          <p className="text-xs sm:text-base text-zinc-300 max-w-2xl leading-relaxed font-sans drop-shadow-md pb-4 line-clamp-3 sm:line-clamp-none">
+          <p 
+            className="text-xs sm:text-base max-w-2xl leading-relaxed font-sans drop-shadow-md pb-4 line-clamp-3 sm:line-clamp-none transition-colors duration-500"
+            style={{ color: activeSlides[activeSlide]?.subtitleColor || '#d4d4d8' }}
+          >
             {activeSlides[activeSlide]?.subtitle[currentLang] || activeSlides[activeSlide]?.subtitle['en']}
           </p>
           
