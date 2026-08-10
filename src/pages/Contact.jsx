@@ -219,7 +219,7 @@ export default function Contact() {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                placeholder={currentLang === 'en' ? 'John Doe' : 'اسمك الكريم'}
+                placeholder={currentLang === 'en' ? 'Enter your full name' : 'أدخل اسمك الكامل'}
               />
 
               {/* Email */}
@@ -231,7 +231,7 @@ export default function Contact() {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                placeholder="name@example.com"
+                placeholder="you@example.com"
               />
 
               {/* Phone */}
@@ -244,7 +244,7 @@ export default function Contact() {
                   value={formData.phone}
                   onChange={handleInputChange}
                   required
-                  placeholder={currentLang === 'en' ? '+962790000000' : 'رقم هاتفك'}
+                  placeholder="XX XXX XXX"
                 />
               </div>
 
@@ -260,23 +260,32 @@ export default function Contact() {
                   value={formData.message}
                   onChange={handleInputChange}
                   required
-                  placeholder={currentLang === 'en' ? 'Describe your request here...' : 'اكتب تفاصيل طلبك هنا...'}
+                  placeholder={currentLang === 'en' ? 'How can we help you?' : 'كيف يمكننا مساعدتك؟'}
                   className="px-4 py-3 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] rounded-xl text-xs placeholder-[var(--input-placeholder)] focus:outline-none focus:border-[var(--input-focus)] focus:ring-4 focus:ring-[var(--input-focus)]/10 transition-all resize-none font-sans"
                 />
               </div>
 
             </div>
 
-            {/* Submit Button */}
+            {/* Premium Submit Button */}
             <div className="pt-2 flex justify-end">
-              <Button
+              <button
                 type="submit"
-                variant="primary"
-                loading={submitting}
-                icon={Send}
+                disabled={submitting}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-gradient-to-r from-[var(--accent)] to-rose-600 hover:from-rose-600 hover:to-red-700 active:scale-98 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg shadow-rose-900/20 transition-all duration-300 cursor-pointer font-heading border border-rose-400/20 group"
               >
-                {t('contact.form.submit')}
-              </Button>
+                {submitting ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <span>{t('contact.form.submitting')}</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                    <span>{t('contact.form.submit')}</span>
+                  </>
+                )}
+              </button>
             </div>
 
           </form>

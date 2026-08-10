@@ -62,7 +62,7 @@ export default function Navbar() {
   const displayCompanyName = settings ? settings.companyName[currentLang] : 'MECHANIC';
 
   const isHome = location.pathname === '/';
-  const isTransparent = isHome && !scrolled;
+  const isTransparent = isHome && !scrolled && theme === 'dark';
 
   return (
     <>

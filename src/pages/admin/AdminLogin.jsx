@@ -25,9 +25,11 @@ export default function AdminLogin() {
   }, [admin, navigate]);
 
   useEffect(() => {
-    clearError();
-    return () => clearError();
-  }, []);
+    if (typeof clearError === 'function') clearError();
+    return () => {
+      if (typeof clearError === 'function') clearError();
+    };
+  }, [clearError]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();

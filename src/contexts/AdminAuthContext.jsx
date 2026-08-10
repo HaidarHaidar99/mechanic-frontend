@@ -7,6 +7,9 @@ export function AdminAuthProvider({ children }) {
   const [admin, setAdmin] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('admin_token'));
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const clearError = () => setError(null);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -31,18 +34,26 @@ export function AdminAuthProvider({ children }) {
   }, [token]);
 
   const login = async (email, password) => {
-    const res = await apiRequest('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password })
-    });
-    
-    if (res.success && res.data) {
-      localStorage.setItem('admin_token', res.data.token);
-      setToken(res.data.token);
-      setAdmin(res.data.admin);
-      return res.data.admin;
-    } else {
-      throw new Error(res.message || 'Login failed');
+    setError(null);
+    try {
+      const res = await apiRequest('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password })
+      });
+      
+      if (res.success && res.data) {
+        localStorage.setItem('admin_token', res.data.token);
+        setToken(res.data.token);
+        setAdmin(res.data.admin);
+        return res.data.admin;
+      } else {
+        const msg = res.message || 'Login failed';
+        setError(msg);
+        throw new Error(msg);
+      }
+    } catch (err) {
+      setError(err.message || 'Login failed');
+      throw err;
     }
   };
 
@@ -50,10 +61,11 @@ export function AdminAuthProvider({ children }) {
     localStorage.removeItem('admin_token');
     setToken(null);
     setAdmin(null);
+    setError(null);
   };
 
   return (
-    <AdminAuthContext.Provider value={{ admin, token, loading, login, logout, setAdmin }}>
+    <AdminAuthContext.Provider value={{ admin, token, loading, login, logout, setAdmin, error, clearError }}>
       {children}
     </AdminAuthContext.Provider>
   );

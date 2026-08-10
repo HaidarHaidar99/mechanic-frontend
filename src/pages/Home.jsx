@@ -318,7 +318,7 @@ export default function Home() {
         </section>
 
         {/* 4. Contact / WhatsApp CTA */}
-        <section ref={ctaRef} className="bg-gradient-to-br from-red-650 to-red-755 text-white rounded-3xl p-8 sm:p-12 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-8 relative overflow-hidden">
+        <section ref={ctaRef} className="bg-gradient-to-br from-red-600 via-rose-600 to-red-700 text-white rounded-3xl p-8 sm:p-12 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-8 relative overflow-hidden border border-red-500/30">
           <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full filter blur-3xl" />
           
           <div className="space-y-4 max-w-xl text-center lg:text-left rtl:lg:text-right z-10">

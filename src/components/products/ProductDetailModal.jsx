@@ -62,21 +62,21 @@ export default function ProductDetailModal({ product, onClose }) {
   return (
     <div 
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm animate-fade-in overflow-y-auto"
     >
-      <div className="bg-[var(--surface)] w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl relative border border-[var(--border)] max-h-[85vh] flex flex-col md:flex-row animate-scale-up">
+      <div className="bg-[var(--surface)] w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl relative border border-[var(--border)] max-h-[88vh] flex flex-col md:flex-row my-auto animate-scale-up">
         
         {/* Close Button */}
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 rtl:right-auto rtl:left-4 z-10 p-2 bg-black/45 hover:bg-black/60 md:bg-[var(--surface-elevated)] md:hover:bg-[var(--surface-hover)] text-white md:text-[var(--text-primary)] rounded-full transition-all cursor-pointer border border-transparent md:border-[var(--border)]"
+          className="absolute top-4 right-4 rtl:right-auto rtl:left-4 z-20 p-2 bg-black/50 hover:bg-black/70 md:bg-[var(--surface-elevated)] md:hover:bg-[var(--surface-hover)] text-white md:text-[var(--text-primary)] rounded-full transition-all cursor-pointer border border-white/20 md:border-[var(--border)] shadow-md"
           aria-label={t('product_modal.close')}
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Product Image Column */}
-        <div className="w-full md:w-1/2 aspect-square md:aspect-auto bg-[var(--page-bg)] relative border-b md:border-b-0 md:border-r border-[var(--border)] shrink-0">
+        <div className="w-full md:w-1/2 aspect-square max-h-[35vh] md:max-h-none md:aspect-auto bg-[var(--page-bg)] relative border-b md:border-b-0 md:border-r border-[var(--border)] shrink-0">
           <img 
             src={product.imageBase64} 
             alt={name} 
@@ -85,7 +85,7 @@ export default function ProductDetailModal({ product, onClose }) {
         </div>
 
         {/* Content Column */}
-        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-between overflow-y-auto max-h-[40vh] md:max-h-[80vh]">
+        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-between overflow-y-auto max-h-[50vh] md:max-h-[85vh]">
           
           <div className="space-y-4">
             {/* Category */}

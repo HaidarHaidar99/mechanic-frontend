@@ -199,7 +199,7 @@ export default function Cart() {
           <button
             onClick={handleCheckout}
             disabled={!settings || !settings.whatsapp}
-            className="w-full inline-flex items-center justify-center gap-2.5 py-4 bg-green-650 hover:bg-green-700 active:bg-green-750 disabled:bg-[var(--button-disabled-bg)] disabled:text-[var(--button-disabled-text)] text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer font-heading"
+            className="w-full inline-flex items-center justify-center gap-2.5 py-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:bg-[var(--button-disabled-bg)] disabled:text-[var(--button-disabled-text)] text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-900/20 transition-all cursor-pointer font-heading border border-emerald-500/30"
           >
             <MessageSquare className="w-4.5 h-4.5 fill-white shrink-0" />
             <span>{t('cart.checkout')}</span>

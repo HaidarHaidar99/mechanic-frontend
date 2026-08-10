@@ -46,7 +46,7 @@ export default function Footer() {
                   href={facebook} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="p-2.5 bg-zinc-900 text-zinc-400 hover:bg-red-650 hover:text-white rounded-xl transition-all duration-300"
+                  className="p-2.5 bg-zinc-900 text-zinc-400 hover:bg-red-600 hover:text-white rounded-xl transition-all duration-300"
                   aria-label="Facebook"
                 >
                   <Facebook className="w-4 h-4" />
@@ -57,7 +57,7 @@ export default function Footer() {
                   href={instagram} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="p-2.5 bg-zinc-900 text-zinc-400 hover:bg-red-650 hover:text-white rounded-xl transition-all duration-300"
+                  className="p-2.5 bg-zinc-900 text-zinc-400 hover:bg-red-600 hover:text-white rounded-xl transition-all duration-300"
                   aria-label="Instagram"
                 >
                   <Instagram className="w-4 h-4" />
@@ -131,7 +131,7 @@ export default function Footer() {
                 rel="noopener noreferrer" 
                 className="inline-flex items-center gap-2 text-xs font-black text-white hover:text-green-500 transition-colors uppercase tracking-widest font-heading"
               >
-                <MessageSquare className="w-4.5 h-4.5 text-green-550 fill-green-550" />
+                <MessageSquare className="w-4.5 h-4.5 text-green-500 fill-green-500" />
                 <span>{currentLang === 'en' ? 'WhatsApp Support' : 'دعم واتساب'}</span>
               </a>
             )}
@@ -140,15 +140,10 @@ export default function Footer() {
         </div>
 
         {/* Bottom copyright banner */}
-        <div className="border-t border-zinc-900 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-black uppercase tracking-widest text-zinc-500">
+        <div className="border-t border-zinc-900 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-center gap-4 text-[10px] font-black uppercase tracking-widest text-zinc-500">
           <p>
             &copy; {currentYear} {displayCompanyName.toUpperCase()}. {currentLang === 'en' ? 'All Rights Reserved.' : 'جميع الحقوق محفوظة.'}
           </p>
-          <div className="flex gap-4">
-            <Link to="/admin" className="hover:text-red-500 transition-colors">
-              {currentLang === 'en' ? 'Console Login' : 'لوحة التحكم'}
-            </Link>
-          </div>
         </div>
 
       </div>

@@ -8,12 +8,7 @@ export function ThemeProvider({ children }) {
     if (cached === 'light' || cached === 'dark') {
       return cached;
     }
-    // Check system preference
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      return systemDark ? 'dark' : 'light';
-    }
-    return 'light';
+    return 'dark';
   });
 
   useEffect(() => {
