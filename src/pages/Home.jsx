@@ -25,7 +25,8 @@ export default function Home() {
   
   const currentLang = i18n.language || 'en';
 
-  const [slides, setSlides] = useState([]);
+  const [slides, setSlides] = useState(cachedCarousel ? cachedCarousel.slides.filter(s => s.enabled) : []);
+  const [slidesLoading, setSlidesLoading] = useState(!cachedCarousel);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const [productsLoading, setProductsLoading] = useState(true);
@@ -42,9 +43,11 @@ export default function Home() {
     const fetchSlides = async () => {
       if (cachedCarousel && (Date.now() - cachedCarouselTime < CAROUSEL_CACHE_DURATION)) {
         setSlides(cachedCarousel.slides.filter(s => s.enabled));
+        setSlidesLoading(false);
         return;
       }
       try {
+        setSlidesLoading(true);
         const res = await apiRequest('/settings/carousel');
         if (res.success && res.data) {
           const enabledSlides = res.data.slides.filter(s => s.enabled);
@@ -54,6 +57,8 @@ export default function Home() {
         }
       } catch (err) {
         console.error('Error fetching carousel slides:', err);
+      } finally {
+        setSlidesLoading(false);
       }
     };
     fetchSlides();
@@ -94,7 +99,7 @@ export default function Home() {
     setActiveSlide(index);
   };
 
-  if (settingsLoading) {
+  if (settingsLoading || slidesLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
         <Wrench className="w-12 h-12 text-[var(--accent)] animate-spin" />

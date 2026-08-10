@@ -331,7 +331,7 @@ export default function Navbar() {
               <ShoppingCart className="w-5 h-5 text-[var(--text-muted)]" />
               <span>{t('nav.cart')}</span>
             </div>
-            <span className="text-xs font-black bg-[var(--accent)] text-white px-2.5 py-1 rounded-full">
+            <span className="text-xs font-black bg-[var(--surface-elevated)] border border-[var(--border)] px-2.5 py-1 rounded-full text-[var(--accent)]">
               {getItemCount()}
             </span>
           </Link>
