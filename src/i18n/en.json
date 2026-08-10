@@ -57,5 +57,23 @@
       "success": "Your message was sent successfully!",
       "error": "Failed to send your message. Please try again."
     }
+  },
+  "admin": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "products": "Products",
+      "announcements": "Announcements",
+      "messages": "Messages",
+      "settings": "Settings",
+      "profile": "My Profile",
+      "admins": "Manage Admins",
+      "logout": "Log Out"
+    },
+    "dashboard": {
+      "products": "Total Products",
+      "messages": "Total Messages",
+      "admins": "Total Admins",
+      "recent_messages": "Recent Messages"
+    }
   }
 }

@@ -21,17 +21,17 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const menuItems = [
-    { name: t('admin.nav.dashboard') || 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
-    { name: t('admin.nav.products') || 'Products', path: '/admin/products', icon: ShoppingBag },
-    { name: t('admin.nav.announcements') || 'Announcements', path: '/admin/announcements', icon: Megaphone },
-    { name: t('admin.nav.messages') || 'Messages', path: '/admin/messages', icon: Mail },
-    { name: t('admin.nav.settings') || 'Settings', path: '/admin/settings', icon: Settings },
-    { name: t('admin.nav.profile') || 'My Profile', path: '/admin/profile', icon: User },
+    { name: t('admin.nav.dashboard', currentLang === 'en' ? 'Dashboard' : 'لوحة التحكم'), path: '/admin/dashboard', icon: LayoutDashboard },
+    { name: t('admin.nav.products', currentLang === 'en' ? 'Products' : 'المنتجات'), path: '/admin/products', icon: ShoppingBag },
+    { name: t('admin.nav.announcements', currentLang === 'en' ? 'Announcements' : 'الإعلانات'), path: '/admin/announcements', icon: Megaphone },
+    { name: t('admin.nav.messages', currentLang === 'en' ? 'Messages' : 'الرسائل'), path: '/admin/messages', icon: Mail },
+    { name: t('admin.nav.settings', currentLang === 'en' ? 'Settings' : 'الإعدادات'), path: '/admin/settings', icon: Settings },
+    { name: t('admin.nav.profile', currentLang === 'en' ? 'My Profile' : 'ملفي الشخصي'), path: '/admin/profile', icon: User },
   ];
 
   if (admin && admin.role === 'super_admin') {
     menuItems.push({ 
-      name: t('admin.nav.admins') || 'Manage Admins', 
+      name: t('admin.nav.admins', currentLang === 'en' ? 'Manage Admins' : 'إدارة المشرفين'), 
       path: '/admin/admins', 
       icon: Users 
     });
@@ -175,7 +175,7 @@ export default function AdminLayout() {
             className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[var(--danger)] hover:bg-red-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer active:scale-98"
           >
             <LogOut className="w-4 h-4" />
-            <span>{t('admin.nav.logout') || 'Log Out'}</span>
+            <span>{t('admin.nav.logout', currentLang === 'en' ? 'Log Out' : 'تسجيل الخروج')}</span>
           </button>
         </div>
       </aside>

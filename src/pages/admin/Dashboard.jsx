@@ -57,7 +57,7 @@ export default function Dashboard() {
           {currentLang === 'en' ? 'Console Overview' : 'نظرة عامة على لوحة التحكم'}
         </span>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] uppercase tracking-tight mt-1 font-heading">
-          {t('admin.nav.dashboard') || 'Dashboard'}
+          {t('admin.nav.dashboard', currentLang === 'en' ? 'Dashboard' : 'لوحة التحكم')}
         </h1>
         {admin && (
           <p className="text-xs text-[var(--text-secondary)] mt-1 font-semibold leading-relaxed">
@@ -78,7 +78,7 @@ export default function Dashboard() {
         >
           <div className="space-y-1">
             <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest block font-heading">
-              {t('admin.dashboard.products') || 'Total Products'}
+              {t('admin.dashboard.products', currentLang === 'en' ? 'Total Products' : 'إجمالي المنتجات')}
             </span>
             <div className="text-3xl font-black text-[var(--text-primary)] font-heading">
               {loading ? <Skeleton variant="text" width="40px" height="30px" className="mt-1" /> : stats.productsCount}
@@ -96,7 +96,7 @@ export default function Dashboard() {
         >
           <div className="space-y-1">
             <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest block font-heading">
-              {t('admin.dashboard.messages') || 'Total Messages'}
+              {t('admin.dashboard.messages', currentLang === 'en' ? 'Total Messages' : 'إجمالي الرسائل')}
             </span>
             <div className="text-3xl font-black text-[var(--text-primary)] font-heading">
               {loading ? <Skeleton variant="text" width="40px" height="30px" className="mt-1" /> : stats.messagesCount}
@@ -116,7 +116,7 @@ export default function Dashboard() {
         >
           <div className="space-y-1">
             <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest block font-heading">
-              {t('admin.dashboard.admins') || 'Total Admins'}
+              {t('admin.dashboard.admins', currentLang === 'en' ? 'Total Admins' : 'إجمالي المشرفين')}
             </span>
             <div className="text-3xl font-black text-[var(--text-primary)] font-heading">
               {loading ? <Skeleton variant="text" width="40px" height="30px" className="mt-1" /> : stats.adminsCount}
@@ -134,7 +134,7 @@ export default function Dashboard() {
         
         <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
           <h2 className="text-sm font-extrabold uppercase tracking-widest text-[var(--text-primary)] font-heading">
-            {t('admin.dashboard.recent_messages') || 'Recent Messages'}
+            {t('admin.dashboard.recent_messages', currentLang === 'en' ? 'Recent Messages' : 'أحدث الرسائل')}
           </h2>
           <Link 
             to="/admin/messages" 

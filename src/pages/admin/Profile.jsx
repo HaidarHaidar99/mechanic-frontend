@@ -177,7 +177,7 @@ export default function Profile() {
           Account control
         </span>
         <h1 className="text-2xl font-extrabold text-[var(--text-primary)] uppercase tracking-tight mt-1 font-heading">
-          {t('admin.nav.profile') || 'My Profile'}
+          {t('admin.nav.profile', currentLang === 'en' ? 'My Profile' : 'ملفي الشخصي')}
         </h1>
         <p className="text-xs text-[var(--text-secondary)] mt-1">
           {currentLang === 'en' ? 'Manage your personal admin credentials and password.' : 'إدارة بيانات حساب المشرف الخاص بك وكلمة المرور.'}

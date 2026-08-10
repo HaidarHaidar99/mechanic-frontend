@@ -290,7 +290,7 @@ export default function ManageSettings() {
             System configuration
           </span>
           <h1 className="text-2xl font-extrabold text-[var(--text-primary)] uppercase tracking-tight mt-1 font-heading">
-            {t('admin.nav.settings')}
+            {t('admin.nav.settings', currentLang === 'en' ? 'Settings' : 'الإعدادات')}
           </h1>
           <p className="text-xs text-[var(--text-secondary)] mt-1">
             {currentLang === 'en' ? 'Configure global store profiles, slides, and default themes.' : 'تعديل الإعدادات العامة لبيانات المتجر، الشرائح، والسمة الافتراضية.'}
