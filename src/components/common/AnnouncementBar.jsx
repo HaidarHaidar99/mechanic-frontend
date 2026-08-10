@@ -23,6 +23,7 @@ export default function AnnouncementBar() {
   const activeList = announcements.filter(a => a.enabled !== false);
   const displayList = activeList.length > 0 ? activeList : [DEFAULT_ANNOUNCEMENT];
 
+  // Rotate announcements every 4 seconds
   useEffect(() => {
     if (displayList.length <= 1) return;
 
@@ -32,7 +33,7 @@ export default function AnnouncementBar() {
         setCurrentIndex(prevIndex => (prevIndex + 1) % displayList.length);
         setIsVisible(true);
       }, 300);
-    }, 5000);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [displayList.length]);
@@ -41,16 +42,21 @@ export default function AnnouncementBar() {
   const displayText = activeAnnouncement?.text?.[currentLang] || activeAnnouncement?.text?.['en'] || '';
 
   return (
-    <div className="w-full max-w-full overflow-hidden bg-zinc-950 dark:bg-black border-b border-zinc-900 text-white text-[10px] sm:text-xs font-extrabold py-2 px-4 text-center select-none uppercase tracking-widest relative z-50 font-heading shrink-0 block">
+    <div className="w-full max-w-full overflow-hidden bg-[var(--surface-elevated)] border-b border-[var(--border)] text-[var(--text-primary)] text-[10px] sm:text-xs font-extrabold py-2 px-4 text-center select-none uppercase tracking-widest relative z-50 font-heading shrink-0 block transition-colors duration-300 shadow-sm">
       <div 
         className={`transition-all duration-300 ease-out flex items-center justify-center gap-2 max-w-full ${
-          isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-1'
+          isVisible ? 'opacity-100 transform translate-y-0 scale-100' : 'opacity-0 transform -translate-y-1 scale-98'
         }`}
       >
         <span className="inline-block w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse shrink-0" />
         <span className="truncate max-w-full">
           {displayText}
         </span>
+        {displayList.length > 1 && (
+          <span className="text-[9px] font-black opacity-60 ml-2 px-1.5 py-0.5 rounded bg-[var(--surface-hover)] border border-[var(--border)]">
+            {currentIndex + 1}/{displayList.length}
+          </span>
+        )}
       </div>
     </div>
   );
