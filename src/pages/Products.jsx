@@ -10,6 +10,23 @@ import Input from '../components/common/Input';
 import Select from '../components/common/Select';
 import EmptyState from '../components/common/EmptyState';
 import Skeleton from '../components/common/Skeleton';
+import { useScrollReveal } from '../hooks/useScrollReveal';
+
+function AnimatedProductCard({ product, onOpenDetails, index }) {
+  const cardRef = useScrollReveal({ once: false });
+  return (
+    <div 
+      ref={cardRef} 
+      className="h-full"
+      style={{ transitionDelay: `${(index % 4) * 80}ms` }}
+    >
+      <ProductCard 
+        product={product} 
+        onOpenDetails={onOpenDetails} 
+      />
+    </div>
+  );
+}
 
 export default function Products() {
   const { t, i18n } = useTranslation();
@@ -122,12 +139,13 @@ export default function Products() {
             : 'يرجى تغيير كلمة البحث أو التصنيف المحدد.'}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch animate-fade-in">
-          {filteredProducts.map(product => (
-            <ProductCard 
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
+          {filteredProducts.map((product, index) => (
+            <AnimatedProductCard 
               key={product.id} 
               product={product} 
               onOpenDetails={setSelectedProduct}
+              index={index}
             />
           ))}
         </div>

@@ -5,7 +5,7 @@ import { useSettings } from '../../contexts/SettingsContext';
 import { compressImage } from '../../utils/imageCompression';
 import { 
   Settings, Image, Plus, Trash2, Upload, AlertCircle, 
-  CheckCircle2, RefreshCw, ChevronUp, ChevronDown, Save 
+  CheckCircle2, RefreshCw, ChevronUp, ChevronDown, Save, Film, Link as LinkIcon 
 } from 'lucide-react';
 import Button from '../../components/common/Button';
 import IconButton from '../../components/common/IconButton';
@@ -178,7 +178,10 @@ export default function ManageSettings() {
     }
     const newSlide = {
       id: Math.random().toString(36).substr(2, 9),
+      mediaType: 'image',
       imageBase64: '',
+      videoUrl: '',
+      videoBase64: '',
       title: { en: '', ar: '' },
       subtitle: { en: '', ar: '' },
       titleColor: '#ffffff',
@@ -227,6 +230,19 @@ export default function ManageSettings() {
     }
   };
 
+  const handleSlideVideoUpload = (id, file) => {
+    if (!file) return;
+    if (file.size > 15 * 1024 * 1024) {
+      alert(currentLang === 'en' ? 'Video file size must be under 15MB' : 'حجم ملف الفيديو يجب أن يكون أقل من 15 ميجابايت');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      handleSlideChange(id, 'videoBase64', e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleMoveSlide = (index, direction) => {
     const nextIndex = direction === 'up' ? index - 1 : index + 1;
     if (nextIndex < 0 || nextIndex >= slides.length) return;
@@ -250,11 +266,16 @@ export default function ManageSettings() {
 
     for (let i = 0; i < slides.length; i++) {
       const slide = slides[i];
-      if (!slide.imageBase64 || !slide.title.en.trim() || !slide.title.ar.trim() ||
+      const isVideo = slide.mediaType === 'video';
+      const hasMedia = isVideo 
+        ? (slide.videoUrl?.trim() || slide.videoBase64?.trim() || slide.imageBase64?.trim())
+        : slide.imageBase64?.trim();
+
+      if (!hasMedia || !slide.title.en.trim() || !slide.title.ar.trim() ||
           !slide.subtitle.en.trim() || !slide.subtitle.ar.trim()) {
         setErrorMsg(currentLang === 'en' 
-          ? `Slide ${i + 1} is missing mandatory title, subtitle, or image.` 
-          : `الشريحة رقم ${i + 1} تفتقر للعنوان أو الوصف أو صورة الخلفية.`);
+          ? `Slide ${i + 1} is missing mandatory title, subtitle, or background media.` 
+          : `الشريحة رقم ${i + 1} تفتقر للعنوان أو الوصف أو وسائط الخلفية.`);
         return;
       }
     }
@@ -568,22 +589,102 @@ export default function ManageSettings() {
                   key={slide.id}
                   className="flex flex-col md:flex-row gap-5 p-5 border border-[var(--border)] rounded-2xl bg-[var(--surface-elevated)]"
                 >
-                  {/* Image Upload Box */}
-                  <div className="w-full md:w-36 aspect-[2/1] md:aspect-square border border-dashed border-[var(--border-strong)] hover:bg-[var(--surface-hover)] rounded-xl relative flex items-center justify-center shrink-0 overflow-hidden">
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={(e) => handleSlideImageUpload(slide.id, e.target.files[0])} 
-                      className="absolute inset-0 opacity-0 cursor-pointer z-10 font-sans" 
-                    />
-                    {slide.imageBase64 ? (
-                      <img src={slide.imageBase64} alt="Slide Preview" className="w-full h-full object-cover" />
+                  {/* Media Selector & Upload Box */}
+                  <div className="w-full md:w-48 flex flex-col gap-2 shrink-0">
+                    
+                    {/* Media Type Toggle */}
+                    <div className="flex bg-[var(--surface)] border border-[var(--border)] p-1 rounded-xl font-heading text-[10px] font-bold">
+                      <button
+                        type="button"
+                        onClick={() => handleSlideChange(slide.id, 'mediaType', 'image')}
+                        className={`flex-1 py-1.5 flex items-center justify-center gap-1 rounded-lg transition-all cursor-pointer ${
+                          (slide.mediaType || 'image') === 'image'
+                            ? 'bg-[var(--accent)] text-white font-black'
+                            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                        }`}
+                      >
+                        <Image className="w-3.5 h-3.5" />
+                        <span>Image</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSlideChange(slide.id, 'mediaType', 'video')}
+                        className={`flex-1 py-1.5 flex items-center justify-center gap-1 rounded-lg transition-all cursor-pointer ${
+                          slide.mediaType === 'video'
+                            ? 'bg-[var(--accent)] text-white font-black'
+                            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                        }`}
+                      >
+                        <Film className="w-3.5 h-3.5" />
+                        <span>Video</span>
+                      </button>
+                    </div>
+
+                    {/* Preview Box */}
+                    <div className="w-full aspect-video border border-dashed border-[var(--border-strong)] hover:bg-[var(--surface-hover)] rounded-xl relative flex items-center justify-center overflow-hidden bg-black/30">
+                      {(slide.mediaType === 'video') ? (
+                        slide.videoBase64 || slide.videoUrl || (slide.imageBase64 && slide.imageBase64.startsWith('data:video/')) ? (
+                          <video 
+                            src={slide.videoBase64 || slide.videoUrl || slide.imageBase64} 
+                            autoPlay 
+                            loop 
+                            muted 
+                            className="w-full h-full object-cover" 
+                          />
+                        ) : (
+                          <div className="text-center text-[var(--text-secondary)] flex flex-col items-center p-2">
+                            <Film className="w-5 h-5 mb-0.5 text-[var(--accent)]" />
+                            <span className="text-[9px] font-black uppercase tracking-widest">No Video</span>
+                          </div>
+                        )
+                      ) : (
+                        slide.imageBase64 ? (
+                          <img src={slide.imageBase64} alt="Slide Preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="text-center text-[var(--text-secondary)] flex flex-col items-center p-2">
+                            <Upload className="w-5 h-5 mb-0.5" />
+                            <span className="text-[9px] font-black uppercase tracking-widest">Upload Image</span>
+                          </div>
+                        )
+                      )}
+                    </div>
+
+                    {/* Upload / Link controls */}
+                    {slide.mediaType === 'video' ? (
+                      <div className="space-y-1.5">
+                        <div className="relative">
+                          <input 
+                            type="file" 
+                            accept="video/mp4,video/webm,video/ogg,video/quicktime" 
+                            onChange={(e) => handleSlideVideoUpload(slide.id, e.target.files[0])} 
+                            className="absolute inset-0 opacity-0 cursor-pointer z-10 font-sans" 
+                          />
+                          <button type="button" className="w-full py-1.5 px-2 bg-[var(--surface)] hover:bg-[var(--surface-hover)] border border-[var(--border)] rounded-lg text-[9px] font-extrabold uppercase tracking-wider text-[var(--text-primary)] flex items-center justify-center gap-1 cursor-pointer">
+                            <Upload className="w-3 h-3 text-[var(--accent)]" />
+                            <span>Upload Video File</span>
+                          </button>
+                        </div>
+                        <Input 
+                          placeholder="Or Video Direct URL (mp4/webm)"
+                          value={slide.videoUrl || ''}
+                          onChange={(e) => handleSlideChange(slide.id, 'videoUrl', e.target.value)}
+                        />
+                      </div>
                     ) : (
-                      <div className="text-center text-[var(--text-secondary)] flex flex-col items-center">
-                        <Upload className="w-5 h-5 mb-0.5" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">Choose Image</span>
+                      <div className="relative">
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={(e) => handleSlideImageUpload(slide.id, e.target.files[0])} 
+                          className="absolute inset-0 opacity-0 cursor-pointer z-10 font-sans" 
+                        />
+                        <button type="button" className="w-full py-1.5 px-2 bg-[var(--surface)] hover:bg-[var(--surface-hover)] border border-[var(--border)] rounded-lg text-[9px] font-extrabold uppercase tracking-wider text-[var(--text-primary)] flex items-center justify-center gap-1 cursor-pointer">
+                          <Upload className="w-3 h-3 text-[var(--accent)]" />
+                          <span>Choose Image</span>
+                        </button>
                       </div>
                     )}
+
                   </div>
 
                   {/* Texts details input */}

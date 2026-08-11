@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate as useNavigateDom, Link as LinkDom } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../contexts/SettingsContext';
+import { useFavorites } from '../contexts/FavoritesContext';
 import { getActiveProducts } from '../services/products.api';
 import { apiRequest } from '../services/api';
 import ProductCard from '../components/products/ProductCard';
@@ -17,6 +18,22 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 let cachedCarousel = null;
 let cachedCarouselTime = null;
 const CAROUSEL_CACHE_DURATION = 120000; // 2 minutes
+
+function AnimatedProductCard({ product, onOpenDetails, index }) {
+  const cardRef = useScrollReveal({ once: false });
+  return (
+    <div 
+      ref={cardRef} 
+      className="h-full"
+      style={{ transitionDelay: `${(index % 3) * 120}ms` }}
+    >
+      <ProductCard 
+        product={product} 
+        onOpenDetails={onOpenDetails} 
+      />
+    </div>
+  );
+}
 
 export default function Home() {
   const { t, i18n } = useTranslation();
@@ -67,14 +84,20 @@ export default function Home() {
     fetchSlides();
   }, []);
 
+  const { cleanupStaleFavorites } = useFavorites();
+
   // Fetch Featured Products
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
         setProductsLoading(true);
         const data = await getActiveProducts();
-        const featured = data.filter(p => p.featured && p.isActive);
+        const activeProducts = data.filter(p => p.isActive);
+        const featured = activeProducts.filter(p => p.featured);
         setFeaturedProducts(featured);
+        if (cleanupStaleFavorites) {
+          cleanupStaleFavorites(activeProducts.map(p => p.id));
+        }
       } catch (err) {
         console.error('Error fetching featured products:', err);
       } finally {
@@ -134,24 +157,41 @@ export default function Home() {
       {/* 1. Hero / Carousel Section (Stable cover layout, avoids mobile resize jitter) */}
       <section className="relative min-h-[520px] h-[82vh] md:h-[88vh] w-full overflow-hidden bg-black select-none z-0">
         
-        {/* Stacked Images */}
-        {activeSlides.map((slide, idx) => (
-          <div 
-            key={slide.id}
-            className={`absolute inset-0 z-0 transition-opacity duration-[1000ms] ease-in-out ${
-              idx === activeSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-102'
-            }`}
-          >
-            <img 
-              src={slide.imageBase64} 
-              alt={slide.title[currentLang] || 'Hero Slide'} 
-              className="w-full h-full object-cover brightness-[0.35]"
-              style={{ objectPosition: slide.focalPoint || 'center center' }}
-            />
-            {/* Dark Vignette Overlay to ensure text visibility */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/60" />
-          </div>
-        ))}
+        {/* Stacked Images / Videos */}
+        {activeSlides.map((slide, idx) => {
+          const isVideo = slide.mediaType === 'video' || !!slide.videoBase64 || !!slide.videoUrl || (slide.imageBase64 && slide.imageBase64.startsWith('data:video/'));
+          const videoSrc = slide.videoBase64 || slide.videoUrl || slide.imageBase64;
+
+          return (
+            <div 
+              key={slide.id}
+              className={`absolute inset-0 z-0 transition-opacity duration-[1000ms] ease-in-out ${
+                idx === activeSlide ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-102 pointer-events-none'
+              }`}
+            >
+              {isVideo && videoSrc ? (
+                <video 
+                  src={videoSrc} 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  className="w-full h-full object-cover brightness-[0.38]"
+                  style={{ objectPosition: slide.focalPoint || 'center center' }}
+                />
+              ) : (
+                <img 
+                  src={slide.imageBase64} 
+                  alt={slide.title[currentLang] || 'Hero Slide'} 
+                  className="w-full h-full object-cover brightness-[0.35]"
+                  style={{ objectPosition: slide.focalPoint || 'center center' }}
+                />
+              )}
+              {/* Dark Vignette Overlay to ensure text visibility */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/60" />
+            </div>
+          );
+        })}
 
         {/* Hero Text content (Admin configured custom text colors) */}
         <div className="absolute inset-0 z-10 flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto h-full space-y-4 pt-12 sm:pt-0">
@@ -243,13 +283,14 @@ export default function Home() {
               description={currentLang === 'en' ? 'No featured products are available at the moment.' : 'لا تتوفر منتجات مميزة في الوقت الحالي.'}
             />
           ) : (
-            <div ref={featuredProductsRef} className="space-y-8" style={{ transitionDelay: '200ms' }}>
+            <div ref={featuredProductsRef} className="space-y-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {featuredProducts.slice(0, 6).map(product => (
-                  <ProductCard 
+                {featuredProducts.slice(0, 6).map((product, index) => (
+                  <AnimatedProductCard 
                     key={product.id}
                     product={product} 
                     onOpenDetails={setSelectedProduct}
+                    index={index}
                   />
                 ))}
               </div>
