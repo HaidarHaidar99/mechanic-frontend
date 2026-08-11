@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useCart } from '../../contexts/CartContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
 import { useSettings } from '../../contexts/SettingsContext';
-import { Heart, ShoppingCart, Eye, Check, Zap } from 'lucide-react';
+import { Heart, ShoppingCart, Eye, Check, ShoppingBag } from 'lucide-react';
 import Button from '../common/Button';
 import IconButton from '../common/IconButton';
 import Badge from '../common/Badge';
@@ -158,7 +158,7 @@ export default function ProductCard({ product, onOpenDetails }) {
               className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white transition-all cursor-pointer font-heading shadow-sm"
               title={currentLang === 'en' ? 'Buy Now via WhatsApp' : 'شراء الآن عبر واتساب'}
             >
-              <Zap className="w-3.5 h-3.5 fill-current text-amber-300" />
+              <ShoppingBag className="w-3.5 h-3.5 fill-current/20 text-emerald-100" />
               <span>{currentLang === 'en' ? 'Buy Now' : 'شراء الآن'}</span>
             </button>
           </div>

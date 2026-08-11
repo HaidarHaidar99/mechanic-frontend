@@ -32,8 +32,10 @@ export default function Home() {
   const [productsLoading, setProductsLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const featuredRef = useScrollReveal();
-  const aboutRef = useScrollReveal();
+  const featuredHeaderRef = useScrollReveal();
+  const featuredProductsRef = useScrollReveal();
+  const aboutLeftRef = useScrollReveal();
+  const aboutRightRef = useScrollReveal();
   const ctaRef = useScrollReveal();
 
   const autoPlayRef = useRef(null);
@@ -206,8 +208,8 @@ export default function Home() {
       <Container className="space-y-28">
         
         {/* 2. Featured Products Section */}
-        <section ref={featuredRef} className="space-y-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 border-b border-[var(--border)] pb-6">
+        <section className="space-y-10 sm:space-y-16">
+          <div ref={featuredHeaderRef} className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[var(--border)] pb-6">
             <div>
               <span className="text-[10px] font-black tracking-widest text-[var(--accent)] uppercase font-heading">
                 {currentLang === 'en' ? 'Our Catalog' : 'كتالوج المنتجات'}
@@ -259,15 +261,15 @@ export default function Home() {
               description={currentLang === 'en' ? 'No featured products are available at the moment.' : 'لا تتوفر منتجات مميزة في الوقت الحالي.'}
             />
           ) : (
-            <div className="space-y-8">
-              {/* Right Horizontal Scroll Container */}
+            <div ref={featuredProductsRef} className="space-y-8" style={{ transitionDelay: '200ms' }}>
+              {/* Right Horizontal Scroll Container (2 Rows) */}
               <div 
                 ref={productScrollRef}
-                className="flex gap-6 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory scrollbar-thin scrollbar-thumb-[var(--border-strong)]"
+                className="grid grid-rows-2 sm:grid-rows-1 grid-flow-col auto-cols-[280px] sm:auto-cols-[320px] gap-6 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory scrollbar-thin scrollbar-thumb-[var(--border-strong)]"
               >
                 {/* 6 Products Max */}
                 {featuredProducts.slice(0, 6).map(product => (
-                  <div key={product.id} className="w-[280px] sm:w-[320px] shrink-0 snap-start">
+                  <div key={product.id} className="w-full h-full shrink-0 snap-start">
                     <ProductCard 
                       product={product} 
                       onOpenDetails={setSelectedProduct}
@@ -276,7 +278,7 @@ export default function Home() {
                 ))}
 
                 {/* View All Products End Card */}
-                <div className="w-[240px] sm:w-[280px] shrink-0 snap-start flex">
+                <div className="w-full h-full shrink-0 snap-start row-span-2 sm:row-span-1 flex">
                   <LinkDom 
                     to="/products"
                     className="w-full bg-gradient-to-br from-[var(--surface-elevated)] to-[var(--surface)] border border-[var(--border)] hover:border-[var(--accent)] rounded-3xl p-6 flex flex-col items-center justify-center text-center gap-4 group cursor-pointer transition-all duration-300 shadow-sm hover:shadow-xl my-auto h-full min-h-[360px]"
@@ -312,10 +314,10 @@ export default function Home() {
         </section>
 
         {/* 3. About Us Preview */}
-        <section ref={aboutRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
           
           {/* Left card */}
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-sm">
+          <div ref={aboutLeftRef} className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-sm">
             <div className="space-y-4">
               <span className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest block font-heading">
                 {t('home.about_preview_title')}
@@ -339,7 +341,7 @@ export default function Home() {
           </div>
 
           {/* Right card (Luxury dark badge) */}
-          <div className="bg-zinc-950 text-white rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-md relative overflow-hidden">
+          <div ref={aboutRightRef} className="bg-zinc-950 text-white rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-md relative overflow-hidden" style={{ transitionDelay: '200ms' }}>
             <Wrench className="absolute -right-20 -bottom-20 w-72 h-72 text-zinc-900 opacity-30 shrink-0 pointer-events-none" />
             
             <div className="space-y-8 z-10">
