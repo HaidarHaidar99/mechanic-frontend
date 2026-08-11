@@ -307,34 +307,52 @@ export default function Navbar() {
           })}
 
           {/* Favorites shortcut row */}
-          <Link
-            to="/favorites"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center justify-between text-xl sm:text-2xl font-black tracking-widest py-3 px-4 rounded-2xl transition-all uppercase text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
-          >
-            <div className="flex items-center gap-3">
-              <Heart className={`w-5 h-5 ${favoriteIds.length > 0 ? 'fill-[var(--accent)] text-[var(--accent)]' : 'text-[var(--text-muted)]'}`} />
-              <span>{t('nav.favorites')}</span>
-            </div>
-            <span className="text-xs font-black bg-[var(--surface-elevated)] border border-[var(--border)] px-2.5 py-1 rounded-full text-[var(--accent)]">
-              {favoriteIds.length}
-            </span>
-          </Link>
+          {(() => {
+            const isFavActive = location.pathname === '/favorites';
+            return (
+              <Link
+                to="/favorites"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center justify-between text-xl sm:text-2xl font-black tracking-widest py-3 px-4 rounded-2xl transition-all uppercase ${
+                  isFavActive 
+                    ? 'bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20' 
+                    : 'text-[var(--text-primary)] hover:bg-[var(--surface-hover)]'
+                }`}
+              >
+                <div className="flex items-center gap-3.5">
+                  <Heart className={`w-5 h-5 shrink-0 ${isFavActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`} />
+                  <span>{t('nav.favorites')}</span>
+                </div>
+                <span className="text-xs font-black bg-[var(--surface-elevated)] border border-[var(--border)] px-2.5 py-1 rounded-full text-[var(--accent)]">
+                  {favoriteIds.length}
+                </span>
+              </Link>
+            );
+          })()}
 
           {/* Cart shortcut row */}
-          <Link
-            to="/cart"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center justify-between text-xl sm:text-2xl font-black tracking-widest py-3 px-4 rounded-2xl transition-all uppercase text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
-          >
-            <div className="flex items-center gap-3">
-              <ShoppingCart className="w-5 h-5 text-[var(--text-muted)]" />
-              <span>{t('nav.cart')}</span>
-            </div>
-            <span className="text-xs font-black bg-[var(--surface-elevated)] border border-[var(--border)] px-2.5 py-1 rounded-full text-[var(--accent)]">
-              {getItemCount()}
-            </span>
-          </Link>
+          {(() => {
+            const isCartActive = location.pathname === '/cart';
+            return (
+              <Link
+                to="/cart"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center justify-between text-xl sm:text-2xl font-black tracking-widest py-3 px-4 rounded-2xl transition-all uppercase ${
+                  isCartActive 
+                    ? 'bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20' 
+                    : 'text-[var(--text-primary)] hover:bg-[var(--surface-hover)]'
+                }`}
+              >
+                <div className="flex items-center gap-3.5">
+                  <ShoppingCart className={`w-5 h-5 shrink-0 ${isCartActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`} />
+                  <span>{t('nav.cart')}</span>
+                </div>
+                <span className="text-xs font-black bg-[var(--surface-elevated)] border border-[var(--border)] px-2.5 py-1 rounded-full text-[var(--accent)]">
+                  {getItemCount()}
+                </span>
+              </Link>
+            );
+          })()}
         </div>
 
         {/* Drawer Footer Controls */}

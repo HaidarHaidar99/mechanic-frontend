@@ -9,6 +9,8 @@ import { AdminAuthProvider, useAdminAuth } from './contexts/AdminAuthContext';
 import { CartProvider } from './contexts/CartContext';
 import { FavoritesProvider } from './contexts/FavoritesContext';
 
+import ScrollToTop from './components/common/ScrollToTop';
+
 // Layouts
 import PublicLayout from './layouts/PublicLayout';
 import AdminLayout from './layouts/AdminLayout';
@@ -68,6 +70,7 @@ export default function App() {
             <CartProvider>
               <FavoritesProvider>
                 <BrowserRouter>
+                  <ScrollToTop />
                   <Routes>
                     
                     {/* Public Customer Facing Routes */}

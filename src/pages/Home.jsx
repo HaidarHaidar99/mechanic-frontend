@@ -6,7 +6,7 @@ import { getActiveProducts } from '../services/products.api';
 import { apiRequest } from '../services/api';
 import ProductCard from '../components/products/ProductCard';
 import ProductDetailModal from '../components/products/ProductDetailModal';
-import { MessageSquare, Phone, Mail, MapPin, Wrench, ArrowRight, ShieldCheck, Cpu } from 'lucide-react';
+import { MessageSquare, Phone, Mail, MapPin, Wrench, ArrowRight, ShieldCheck, Cpu, ChevronLeft, ChevronRight, Package } from 'lucide-react';
 import Button from '../components/common/Button';
 import Container from '../components/common/Container';
 import Badge from '../components/common/Badge';
@@ -37,6 +37,7 @@ export default function Home() {
   const ctaRef = useScrollReveal();
 
   const autoPlayRef = useRef(null);
+  const productScrollRef = useRef(null);
 
   // Fetch Carousel slides
   useEffect(() => {
@@ -221,19 +222,29 @@ export default function Home() {
               </p>
             </div>
             
-            <LinkDom 
-              to="/products"
-              className="inline-flex items-center gap-1.5 text-xs font-black text-[var(--accent)] hover:underline uppercase tracking-widest shrink-0 font-heading"
-            >
-              <span>{t('home.view_all')}</span>
-              <ArrowRight className="w-4 h-4 rtl:rotate-180" />
-            </LinkDom>
+            {/* Scroll Navigation Arrows */}
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => productScrollRef.current?.scrollBy({ left: -340, behavior: 'smooth' })}
+                className="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--text-primary)] transition-all cursor-pointer shadow-sm active:scale-95"
+                title="Scroll Left"
+              >
+                <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
+              </button>
+              <button 
+                onClick={() => productScrollRef.current?.scrollBy({ left: 340, behavior: 'smooth' })}
+                className="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--text-primary)] transition-all cursor-pointer shadow-sm active:scale-95"
+                title="Scroll Right"
+              >
+                <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+              </button>
+            </div>
           </div>
 
           {productsLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="flex gap-6 overflow-x-hidden pb-4">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="animate-pulse bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-5 space-y-4 shadow-sm">
+                <div key={i} className="w-[280px] sm:w-[320px] shrink-0 animate-pulse bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-5 space-y-4 shadow-sm">
                   <Skeleton variant="rect" className="aspect-square w-full" />
                   <Skeleton variant="text" width="60%" />
                   <Skeleton variant="text" width="40%" />
@@ -248,14 +259,54 @@ export default function Home() {
               description={currentLang === 'en' ? 'No featured products are available at the moment.' : 'لا تتوفر منتجات مميزة في الوقت الحالي.'}
             />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
-              {featuredProducts.map(product => (
-                <ProductCard 
-                  key={product.id}
-                  product={product} 
-                  onOpenDetails={setSelectedProduct}
-                />
-              ))}
+            <div className="space-y-8">
+              {/* Right Horizontal Scroll Container */}
+              <div 
+                ref={productScrollRef}
+                className="flex gap-6 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory scrollbar-thin scrollbar-thumb-[var(--border-strong)]"
+              >
+                {/* 6 Products Max */}
+                {featuredProducts.slice(0, 6).map(product => (
+                  <div key={product.id} className="w-[280px] sm:w-[320px] shrink-0 snap-start">
+                    <ProductCard 
+                      product={product} 
+                      onOpenDetails={setSelectedProduct}
+                    />
+                  </div>
+                ))}
+
+                {/* View All Products End Card */}
+                <div className="w-[240px] sm:w-[280px] shrink-0 snap-start flex">
+                  <LinkDom 
+                    to="/products"
+                    className="w-full bg-gradient-to-br from-[var(--surface-elevated)] to-[var(--surface)] border border-[var(--border)] hover:border-[var(--accent)] rounded-3xl p-6 flex flex-col items-center justify-center text-center gap-4 group cursor-pointer transition-all duration-300 shadow-sm hover:shadow-xl my-auto h-full min-h-[360px]"
+                  >
+                    <div className="p-4 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] group-hover:scale-115 group-hover:bg-[var(--accent)] group-hover:text-white transition-all duration-300 shadow-sm">
+                      <ArrowRight className="w-6 h-6 rtl:rotate-180" />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-xs font-black uppercase tracking-widest text-[var(--text-primary)] font-heading block group-hover:text-[var(--accent)] transition-colors">
+                        {t('home.view_all')}
+                      </span>
+                      <span className="text-[11px] text-[var(--text-secondary)] font-semibold block">
+                        {currentLang === 'en' ? 'Explore full collection' : 'استكشف التشكيلة الكاملة'}
+                      </span>
+                    </div>
+                  </LinkDom>
+                </div>
+              </div>
+
+              {/* View All Products Button Below the Products */}
+              <div className="flex justify-center pt-2">
+                <LinkDom 
+                  to="/products"
+                  className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-[var(--surface-elevated)] hover:bg-[var(--surface-hover)] text-[var(--text-primary)] border border-[var(--border-strong)] hover:border-[var(--accent)] text-xs font-black uppercase tracking-widest rounded-2xl transition-all shadow-sm hover:shadow-md cursor-pointer font-heading group active:scale-95"
+                >
+                  <Package className="w-4 h-4 text-[var(--accent)]" />
+                  <span>{t('home.view_all')}</span>
+                  <ArrowRight className="w-4 h-4 text-[var(--accent)] group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180 transition-transform" />
+                </LinkDom>
+              </div>
             </div>
           )}
         </section>

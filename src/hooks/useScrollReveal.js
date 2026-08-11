@@ -1,5 +1,9 @@
 import { useEffect, useRef } from 'react';
 
+/**
+ * Bidirectional Luxury Scroll Reveal Hook
+ * Animates elements when scrolling UP and DOWN into view.
+ */
 export function useScrollReveal(options = {}) {
   const ref = useRef(null);
 
@@ -7,24 +11,38 @@ export function useScrollReveal(options = {}) {
     const el = ref.current;
     if (!el) return;
 
-    // Default classes
-    el.classList.add('scroll-reveal-hidden');
+    const isOnce = options.once === true; // Default to repeatable (once: false) for dynamic scroll up & down
+    const threshold = options.threshold !== undefined ? options.threshold : 0.12;
+    const rootMargin = options.rootMargin || '0px 0px -30px 0px';
+
+    el.classList.add('scroll-reveal-base');
+
+    let lastScrollY = window.scrollY;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
+        const currentScrollY = window.scrollY;
+        const scrollingDown = currentScrollY >= lastScrollY;
+        lastScrollY = currentScrollY;
+
         if (entry.isIntersecting) {
+          el.classList.remove('scroll-reveal-out-up', 'scroll-reveal-out-down');
           el.classList.add('scroll-reveal-visible');
-          if (options.once !== false) {
+          if (isOnce) {
             observer.unobserve(el);
           }
-        } else if (options.once === false) {
+        } else if (!isOnce) {
           el.classList.remove('scroll-reveal-visible');
+          if (entry.boundingClientRect.top < 0 || scrollingDown) {
+            el.classList.add('scroll-reveal-out-up');
+            el.classList.remove('scroll-reveal-out-down');
+          } else {
+            el.classList.add('scroll-reveal-out-down');
+            el.classList.remove('scroll-reveal-out-up');
+          }
         }
       },
-      {
-        threshold: options.threshold || 0.15,
-        rootMargin: options.rootMargin || '0px 0px -40px 0px',
-      }
+      { threshold, rootMargin }
     );
 
     observer.observe(el);

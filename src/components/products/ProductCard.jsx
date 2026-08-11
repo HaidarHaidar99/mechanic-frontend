@@ -3,14 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { useCart } from '../../contexts/CartContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
 import { useSettings } from '../../contexts/SettingsContext';
-import { Heart, ShoppingCart, Eye, Check, MessageSquare } from 'lucide-react';
+import { Heart, ShoppingCart, Eye, Check, Zap } from 'lucide-react';
 import Button from '../common/Button';
 import IconButton from '../common/IconButton';
 import Badge from '../common/Badge';
 
 export default function ProductCard({ product, onOpenDetails }) {
   const { t, i18n } = useTranslation();
-  const { cartItems, addToCart } = useCart();
+  const { cartItems, addToCart, removeFromCart } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { settings } = useSettings();
   
@@ -35,8 +35,11 @@ export default function ProductCard({ product, onOpenDetails }) {
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    if (isAdded) return;
-    addToCart(product);
+    if (isAdded) {
+      removeFromCart(product.id);
+    } else {
+      addToCart(product);
+    }
   };
 
   const handleBuyNow = (e) => {
@@ -130,17 +133,17 @@ export default function ProductCard({ product, onOpenDetails }) {
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={handleAddToCart}
-              disabled={isAdded}
-              className={`inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all cursor-pointer font-heading ${
+              className={`inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all cursor-pointer font-heading active:scale-95 ${
                 isAdded
-                  ? 'bg-[var(--success)]/10 border-[var(--success)]/20 text-[var(--success)] cursor-not-allowed opacity-100 font-bold'
-                  : 'bg-[var(--surface-elevated)] border-[var(--border-strong)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:scale-95'
+                  ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-rose-500/15 hover:border-rose-500/30 hover:text-rose-600 dark:hover:text-rose-400 font-bold'
+                  : 'bg-[var(--surface-elevated)] border-[var(--border-strong)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)]'
               }`}
+              title={isAdded ? (currentLang === 'en' ? 'Click to remove from cart' : 'انقر للإزالة من السلة') : t('products.add_to_cart')}
             >
               {isAdded ? (
                 <>
                   <Check className="w-3.5 h-3.5 stroke-[3px]" />
-                  <span>{currentLang === 'en' ? 'Added' : 'تمت'}</span>
+                  <span>{currentLang === 'en' ? 'In Cart' : 'في السلة'}</span>
                 </>
               ) : (
                 <>
@@ -155,7 +158,7 @@ export default function ProductCard({ product, onOpenDetails }) {
               className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white transition-all cursor-pointer font-heading shadow-sm"
               title={currentLang === 'en' ? 'Buy Now via WhatsApp' : 'شراء الآن عبر واتساب'}
             >
-              <MessageSquare className="w-3.5 h-3.5 fill-current" />
+              <Zap className="w-3.5 h-3.5 fill-current text-amber-300" />
               <span>{currentLang === 'en' ? 'Buy Now' : 'شراء الآن'}</span>
             </button>
           </div>
