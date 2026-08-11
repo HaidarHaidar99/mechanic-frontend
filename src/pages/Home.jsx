@@ -49,6 +49,7 @@ export default function Home() {
   const [productsLoading, setProductsLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  const heroTextRef = useScrollReveal({ once: false });
   const featuredHeaderRef = useScrollReveal({ once: false });
   const featuredProductsRef = useScrollReveal({ once: false });
   const aboutLeftRef = useScrollReveal({ once: false });
@@ -194,7 +195,7 @@ export default function Home() {
         })}
 
         {/* Hero Text content (Admin configured custom text colors) */}
-        <div className="absolute inset-0 z-10 flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto h-full space-y-4 pt-12 sm:pt-0">
+        <div ref={heroTextRef} className="absolute inset-0 z-10 flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto h-full space-y-4 pt-12 sm:pt-0">
           <span className="text-[10px] sm:text-xs font-black tracking-[0.25em] text-red-500 uppercase animate-fade-in">
             {currentLang === 'en' ? 'Performance Engineered' : 'هندسة الأداء المتميز'}
           </span>
