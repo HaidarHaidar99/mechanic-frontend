@@ -114,7 +114,7 @@ export default function Home() {
     
     autoPlayRef.current = setInterval(() => {
       setActiveSlide(current => (current + 1) % slides.length);
-    }, 5000);
+    }, 2000);
 
     return () => {
       if (autoPlayRef.current) clearInterval(autoPlayRef.current);
