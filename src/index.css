@@ -180,42 +180,26 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Bidirectional Luxury Scroll Animations */
 .scroll-reveal-base {
-  opacity: 0;
-  transform: translateY(80px) scale(0.92) rotateX(10deg);
-  filter: blur(12px);
-  transition: opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1),
-              transform 1.2s cubic-bezier(0.19, 1, 0.22, 1),
-              filter 1s cubic-bezier(0.19, 1, 0.22, 1);
   will-change: opacity, transform, filter;
 }
 
 .scroll-reveal-hidden {
-  opacity: 0;
-  transform: translateY(80px) scale(0.92) rotateX(10deg);
-  filter: blur(12px);
-  transition: opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1),
-              transform 1.2s cubic-bezier(0.19, 1, 0.22, 1),
-              filter 1s cubic-bezier(0.19, 1, 0.22, 1);
-  will-change: opacity, transform, filter;
-}
-
-.scroll-reveal-out-up {
-  opacity: 0;
-  transform: translateY(-80px) scale(0.92) rotateX(-10deg);
-  filter: blur(12px);
-}
-
-.scroll-reveal-out-down {
-  opacity: 0;
-  transform: translateY(80px) scale(0.92) rotateX(10deg);
-  filter: blur(12px);
+  opacity: 0 !important;
+  transform: translateY(100px) scale(0.9) rotateX(15deg) !important;
+  filter: blur(15px) !important;
+  /* Fast transition out so it's ready to transition back in immediately */
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .scroll-reveal-visible {
   opacity: 1 !important;
   transform: translateY(0) scale(1) rotateX(0deg) !important;
   filter: blur(0px) !important;
+  /* Luxurious and smooth transition IN */
+  transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1) !important;
 }
+
+
 
 #root {
   min-height: 100vh;

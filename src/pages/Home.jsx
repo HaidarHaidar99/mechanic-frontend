@@ -32,11 +32,11 @@ export default function Home() {
   const [productsLoading, setProductsLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const featuredHeaderRef = useScrollReveal();
-  const featuredProductsRef = useScrollReveal();
-  const aboutLeftRef = useScrollReveal();
-  const aboutRightRef = useScrollReveal();
-  const ctaRef = useScrollReveal();
+  const featuredHeaderRef = useScrollReveal({ once: false });
+  const featuredProductsRef = useScrollReveal({ once: false });
+  const aboutLeftRef = useScrollReveal({ once: false });
+  const aboutRightRef = useScrollReveal({ once: false });
+  const ctaRef = useScrollReveal({ once: false });
 
   const autoPlayRef = useRef(null);
   const productScrollRef = useRef(null);
@@ -222,24 +222,6 @@ export default function Home() {
                   ? 'Check out our hand-picked top recommended products for your vehicle.' 
                   : 'اطلع على أفضل المنتجات الموصى بها لسيارتك من قبل خبرائنا.'}
               </p>
-            </div>
-            
-            {/* Scroll Navigation Arrows */}
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => productScrollRef.current?.scrollBy({ left: -340, behavior: 'smooth' })}
-                className="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--text-primary)] transition-all cursor-pointer shadow-sm active:scale-95"
-                title="Scroll Left"
-              >
-                <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
-              </button>
-              <button 
-                onClick={() => productScrollRef.current?.scrollBy({ left: 340, behavior: 'smooth' })}
-                className="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--text-primary)] transition-all cursor-pointer shadow-sm active:scale-95"
-                title="Scroll Right"
-              >
-                <ChevronRight className="w-4 h-4 rtl:rotate-180" />
-              </button>
             </div>
           </div>
 

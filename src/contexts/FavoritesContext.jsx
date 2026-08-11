@@ -6,8 +6,16 @@ export function FavoritesProvider({ children }) {
   const [favoriteIds, setFavoriteIds] = useState(() => {
     try {
       const cached = localStorage.getItem('favorites');
-      return cached ? JSON.parse(cached).filter(Boolean) : [];
+      if (!cached) return [];
+      const parsed = JSON.parse(cached);
+      // If it's not an array, or if it has any null/undefined/empty string items, or short mock IDs like '1', nuke it
+      if (!Array.isArray(parsed) || parsed.some(id => !id || String(id).length < 5)) {
+        localStorage.removeItem('favorites');
+        return [];
+      }
+      return parsed;
     } catch (e) {
+      localStorage.removeItem('favorites');
       return [];
     }
   });
