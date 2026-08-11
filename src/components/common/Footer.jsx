@@ -144,11 +144,19 @@ export default function Footer() {
           <p>
             &copy; {currentYear} {displayCompanyName.toUpperCase()}. {currentLang === 'en' ? 'All Rights Reserved.' : 'جميع الحقوق محفوظة.'}
           </p>
-          <div className="flex items-center gap-1.5 text-zinc-400 font-heading bg-zinc-900/90 px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-sm">
-            <span>Made by</span>
-            <span className="text-red-500 font-black">h.haidar</span>
-            <a href="tel:+9617097308" className="text-zinc-300 hover:text-white transition-colors ml-1 font-sans tracking-normal font-bold">+9617097308</a>
-          </div>
+          <a 
+            href="https://wa.me/9617097308" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-zinc-400 font-heading bg-zinc-900/90 hover:bg-zinc-800 px-4 py-2 rounded-full border border-zinc-800 hover:border-green-500/30 shadow-sm transition-all group cursor-pointer"
+          >
+            <span className="text-[10px] uppercase font-bold text-zinc-400">Made by</span>
+            <span className="text-red-500 font-black text-xs uppercase tracking-wider group-hover:text-red-400 transition-colors">h.haidar</span>
+            <div className="flex items-center gap-1 bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full border border-green-500/20 text-[10px] font-sans font-bold group-hover:bg-green-500/20 transition-all">
+              <MessageSquare className="w-3 h-3 fill-green-500 text-green-500 shrink-0" />
+              <span>+9617097308</span>
+            </div>
+          </a>
         </div>
 
       </div>
