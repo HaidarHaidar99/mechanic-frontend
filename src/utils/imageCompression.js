@@ -8,7 +8,7 @@
  * @param {number} quality JPEG compression quality (0.0 to 1.0)
  * @returns {Promise<string>} Resolves to a Base64 data URL
  */
-export function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.75) {
+export function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.70) {
   return new Promise((resolve, reject) => {
     // Validate file is indeed an image
     if (!file.type.startsWith('image/')) {
@@ -44,12 +44,26 @@ export function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0
         canvas.height = height;
 
         const ctx = canvas.getContext('2d');
-        // Clear and draw image on canvas
         ctx.clearRect(0, 0, width, height);
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Export as JPEG with compression quality
-        const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+        // Initial compression attempt
+        let compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+
+        // Calculate size in KB
+        let sizeKB = (compressedBase64.length * 0.75) / 1024;
+
+        // If size is over 160KB, re-compress with stronger quality reduction
+        if (sizeKB > 160) {
+          compressedBase64 = canvas.toDataURL('image/jpeg', 0.55);
+          sizeKB = (compressedBase64.length * 0.75) / 1024;
+        }
+
+        // Hard limit check (max 220KB per compressed image document)
+        if (sizeKB > 220) {
+          return reject(new Error(`Compressed image (${sizeKB.toFixed(0)} KB) exceeds max 200 KB limit. Please choose a smaller image.`));
+        }
+
         resolve(compressedBase64);
       };
       
