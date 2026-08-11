@@ -1,19 +1,22 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 
 /**
  * Bidirectional Luxury Scroll Reveal Hook
  * Animates elements when scrolling UP and DOWN into view.
  */
 export function useScrollReveal(options = {}) {
-  const ref = useRef(null);
+  const isOnce = options.once === true;
+  const threshold = options.threshold !== undefined ? options.threshold : 0.05;
+  const rootMargin = options.rootMargin || '0px';
 
-  useEffect(() => {
-    const el = ref.current;
+  const observerRef = useRef(null);
+
+  const setRef = useCallback((el) => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
     if (!el) return;
-
-    const isOnce = options.once === true;
-    const threshold = options.threshold !== undefined ? options.threshold : 0.05;
-    const rootMargin = options.rootMargin || '0px';
 
     el.classList.add('scroll-reveal-base');
 
@@ -42,13 +45,10 @@ export function useScrollReveal(options = {}) {
     );
 
     observer.observe(el);
+    observerRef.current = observer;
+  }, [threshold, rootMargin, isOnce]);
 
-    return () => {
-      if (el) observer.unobserve(el);
-    };
-  }, [options.threshold, options.rootMargin, options.once]);
-
-  return ref;
+  return setRef;
 }
 
 export function ScrollReveal({ children, className = '', style = {}, once = false, delay = 0 }) {
