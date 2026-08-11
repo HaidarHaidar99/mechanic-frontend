@@ -262,40 +262,14 @@ export default function Home() {
             />
           ) : (
             <div ref={featuredProductsRef} className="space-y-8" style={{ transitionDelay: '200ms' }}>
-              {/* Right Horizontal Scroll Container (2 Rows) */}
-              <div 
-                ref={productScrollRef}
-                className="grid grid-rows-2 sm:grid-rows-1 grid-flow-col auto-cols-[280px] sm:auto-cols-[320px] gap-6 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory scrollbar-thin scrollbar-thumb-[var(--border-strong)]"
-              >
-                {/* 6 Products Max */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {featuredProducts.slice(0, 6).map(product => (
-                  <div key={product.id} className="w-full h-full shrink-0 snap-start">
-                    <ProductCard 
-                      product={product} 
-                      onOpenDetails={setSelectedProduct}
-                    />
-                  </div>
+                  <ProductCard 
+                    key={product.id}
+                    product={product} 
+                    onOpenDetails={setSelectedProduct}
+                  />
                 ))}
-
-                {/* View All Products End Card */}
-                <div className="w-full h-full shrink-0 snap-start row-span-2 sm:row-span-1 flex">
-                  <LinkDom 
-                    to="/products"
-                    className="w-full bg-gradient-to-br from-[var(--surface-elevated)] to-[var(--surface)] border border-[var(--border)] hover:border-[var(--accent)] rounded-3xl p-6 flex flex-col items-center justify-center text-center gap-4 group cursor-pointer transition-all duration-300 shadow-sm hover:shadow-xl my-auto h-full min-h-[360px]"
-                  >
-                    <div className="p-4 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] group-hover:scale-115 group-hover:bg-[var(--accent)] group-hover:text-white transition-all duration-300 shadow-sm">
-                      <ArrowRight className="w-6 h-6 rtl:rotate-180" />
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-xs font-black uppercase tracking-widest text-[var(--text-primary)] font-heading block group-hover:text-[var(--accent)] transition-colors">
-                        {t('home.view_all')}
-                      </span>
-                      <span className="text-[11px] text-[var(--text-secondary)] font-semibold block">
-                        {currentLang === 'en' ? 'Explore full collection' : 'استكشف التشكيلة الكاملة'}
-                      </span>
-                    </div>
-                  </LinkDom>
-                </div>
               </div>
 
               {/* View All Products Button Below the Products */}

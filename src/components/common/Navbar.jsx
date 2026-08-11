@@ -323,9 +323,11 @@ export default function Navbar() {
                   <Heart className={`w-5 h-5 shrink-0 ${isFavActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`} />
                   <span>{t('nav.favorites')}</span>
                 </div>
-                <span className="text-xs font-black bg-[var(--surface-elevated)] border border-[var(--border)] px-2.5 py-1 rounded-full text-[var(--accent)]">
-                  {favoriteIds.length}
-                </span>
+                {favoriteIds.length > 0 && (
+                  <span className="text-xs font-black bg-[var(--surface-elevated)] border border-[var(--border)] px-2.5 py-1 rounded-full text-[var(--accent)]">
+                    {favoriteIds.length}
+                  </span>
+                )}
               </Link>
             );
           })()}
@@ -347,9 +349,11 @@ export default function Navbar() {
                   <ShoppingCart className={`w-5 h-5 shrink-0 ${isCartActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`} />
                   <span>{t('nav.cart')}</span>
                 </div>
-                <span className="text-xs font-black bg-[var(--surface-elevated)] border border-[var(--border)] px-2.5 py-1 rounded-full text-[var(--accent)]">
-                  {getItemCount()}
-                </span>
+                {getItemCount() > 0 && (
+                  <span className="text-xs font-black bg-[var(--surface-elevated)] border border-[var(--border)] px-2.5 py-1 rounded-full text-[var(--accent)]">
+                    {getItemCount()}
+                  </span>
+                )}
               </Link>
             );
           })()}

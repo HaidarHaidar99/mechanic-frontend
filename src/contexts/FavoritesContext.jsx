@@ -4,8 +4,12 @@ const FavoritesContext = createContext(null);
 
 export function FavoritesProvider({ children }) {
   const [favoriteIds, setFavoriteIds] = useState(() => {
-    const cached = localStorage.getItem('favorites');
-    return cached ? JSON.parse(cached) : [];
+    try {
+      const cached = localStorage.getItem('favorites');
+      return cached ? JSON.parse(cached).filter(Boolean) : [];
+    } catch (e) {
+      return [];
+    }
   });
 
   useEffect(() => {

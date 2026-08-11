@@ -17,29 +17,17 @@ export function useScrollReveal(options = {}) {
 
     el.classList.add('scroll-reveal-base');
 
-    let lastScrollY = window.scrollY;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
-        const currentScrollY = window.scrollY;
-        const scrollingDown = currentScrollY >= lastScrollY;
-        lastScrollY = currentScrollY;
-
         if (entry.isIntersecting) {
-          el.classList.remove('scroll-reveal-out-up', 'scroll-reveal-out-down');
           el.classList.add('scroll-reveal-visible');
+          el.classList.remove('scroll-reveal-hidden');
           if (isOnce) {
             observer.unobserve(el);
           }
         } else if (!isOnce) {
           el.classList.remove('scroll-reveal-visible');
-          if (entry.boundingClientRect.top < 0 || scrollingDown) {
-            el.classList.add('scroll-reveal-out-up');
-            el.classList.remove('scroll-reveal-out-down');
-          } else {
-            el.classList.add('scroll-reveal-out-down');
-            el.classList.remove('scroll-reveal-out-up');
-          }
+          el.classList.add('scroll-reveal-hidden');
         }
       },
       { threshold, rootMargin }
