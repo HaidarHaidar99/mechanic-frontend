@@ -232,13 +232,18 @@ export default function ManageSettings() {
 
   const handleSlideVideoUpload = (id, file) => {
     if (!file) return;
-    if (file.size > 15 * 1024 * 1024) {
-      alert(currentLang === 'en' ? 'Video file size must be under 15MB' : 'حجم ملف الفيديو يجب أن يكون أقل من 15 ميجابايت');
+    // Firestore has a strict 1MB document limit. Base64 adds ~33% overhead.
+    // 750KB raw binary converts to ~1MB Base64.
+    if (file.size > 800 * 1024) {
+      alert(currentLang === 'en' 
+        ? `Selected video (${(file.size / (1024 * 1024)).toFixed(2)} MB) is too large for raw database storage (Max 800 KB for direct file upload).\n\nTo use larger HD videos, please upload your video to a free host (like Streamable, Cloudinary, or Imgur) and paste the direct MP4 URL into the "Video Direct URL" box below!` 
+        : `ملف الفيديو المحدد (${(file.size / (1024 * 1024)).toFixed(2)} ميجابايت) كبير جداً للتخزين المباشر في قاعدة البيانات (الحد الأقصى 800 كيلوبايت لرفع الملفات المباشرة).\n\nلاستخدام فيديوهات عالية الدقة، يرجى رفع الفيديو على موقع مجاني مثل (Streamable أو Cloudinary) ولصق رابط MP4 المباشر في خانة "Video Direct URL" أدناه!`);
       return;
     }
     const reader = new FileReader();
     reader.onload = (e) => {
       handleSlideChange(id, 'videoBase64', e.target.result);
+      handleSlideChange(id, 'videoUrl', ''); // clear url if file uploaded
     };
     reader.readAsDataURL(file);
   };
