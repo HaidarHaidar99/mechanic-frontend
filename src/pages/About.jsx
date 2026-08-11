@@ -5,11 +5,18 @@ import { Wrench, ShieldCheck, Award, HeartHandshake } from 'lucide-react';
 import Container from '../components/common/Container';
 import SectionHeader from '../components/common/SectionHeader';
 import Badge from '../components/common/Badge';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export default function About() {
   const { i18n } = useTranslation();
   const { settings, loading } = useSettings();
   const currentLang = i18n.language || 'en';
+
+  const headerRef = useScrollReveal({ once: false });
+  const profileLeftRef = useScrollReveal({ once: false });
+  const profileRightRef = useScrollReveal({ once: false });
+  const missionRef = useScrollReveal({ once: false });
+  const visionRef = useScrollReveal({ once: false });
 
   if (loading) {
     return (
@@ -32,7 +39,7 @@ export default function About() {
     <Container className="py-8 space-y-16">
       
       {/* 1. Header Banner */}
-      <section className="bg-zinc-950 text-white rounded-3xl p-8 sm:p-16 relative overflow-hidden shadow-lg">
+      <section ref={headerRef} className="bg-zinc-950 text-white rounded-3xl p-8 sm:p-16 relative overflow-hidden shadow-lg">
         <Wrench className="absolute -right-20 -bottom-20 w-80 h-80 text-zinc-900 opacity-60 shrink-0 pointer-events-none" />
         
         <div className="relative z-10 max-w-3xl space-y-4">
@@ -53,7 +60,7 @@ export default function About() {
       {/* 2. Main Profile Content */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
         
-        <div className="space-y-4">
+        <div ref={profileLeftRef} className="space-y-4">
           <span className="text-[9px] font-black text-[var(--accent)] uppercase tracking-widest block font-heading">
             {currentLang === 'en' ? 'Core Profile' : 'اللمحة العامة'}
           </span>
@@ -66,7 +73,7 @@ export default function About() {
         </div>
 
         {/* Feature badges card */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 bg-[var(--surface)] border border-[var(--border)] p-8 sm:p-10 rounded-3xl shadow-sm">
+        <div ref={profileRightRef} className="grid grid-cols-1 sm:grid-cols-2 gap-8 bg-[var(--surface)] border border-[var(--border)] p-8 sm:p-10 rounded-3xl shadow-sm">
           
           <div className="space-y-3">
             <div className="p-3 bg-[var(--accent)]/10 text-[var(--accent)] rounded-xl w-fit">
@@ -115,7 +122,7 @@ export default function About() {
       <section className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
         
         {/* Mission */}
-        <div className="bg-[var(--surface-elevated)] p-8 sm:p-10 rounded-3xl border border-[var(--border)] space-y-4">
+        <div ref={missionRef} className="bg-[var(--surface-elevated)] p-8 sm:p-10 rounded-3xl border border-[var(--border)] space-y-4">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-[var(--accent)]" />
             <h3 className="text-xs font-black text-[var(--accent)] uppercase tracking-widest font-heading">
@@ -128,7 +135,7 @@ export default function About() {
         </div>
 
         {/* Vision */}
-        <div className="bg-[var(--surface-elevated)] p-8 sm:p-10 rounded-3xl border border-[var(--border)] space-y-4">
+        <div ref={visionRef} className="bg-[var(--surface-elevated)] p-8 sm:p-10 rounded-3xl border border-[var(--border)] space-y-4">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-[var(--accent)]" />
             <h3 className="text-xs font-black text-[var(--accent)] uppercase tracking-widest font-heading">

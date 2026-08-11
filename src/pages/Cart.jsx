@@ -9,12 +9,24 @@ import Button from '../components/common/Button';
 import IconButton from '../components/common/IconButton';
 import Container from '../components/common/Container';
 import EmptyState from '../components/common/EmptyState';
+import { useScrollReveal } from '../hooks/useScrollReveal';
+
+function AnimatedCartItem({ children, index }) {
+  const itemRef = useScrollReveal({ once: false });
+  return (
+    <div ref={itemRef} style={{ transitionDelay: `${(index % 5) * 70}ms` }}>
+      {children}
+    </div>
+  );
+}
 
 export default function Cart() {
   const { t, i18n } = useTranslation();
   const { cartItems, updateQuantity, removeFromCart, clearCart, getTotal } = useCart();
   const { settings } = useSettings();
   
+  const summaryRef = useScrollReveal({ once: false });
+
   const currentLang = i18n.language || 'en';
   const total = getTotal();
 
@@ -83,16 +95,16 @@ export default function Cart() {
         
         {/* Cart items list (Left side on Desktop, Stacked on Mobile) */}
         <div className="lg:col-span-2 space-y-4">
-          {cartItems.map((item) => {
+          {cartItems.map((item, index) => {
             const name = item.name?.[currentLang] || item.name?.['en'] || '';
             const category = item.category ? (item.category[currentLang] || item.category['en'] || '') : '';
             const subtotal = item.price * item.quantity;
             
             return (
-              <div 
-                key={item.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[var(--surface)] p-4 sm:p-5 rounded-2xl border border-[var(--border)] shadow-sm hover:border-[var(--border-strong)] transition-all"
-              >
+              <AnimatedCartItem key={item.id} index={index}>
+                <div 
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[var(--surface)] p-4 sm:p-5 rounded-2xl border border-[var(--border)] shadow-sm hover:border-[var(--border-strong)] transition-all"
+                >
                 
                 {/* Details left section */}
                 <div className="flex items-center gap-4">
@@ -159,14 +171,14 @@ export default function Cart() {
                   </div>
 
                 </div>
-
               </div>
-            );
+            </AnimatedCartItem>
+          );
           })}
         </div>
 
         {/* Checkout Summary Card */}
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 lg:sticky lg:top-24">
+        <div ref={summaryRef} className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 lg:sticky lg:top-24">
           <h2 className="text-base font-extrabold text-[var(--text-primary)] pb-3 border-b border-[var(--border)] font-heading uppercase tracking-widest">
             {currentLang === 'en' ? 'Order Summary' : 'ملخص الطلب'}
           </h2>

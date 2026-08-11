@@ -9,6 +9,23 @@ import { Link } from 'react-router-dom';
 import Container from '../components/common/Container';
 import EmptyState from '../components/common/EmptyState';
 import Skeleton from '../components/common/Skeleton';
+import { useScrollReveal } from '../hooks/useScrollReveal';
+
+function AnimatedProductCard({ product, onOpenDetails, index }) {
+  const cardRef = useScrollReveal({ once: false });
+  return (
+    <div 
+      ref={cardRef} 
+      className="h-full"
+      style={{ transitionDelay: `${(index % 4) * 80}ms` }}
+    >
+      <ProductCard 
+        product={product} 
+        onOpenDetails={onOpenDetails} 
+      />
+    </div>
+  );
+}
 
 export default function Favorites() {
   const { t, i18n } = useTranslation();
@@ -88,11 +105,12 @@ export default function Favorites() {
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
-        {favoriteProducts.map(product => (
-          <ProductCard 
+        {favoriteProducts.map((product, index) => (
+          <AnimatedProductCard 
             key={product.id} 
             product={product} 
             onOpenDetails={setSelectedProduct}
+            index={index}
           />
         ))}
       </div>

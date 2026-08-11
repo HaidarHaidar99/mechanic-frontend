@@ -7,11 +7,15 @@ import Container from '../components/common/Container';
 import SectionHeader from '../components/common/SectionHeader';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export default function Contact() {
   const { t, i18n } = useTranslation();
   const { settings } = useSettings();
   const currentLang = i18n.language || 'en';
+
+  const detailsRef = useScrollReveal({ once: false });
+  const formRef = useScrollReveal({ once: false });
 
   const [formData, setFormData] = useState({
     name: '',
@@ -106,7 +110,7 @@ export default function Contact() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
         {/* Contact details card */}
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 shadow-sm space-y-8">
+        <div ref={detailsRef} className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 shadow-sm space-y-8">
           
           <h2 className="text-sm font-extrabold text-[var(--text-primary)] pb-3 border-b border-[var(--border)] font-heading uppercase tracking-widest">
             {currentLang === 'en' ? 'Direct Contact' : 'الاتصال المباشر'}
@@ -186,7 +190,7 @@ export default function Contact() {
         </div>
 
         {/* Contact form card */}
-        <div className="lg:col-span-2 bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 sm:p-10 shadow-sm">
+        <div ref={formRef} className="lg:col-span-2 bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 sm:p-10 shadow-sm" style={{ transitionDelay: '150ms' }}>
           
           <h2 className="text-sm font-extrabold text-[var(--text-primary)] pb-3 border-b border-[var(--border)] mb-6 font-heading uppercase tracking-widest">
             {currentLang === 'en' ? 'Send Us a Message' : 'أرسل لنا رسالة'}

@@ -140,10 +140,15 @@ export default function Footer() {
         </div>
 
         {/* Bottom copyright banner */}
-        <div className="border-t border-zinc-900 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-center gap-4 text-[10px] font-black uppercase tracking-widest text-zinc-500">
+        <div className="border-t border-zinc-900 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-black uppercase tracking-widest text-zinc-500">
           <p>
             &copy; {currentYear} {displayCompanyName.toUpperCase()}. {currentLang === 'en' ? 'All Rights Reserved.' : 'جميع الحقوق محفوظة.'}
           </p>
+          <div className="flex items-center gap-1.5 text-zinc-400 font-heading bg-zinc-900/90 px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-sm">
+            <span>Made by</span>
+            <span className="text-red-500 font-black">h.haidar</span>
+            <a href="tel:+9617097308" className="text-zinc-300 hover:text-white transition-colors ml-1 font-sans tracking-normal font-bold">+9617097308</a>
+          </div>
         </div>
 
       </div>
